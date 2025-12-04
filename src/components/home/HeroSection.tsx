@@ -80,15 +80,76 @@ export function HeroSection() {
             </Badge>
           </motion.div>
 
-          {/* Headline */}
-          <motion.h1
+          {/* Headline with Video Background Text */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-primary-foreground"
+            className="relative mb-6"
           >
-            <span className="gradient-text-luxury">FUN</span> Charity
-          </motion.h1>
+            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+              <span className="relative inline-block">
+                {/* Video Background for FUN text */}
+                <span 
+                  className="relative"
+                  style={{
+                    background: 'linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)))',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{
+                      WebkitBackgroundClip: 'text',
+                      mixBlendMode: 'screen',
+                      opacity: 0.9,
+                    }}
+                  >
+                    <source src="/videos/logo-video.mp4" type="video/mp4" />
+                  </video>
+                  FUN
+                </span>
+              </span>
+              <span className="text-primary-foreground"> Charity</span>
+            </h1>
+            
+            {/* Hidden video that clips to text using SVG mask */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+              <svg className="absolute w-full h-full" style={{ overflow: 'visible' }}>
+                <defs>
+                  <clipPath id="textClip">
+                    <text 
+                      x="50%" 
+                      y="50%" 
+                      textAnchor="middle" 
+                      dominantBaseline="middle"
+                      className="font-display font-bold"
+                      style={{ fontSize: 'clamp(2.25rem, 8vw, 4.5rem)' }}
+                    >
+                      FUN
+                    </text>
+                  </clipPath>
+                </defs>
+                <foreignObject x="0" y="0" width="100%" height="100%" clipPath="url(#textClip)">
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                  >
+                    <source src="/videos/logo-video.mp4" type="video/mp4" />
+                  </video>
+                </foreignObject>
+              </svg>
+            </div>
+          </motion.div>
 
           {/* Tagline */}
           <motion.p
