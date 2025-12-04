@@ -7,40 +7,42 @@ import {
   Trophy,
   ArrowRight,
   Sparkles,
+  Wallet,
+  Link as LinkIcon,
 } from "lucide-react";
 
 const steps = [
   {
-    icon: Search,
-    title: "Discover Campaigns",
+    icon: Wallet,
+    title: "Connect & Discover",
     description:
-      "Browse verified campaigns or use Need Map to find causes that match your passion and location.",
-    color: "text-primary",
-    bgColor: "bg-primary/10",
+      "Connect wallet hoặc đăng ký email. Khám phá campaigns được verify và Needs Map để tìm cause phù hợp.",
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
   },
   {
     icon: Heart,
     title: "Give with Confidence",
     description:
-      "Donate via fiat or crypto. Every transaction is recorded on-chain for full transparency.",
-    color: "text-secondary",
-    bgColor: "bg-secondary/10",
+      "Donate bằng fiat hoặc crypto. Mọi giao dịch được ghi nhận on-chain minh bạch 100%.",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
   },
   {
-    icon: Shield,
-    title: "Track Your Impact",
+    icon: LinkIcon,
+    title: "Track On-Chain",
     description:
-      "Follow real-time updates, photos, and videos. See exactly how your donation makes a difference.",
+      "Theo dõi real-time từng đồng donate đi đâu, chi tiêu như nào. Có hash, có proof, có trust.",
     color: "text-success",
     bgColor: "bg-success/10",
   },
   {
     icon: Trophy,
-    title: "Earn Recognition",
+    title: "Earn & Grow",
     description:
-      "Build your reputation, earn badges, and receive FUN tokens for consistent, impactful giving.",
-    color: "text-accent",
-    bgColor: "bg-accent/10",
+      "Xây dựng Reputation, nhận badges, FUN tokens. Đóng góp nhiều = uy tín cao = được community tin tưởng.",
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
   },
 ];
 
@@ -50,7 +52,7 @@ export function HowItWorks() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <Badge variant="secondary" className="mb-4">
+          <Badge variant="purple" className="mb-4">
             <Sparkles className="w-3.5 h-3.5 mr-1" />
             Simple & Transparent
           </Badge>
@@ -58,8 +60,7 @@ export function HowItWorks() {
             How <span className="gradient-text">FUN</span> Works
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            From discovery to impact tracking, our platform makes charitable giving
-            simple, transparent, and rewarding.
+            Từ khám phá đến theo dõi impact – mọi thứ đều minh bạch, đơn giản và rewarding.
           </p>
         </div>
 
@@ -79,14 +80,14 @@ export function HowItWorks() {
                 {/* Connector Line */}
                 {index < steps.length - 1 && (
                   <div className="hidden lg:block absolute top-12 left-1/2 w-full">
-                    <ArrowRight className="w-6 h-6 text-muted-foreground/30 absolute -right-3" />
+                    <ArrowRight className="w-6 h-6 text-secondary/30 absolute -right-3" />
                   </div>
                 )}
 
-                <div className="glass-card p-6 text-center h-full">
+                <div className="glass-card p-6 text-center h-full luxury-border">
                   {/* Step Number */}
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full gradient-bg text-xs font-bold text-primary-foreground">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full gradient-bg-gold text-xs font-bold text-secondary-foreground">
                       {index + 1}
                     </span>
                   </div>

@@ -7,6 +7,10 @@ import Index from "./pages/Index";
 import Campaigns from "./pages/Campaigns";
 import CampaignDetail from "./pages/CampaignDetail";
 import Dashboard from "./pages/Dashboard";
+import NeedsMap from "./pages/NeedsMap";
+import Profiles from "./pages/Profiles";
+import Reviews from "./pages/Reviews";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +26,10 @@ const App = () => (
           <Route path="/campaigns" element={<Campaigns />} />
           <Route path="/campaigns/:id" element={<CampaignDetail />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/needs-map" element={<NeedsMap />} />
+          <Route path="/profiles" element={<Profiles />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

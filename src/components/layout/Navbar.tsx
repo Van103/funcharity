@@ -3,23 +3,26 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Logo } from "@/components/brand/Logo";
 import {
-  Heart,
   Menu,
   X,
-  Search,
   Bell,
-  User,
-  Sparkles,
-  HandHeart,
-  LayoutDashboard,
   Wallet,
+  LayoutDashboard,
+  MapPin,
+  Users,
+  Star,
+  Shield,
+  Newspaper,
 } from "lucide-react";
 
 const navItems = [
-  { name: "Campaigns", path: "/campaigns", icon: HandHeart },
+  { name: "Campaigns", path: "/campaigns", icon: Newspaper },
+  { name: "Needs Map", path: "/needs-map", icon: MapPin },
   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { name: "Need Map", path: "/need-map", icon: Search },
+  { name: "Profiles", path: "/profiles", icon: Users },
+  { name: "Reviews", path: "/reviews", icon: Star },
 ];
 
 export function Navbar() {
@@ -32,20 +35,11 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl gradient-bg flex items-center justify-center shadow-md group-hover:shadow-glow transition-shadow duration-300">
-                <Heart className="w-5 h-5 text-primary-foreground" fill="currentColor" />
-              </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-accent animate-pulse" />
-            </div>
-            <span className="font-display font-bold text-xl">
-              <span className="gradient-text">FUN</span>
-              <span className="text-foreground">Charity</span>
-            </span>
+            <Logo size="md" />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -54,7 +48,7 @@ export function Navbar() {
                   <Button
                     variant={isActive ? "secondary" : "ghost"}
                     size="sm"
-                    className={isActive ? "bg-primary/10 text-primary" : ""}
+                    className={isActive ? "bg-secondary/10 text-secondary" : ""}
                   >
                     <Icon className="w-4 h-4" />
                     {item.name}
@@ -68,21 +62,25 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-secondary rounded-full animate-pulse" />
             </Button>
             
-            <Button variant="glass" size="sm" className="gap-2">
+            <Button variant="wallet" size="sm" className="gap-2">
               <Wallet className="w-4 h-4" />
-              <span className="font-mono">0.00 ETH</span>
+              <span className="font-mono text-xs">Connect Wallet</span>
             </Button>
 
             <div className="flex items-center gap-2 pl-3 border-l border-border">
-              <Button variant="outline" size="sm">
-                Sign In
-              </Button>
-              <Button variant="hero" size="sm">
-                Start Giving
-              </Button>
+              <Link to="/auth">
+                <Button variant="outline" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/campaigns">
+                <Button variant="hero" size="sm">
+                  Donate Now
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -90,7 +88,7 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -105,7 +103,7 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-b border-border"
+            className="lg:hidden bg-background border-b border-border"
           >
             <div className="container mx-auto px-4 py-4 space-y-2">
               {navItems.map((item) => {
@@ -124,12 +122,20 @@ export function Navbar() {
                 );
               })}
               <div className="pt-4 space-y-2 border-t border-border">
-                <Button variant="outline" className="w-full">
-                  Sign In
+                <Button variant="wallet" className="w-full">
+                  <Wallet className="w-4 h-4" />
+                  Connect Wallet
                 </Button>
-                <Button variant="hero" className="w-full">
-                  Start Giving
-                </Button>
+                <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/campaigns" onClick={() => setIsOpen(false)}>
+                  <Button variant="hero" className="w-full">
+                    Donate Now
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>

@@ -9,6 +9,7 @@ import {
   GraduationCap,
   UtensilsCrossed,
   Home,
+  ExternalLink,
 } from "lucide-react";
 
 const impactCategories = [
@@ -33,38 +34,43 @@ const impactCategories = [
     title: "Food Security",
     value: "890K+",
     description: "Meals provided",
-    color: "text-primary",
-    bgColor: "bg-primary/10",
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
   },
   {
     icon: Home,
     title: "Shelter",
     value: "12K+",
     description: "Families housed",
-    color: "text-secondary",
-    bgColor: "bg-secondary/10",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
   },
+];
+
+const recentTransactions = [
+  { donor: "0x1a2b...3c4d", amount: "$500", campaign: "Clean Water Vietnam", time: "2 min ago", hash: "0xabc..." },
+  { donor: "sarah.eth", amount: "0.5 ETH", campaign: "Education India", time: "5 min ago", hash: "0xdef..." },
+  { donor: "0x5e6f...7g8h", amount: "$1,000", campaign: "Food Relief Kenya", time: "8 min ago", hash: "0xghi..." },
 ];
 
 export function ImpactStats() {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden bg-background">
       {/* Background */}
-      <div className="absolute inset-0 gradient-bg opacity-5" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_hsl(var(--secondary)/0.1),_transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_hsl(43_55%_52%_/_0.05),_transparent_70%)]" />
 
       <div className="container mx-auto px-4 relative">
         {/* Header */}
         <div className="text-center mb-16">
-          <Badge variant="success" className="mb-4">
+          <Badge variant="gold" className="mb-4">
             <TrendingUp className="w-3.5 h-3.5 mr-1" />
             Real Impact
           </Badge>
           <h2 className="font-display text-4xl font-bold mb-4">
-            Together, We've Made a <span className="text-secondary">Difference</span>
+            Together, We've Made a <span className="gradient-text">Difference</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Every donation contributes to measurable impact. Track it all on-chain.
+            Mọi donation đều contribute vào impact có thể đo lường. Track tất cả on-chain.
           </p>
         </div>
 
@@ -79,14 +85,14 @@ export function ImpactStats() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="glass-card p-6 text-center group hover:shadow-lg transition-shadow"
+                className="glass-card p-6 text-center group hover:shadow-lg transition-shadow luxury-border"
               >
                 <div
                   className={`w-14 h-14 rounded-2xl ${category.bgColor} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}
                 >
                   <Icon className={`w-7 h-7 ${category.color}`} />
                 </div>
-                <div className="font-display text-3xl font-bold mb-1">
+                <div className="font-display text-3xl font-bold gradient-text mb-1">
                   {category.value}
                 </div>
                 <div className="font-medium text-foreground mb-1">
@@ -100,38 +106,52 @@ export function ImpactStats() {
           })}
         </div>
 
-        {/* Live Activity Feed */}
+        {/* Live Blockchain Feed */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="glass-card p-6 max-w-2xl mx-auto"
+          className="glass-card p-6 max-w-3xl mx-auto luxury-border"
         >
           <div className="flex items-center gap-2 mb-4">
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
             </span>
-            <span className="font-medium">Live Activity</span>
+            <span className="font-medium">Live Blockchain Activity</span>
+            <Badge variant="blockchain" className="ml-auto text-xs">
+              On-Chain Verified
+            </Badge>
           </div>
           
           <div className="space-y-3">
-            {[
-              { user: "Sarah M.", action: "donated $50 to", campaign: "Clean Water for Vietnam", time: "2 min ago" },
-              { user: "John D.", action: "volunteered for", campaign: "Education Initiative", time: "5 min ago" },
-              { user: "Anonymous", action: "donated 0.5 ETH to", campaign: "Food Relief Kenya", time: "8 min ago" },
-            ].map((activity, index) => (
-              <div key={index} className="flex items-center gap-3 text-sm">
-                <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-primary-foreground text-xs font-bold">
-                  {activity.user[0]}
+            {recentTransactions.map((tx, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.2 }}
+                className="flex items-center gap-3 text-sm p-3 bg-muted/50 rounded-xl"
+              >
+                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                  <Heart className="w-4 h-4 text-primary-foreground" fill="currentColor" />
                 </div>
-                <div className="flex-1">
-                  <span className="font-medium">{activity.user}</span>{" "}
-                  <span className="text-muted-foreground">{activity.action}</span>{" "}
-                  <span className="text-primary font-medium">{activity.campaign}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs text-muted-foreground">{tx.donor}</span>
+                    <span className="text-muted-foreground">donated</span>
+                    <span className="font-semibold text-secondary">{tx.amount}</span>
+                  </div>
+                  <span className="text-muted-foreground">to <span className="text-foreground">{tx.campaign}</span></span>
                 </div>
-                <span className="text-xs text-muted-foreground">{activity.time}</span>
-              </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground hover:text-secondary cursor-pointer">
+                    <span className="font-mono">{tx.hash}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </div>
+                  <span className="text-xs text-muted-foreground">{tx.time}</span>
+                </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>

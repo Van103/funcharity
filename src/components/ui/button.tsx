@@ -10,27 +10,30 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
+          "bg-primary text-primary-foreground shadow-md hover:bg-primary-light hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0",
         destructive:
           "bg-destructive text-destructive-foreground shadow-md hover:bg-destructive/90 hover:shadow-lg",
         outline:
-          "border-2 border-primary bg-transparent text-primary hover:bg-primary hover:text-primary-foreground",
+          "border-2 border-secondary bg-transparent text-secondary hover:bg-secondary hover:text-secondary-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/80 hover:shadow-lg hover:-translate-y-0.5",
+          "bg-secondary text-secondary-foreground shadow-md hover:bg-secondary-light hover:shadow-lg hover:-translate-y-0.5",
         ghost:
           "text-foreground hover:bg-muted hover:text-foreground",
         link:
-          "text-primary underline-offset-4 hover:underline",
+          "text-secondary underline-offset-4 hover:underline",
+        // Luxury variants
         hero:
-          "bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:shadow-xl hover:-translate-y-1 active:translate-y-0 font-semibold",
+          "bg-gradient-to-r from-secondary via-secondary-light to-secondary text-secondary-foreground shadow-lg hover:shadow-glow hover:-translate-y-1 active:translate-y-0 font-semibold border border-secondary-light/30",
         "hero-outline":
-          "border-2 border-primary-foreground/30 bg-primary-foreground/10 text-primary-foreground backdrop-blur-sm hover:bg-primary-foreground/20 hover:border-primary-foreground/50",
-        accent:
-          "bg-accent text-accent-foreground shadow-md hover:bg-accent/90 hover:shadow-lg font-semibold",
-        success:
-          "bg-success text-success-foreground shadow-md hover:bg-success/90 hover:shadow-lg",
+          "border-2 border-secondary/50 bg-transparent text-secondary hover:bg-secondary/10 hover:border-secondary",
+        "hero-dark":
+          "bg-primary text-primary-foreground shadow-lg hover:shadow-glow-purple hover:-translate-y-1 active:translate-y-0 font-semibold",
+        gold:
+          "bg-gradient-to-r from-secondary-dark via-secondary to-secondary-light text-secondary-foreground shadow-md hover:shadow-glow font-semibold",
         glass:
-          "bg-card/60 backdrop-blur-lg border border-border/50 text-foreground hover:bg-card/80 hover:border-border shadow-sm",
+          "bg-card/60 backdrop-blur-lg border border-secondary/20 text-foreground hover:bg-card/80 hover:border-secondary/40 shadow-sm",
+        wallet:
+          "bg-primary text-primary-foreground border border-secondary/30 hover:border-secondary hover:shadow-glow font-mono",
       },
       size: {
         default: "h-11 px-5 py-2",

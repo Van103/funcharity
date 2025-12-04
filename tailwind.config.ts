@@ -33,6 +33,7 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
           light: "hsl(var(--secondary-light))",
+          dark: "hsl(var(--secondary-dark))",
         },
         success: {
           DEFAULT: "hsl(var(--success))",
@@ -72,6 +73,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Brand specific colors
+        purple: {
+          deep: "#2E0F4A",
+          light: "#4A2070",
+        },
+        gold: {
+          metallic: "#C9A23D",
+          light: "#D4B85A",
+          dark: "#A88A2D",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -83,7 +94,7 @@ export default {
       },
       boxShadow: {
         'glow': 'var(--shadow-glow)',
-        'glow-teal': 'var(--shadow-glow-teal)',
+        'glow-purple': 'var(--shadow-glow-purple)',
       },
       keyframes: {
         "accordion-down": {
@@ -110,9 +121,13 @@ export default {
           from: { opacity: "0", transform: "translateX(20px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
-        "counter": {
-          from: { "--num": "0" },
-          to: { "--num": "var(--target)" },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% center" },
+          "100%": { backgroundPosition: "200% center" },
+        },
+        "sparkle": {
+          "0%, 100%": { opacity: "0.3", transform: "scale(0.8)" },
+          "50%": { opacity: "1", transform: "scale(1.2)" },
         },
       },
       animation: {
@@ -122,6 +137,8 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
         "scale-in": "scale-in 0.3s ease-out forwards",
         "slide-in-right": "slide-in-right 0.4s ease-out forwards",
+        "shimmer": "shimmer 3s ease-in-out infinite",
+        "sparkle": "sparkle 2s ease-in-out infinite",
       },
     },
   },

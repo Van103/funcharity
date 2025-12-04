@@ -1,38 +1,38 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Heart, ArrowRight, Building2, Users, Sparkles } from "lucide-react";
+import { Heart, ArrowRight, Building2, Users, Sparkles, Crown, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const roles = [
   {
     icon: Heart,
     title: "For Donors",
-    description: "Give with confidence. Track impact. Earn recognition.",
+    description: "Donate với sự tin tưởng. Track impact. Earn reputation & badges.",
     cta: "Start Giving",
     href: "/campaigns",
-    gradient: "from-primary to-accent",
+    gradient: "from-secondary to-secondary-light",
   },
   {
     icon: Users,
     title: "For Volunteers",
-    description: "Find opportunities. Build skills. Make a difference.",
+    description: "Tìm cơ hội. Build skills. Tạo impact thực sự trong cộng đồng.",
     cta: "Join as Volunteer",
-    href: "/volunteers",
-    gradient: "from-secondary to-secondary-light",
+    href: "/auth",
+    gradient: "from-primary to-primary-light",
   },
   {
     icon: Building2,
     title: "For NGOs",
-    description: "Launch campaigns. Build trust. Grow your impact.",
+    description: "Launch campaigns. Build trust với community. Scale your impact.",
     cta: "Register NGO",
-    href: "/ngos",
+    href: "/auth",
     gradient: "from-success to-secondary",
   },
 ];
 
 export function CTASection() {
   return (
-    <section className="py-24">
+    <section className="py-24 bg-background">
       <div className="container mx-auto px-4">
         {/* Role Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-24">
@@ -47,9 +47,9 @@ export function CTASection() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Link to={role.href}>
-                  <div className="glass-card-hover p-8 h-full group">
+                  <div className="glass-card-hover p-8 h-full group luxury-border">
                     <div
-                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${role.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
+                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${role.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg`}
                     >
                       <Icon className="w-7 h-7 text-primary-foreground" />
                     </div>
@@ -78,37 +78,37 @@ export function CTASection() {
           className="relative rounded-3xl overflow-hidden"
         >
           {/* Background */}
-          <div className="absolute inset-0 gradient-bg" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.2),_transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(0,0,0,0.1),_transparent_50%)]" />
+          <div className="absolute inset-0 bg-primary" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_hsl(43_55%_52%_/_0.2),_transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_hsl(275_60%_30%_/_0.3),_transparent_50%)]" />
 
           {/* Content */}
           <div className="relative px-8 py-16 md:px-16 md:py-24 text-center">
-            <Sparkles className="w-12 h-12 text-primary-foreground/80 mx-auto mb-6" />
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-secondary/20 flex items-center justify-center crown-glow">
+                <Crown className="w-8 h-8 text-secondary" />
+              </div>
+            </div>
             <h2 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
-              Ready to Make a Difference?
+              Ready to Make a <span className="text-secondary">Difference</span>?
             </h2>
-            <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-              Join thousands of donors, volunteers, and NGOs creating transparent,
-              lasting impact through Web3 technology.
+            <p className="text-primary-foreground/80 text-lg mb-4 max-w-2xl mx-auto">
+              Join thousands of donors, volunteers, và NGOs tạo nên transparent, lasting impact thông qua Web3 technology.
+            </p>
+            <p className="text-secondary font-medium mb-8">
+              Từ thiện là ánh sáng. Minh bạch là vàng.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/campaigns">
-                <Button variant="hero-outline" size="xl">
+                <Button variant="hero" size="xl">
                   <Heart className="w-5 h-5" fill="currentColor" />
                   Browse Campaigns
                 </Button>
               </Link>
-              <Link to="/dashboard">
-                <Button
-                  variant="ghost"
-                  size="xl"
-                  className="text-primary-foreground hover:bg-primary-foreground/10"
-                >
-                  Explore Dashboard
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
-              </Link>
+              <Button variant="wallet" size="xl">
+                <Wallet className="w-5 h-5" />
+                Connect Wallet
+              </Button>
             </div>
           </div>
         </motion.div>

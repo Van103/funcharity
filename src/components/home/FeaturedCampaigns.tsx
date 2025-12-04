@@ -10,6 +10,7 @@ import {
   MapPin,
   Verified,
   TrendingUp,
+  ExternalLink,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -27,6 +28,7 @@ const campaigns = [
     category: "Water & Sanitation",
     verified: true,
     trending: true,
+    txHash: "0x1a2b...3c4d",
   },
   {
     id: 2,
@@ -41,6 +43,7 @@ const campaigns = [
     category: "Education",
     verified: true,
     trending: false,
+    txHash: "0x5e6f...7g8h",
   },
   {
     id: 3,
@@ -55,27 +58,28 @@ const campaigns = [
     category: "Hunger Relief",
     verified: true,
     trending: true,
+    txHash: "0x9i0j...1k2l",
   },
 ];
 
 export function FeaturedCampaigns() {
   return (
-    <section className="py-24 relative">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(var(--primary)/0.05),_transparent_70%)]" />
+    <section className="py-24 relative bg-background">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_hsl(275_70%_18%_/_0.03),_transparent_70%)]" />
       
       <div className="container mx-auto px-4 relative">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
           <div>
-            <Badge variant="accent" className="mb-3">
+            <Badge variant="gold" className="mb-3">
               <TrendingUp className="w-3.5 h-3.5 mr-1" />
-              Featured Campaigns
+              Trending Campaigns
             </Badge>
             <h2 className="font-display text-4xl font-bold">
               Make an Impact <span className="gradient-text">Today</span>
             </h2>
             <p className="text-muted-foreground mt-2 max-w-lg">
-              Support verified campaigns and track your impact in real-time
+              Support verified campaigns and track your impact in real-time on blockchain
             </p>
           </div>
           <Link to="/campaigns">
@@ -105,7 +109,7 @@ export function FeaturedCampaigns() {
                       alt={campaign.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent" />
                     
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex gap-2">
@@ -123,10 +127,14 @@ export function FeaturedCampaigns() {
                       )}
                     </div>
 
-                    {/* Category */}
-                    <div className="absolute bottom-3 left-3">
+                    {/* Category & TX */}
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
                       <Badge variant="secondary" className="backdrop-blur-sm">
                         {campaign.category}
+                      </Badge>
+                      <Badge variant="blockchain" className="backdrop-blur-sm text-xs">
+                        <ExternalLink className="w-2.5 h-2.5" />
+                        {campaign.txHash}
                       </Badge>
                     </div>
                   </div>
@@ -138,7 +146,7 @@ export function FeaturedCampaigns() {
                       {campaign.location}
                     </div>
 
-                    <h3 className="font-display font-semibold text-lg mb-1 line-clamp-2 group-hover:text-primary transition-colors">
+                    <h3 className="font-display font-semibold text-lg mb-1 line-clamp-2 group-hover:text-secondary transition-colors">
                       {campaign.title}
                     </h3>
                     
@@ -149,7 +157,7 @@ export function FeaturedCampaigns() {
                     {/* Progress */}
                     <div className="mb-4">
                       <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="font-semibold">
+                        <span className="font-semibold text-secondary">
                           ${campaign.raised.toLocaleString()}
                         </span>
                         <span className="text-muted-foreground">

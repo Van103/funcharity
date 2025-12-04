@@ -24,17 +24,25 @@ const badgeVariants = cva(
           "border-transparent bg-accent text-accent-foreground",
         muted:
           "border-transparent bg-muted text-muted-foreground",
-        // Reputation badges
+        // Luxury & Role badges
+        gold:
+          "border-secondary/30 bg-gradient-to-r from-secondary-dark via-secondary to-secondary-light text-secondary-foreground",
+        purple:
+          "border-transparent bg-primary text-primary-foreground",
         donor:
-          "border-transparent bg-gradient-to-r from-primary to-accent text-primary-foreground",
+          "border-secondary/30 bg-gradient-to-r from-secondary to-secondary-light text-secondary-foreground",
         volunteer:
-          "border-transparent bg-gradient-to-r from-secondary to-secondary text-secondary-foreground",
+          "border-primary-light/30 bg-gradient-to-r from-primary to-primary-light text-primary-foreground",
         ngo:
           "border-transparent bg-gradient-to-r from-success to-secondary text-success-foreground",
         verified:
-          "border-transparent bg-success/20 text-success border border-success/30",
+          "border-secondary/30 bg-secondary/20 text-secondary",
         trending:
-          "border-transparent bg-primary/10 text-primary border border-primary/20",
+          "border-secondary/20 bg-secondary/10 text-secondary",
+        blockchain:
+          "border-primary/30 bg-primary/10 text-primary font-mono",
+        urgent:
+          "border-destructive/30 bg-destructive/10 text-destructive animate-pulse",
       },
     },
     defaultVariants: {
