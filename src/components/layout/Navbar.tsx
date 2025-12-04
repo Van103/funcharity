@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/Logo";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import {
@@ -37,20 +38,41 @@ const navItems = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserAvatar(session.user.id);
+      } else {
+        setAvatarUrl(null);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchUserAvatar(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const fetchUserAvatar = async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("user_id", userId)
+      .single();
+    
+    if (data?.avatar_url) {
+      setAvatarUrl(data.avatar_url);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -118,10 +140,13 @@ export function Navbar() {
               {user ? (
                 <>
                   <Link to="/profile" className="flex items-center gap-2 text-sm hover:opacity-80 transition-opacity cursor-pointer">
-                    <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center">
-                      <UserIcon className="w-4 h-4 text-secondary" />
-                    </div>
-                    <span className="text-muted-foreground max-w-[120px] truncate">
+                    <Avatar className="w-8 h-8 border-2 border-secondary/50">
+                      <AvatarImage src={avatarUrl || undefined} alt="Avatar" />
+                      <AvatarFallback className="bg-secondary/20">
+                        <UserIcon className="w-4 h-4 text-secondary" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="navbar-username max-w-[120px] truncate font-semibold">
                       {user.user_metadata?.full_name || user.email?.split('@')[0]}
                     </span>
                   </Link>
@@ -192,10 +217,13 @@ export function Navbar() {
                 {user ? (
                   <>
                     <Link to="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-2 px-4 py-2 hover:bg-muted rounded-md transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center">
-                        <UserIcon className="w-4 h-4 text-secondary" />
-                      </div>
-                      <span className="text-muted-foreground text-sm truncate">
+                      <Avatar className="w-8 h-8 border-2 border-secondary/50">
+                        <AvatarImage src={avatarUrl || undefined} alt="Avatar" />
+                        <AvatarFallback className="bg-secondary/20">
+                          <UserIcon className="w-4 h-4 text-secondary" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="navbar-username text-sm truncate font-semibold">
                         {user.user_metadata?.full_name || user.email?.split('@')[0]}
                       </span>
                     </Link>

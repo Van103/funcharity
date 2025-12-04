@@ -217,6 +217,18 @@
     background-image: var(--gradient-luxury);
   }
 
+  /* Navbar username - deep purple + gold gradient */
+  .navbar-username {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      90deg,
+      hsl(275 80% 35%) 0%,
+      hsl(280 70% 45%) 30%,
+      hsl(43 85% 55%) 70%,
+      hsl(38 90% 60%) 100%
+    );
+  }
+
   .text-balance {
     text-wrap: balance;
   }
