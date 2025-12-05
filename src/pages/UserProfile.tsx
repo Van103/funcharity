@@ -13,6 +13,7 @@ import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { PostsTab } from "@/components/profile/PostsTab";
 import { PhotosTab } from "@/components/profile/PhotosTab";
 import { FriendsTab } from "@/components/profile/FriendsTab";
+import { WalletBalances } from "@/components/wallet/WalletBalances";
 import {
   Edit3,
   Users,
@@ -21,6 +22,7 @@ import {
   FileText,
   Shield,
   Star,
+  Wallet,
 } from "lucide-react";
 
 interface Profile {
@@ -33,6 +35,7 @@ interface Profile {
   role: string | null;
   reputation_score: number | null;
   is_verified: boolean | null;
+  wallet_address: string | null;
 }
 
 interface Stats {
@@ -297,6 +300,13 @@ export default function UserProfile() {
                 <Activity className="w-4 h-4 mr-2" />
                 Hoạt Động
               </TabsTrigger>
+              <TabsTrigger
+                value="wallet"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-secondary data-[state=active]:bg-transparent px-6 py-3"
+              >
+                <Wallet className="w-4 h-4 mr-2" />
+                Ví Crypto
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="posts" className="mt-6">
@@ -319,6 +329,10 @@ export default function UserProfile() {
                   Các chiến dịch và hoạt động từ thiện của bạn sẽ xuất hiện ở đây
                 </p>
               </div>
+            </TabsContent>
+
+            <TabsContent value="wallet" className="mt-6">
+              <WalletBalances walletAddress={profile?.wallet_address || null} />
             </TabsContent>
           </Tabs>
         </div>
