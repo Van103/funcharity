@@ -20,6 +20,8 @@ import {
   Trophy,
   Send,
   X,
+  Pencil,
+  Check,
 } from "lucide-react";
 
 interface ReviewComment {
@@ -159,6 +161,8 @@ const Reviews = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [expandedComments, setExpandedComments] = useState<number | null>(null);
   const [newCommentText, setNewCommentText] = useState<{[key: number]: string}>({});
+  const [editingComment, setEditingComment] = useState<number | null>(null);
+  const [editCommentText, setEditCommentText] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -293,6 +297,43 @@ const Reviews = () => {
       }
       return comment;
     }));
+  };
+
+  const handleStartEditComment = (comment: ReviewComment) => {
+    setEditingComment(comment.id);
+    setEditCommentText(comment.content);
+  };
+
+  const handleSaveEditComment = (commentId: number) => {
+    if (!editCommentText.trim()) {
+      toast({
+        title: "Nội dung bình luận không được trống",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setComments(comments.map(comment => {
+      if (comment.id === commentId) {
+        return {
+          ...comment,
+          content: editCommentText,
+          date: "Đã chỉnh sửa"
+        };
+      }
+      return comment;
+    }));
+    setEditingComment(null);
+    setEditCommentText("");
+
+    toast({
+      title: "Bình luận đã được cập nhật!",
+    });
+  };
+
+  const handleCancelEditComment = () => {
+    setEditingComment(null);
+    setEditCommentText("");
   };
 
   const getCommentsForReview = (reviewId: number) => {
@@ -478,18 +519,61 @@ const Reviews = () => {
                                     <span className="text-sm font-medium">{comment.author.name}</span>
                                     <span className="text-xs text-muted-foreground">{comment.date}</span>
                                   </div>
-                                  <p className="text-sm text-muted-foreground">{comment.content}</p>
-                                  <button 
-                                    onClick={() => handleLikeComment(comment.id)}
-                                    className={`flex items-center gap-1 text-xs mt-2 transition-colors ${
-                                      comment.isLiked 
-                                        ? "text-secondary" 
-                                        : "text-muted-foreground hover:text-secondary"
-                                    }`}
-                                  >
-                                    <ThumbsUp className={`w-3 h-3 ${comment.isLiked ? "fill-secondary" : ""}`} />
-                                    {comment.likes}
-                                  </button>
+                                  
+                                  {editingComment === comment.id ? (
+                                    <div className="space-y-2">
+                                      <Input
+                                        value={editCommentText}
+                                        onChange={(e) => setEditCommentText(e.target.value)}
+                                        className="text-sm"
+                                        autoFocus
+                                      />
+                                      <div className="flex gap-2">
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => handleSaveEditComment(comment.id)}
+                                          className="h-7 px-2 text-xs hover:bg-success/20 hover:text-success"
+                                        >
+                                          <Check className="w-3 h-3 mr-1" />
+                                          Lưu
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={handleCancelEditComment}
+                                          className="h-7 px-2 text-xs hover:bg-destructive/20 hover:text-destructive"
+                                        >
+                                          <X className="w-3 h-3 mr-1" />
+                                          Hủy
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <p className="text-sm text-muted-foreground">{comment.content}</p>
+                                      <div className="flex items-center gap-3 mt-2">
+                                        <button 
+                                          onClick={() => handleLikeComment(comment.id)}
+                                          className={`flex items-center gap-1 text-xs transition-colors ${
+                                            comment.isLiked 
+                                              ? "text-secondary" 
+                                              : "text-muted-foreground hover:text-secondary"
+                                          }`}
+                                        >
+                                          <ThumbsUp className={`w-3 h-3 ${comment.isLiked ? "fill-secondary" : ""}`} />
+                                          {comment.likes}
+                                        </button>
+                                        <button
+                                          onClick={() => handleStartEditComment(comment)}
+                                          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                                        >
+                                          <Pencil className="w-3 h-3" />
+                                          Chỉnh sửa
+                                        </button>
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
                               </div>
                             ))
