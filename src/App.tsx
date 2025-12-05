@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MotionProvider } from "@/contexts/MotionContext";
 import { AnimatedBackground } from "@/components/background/AnimatedBackground";
+import CustomCursor from "@/components/cursor/CustomCursor";
 import Index from "./pages/Index";
 import Campaigns from "./pages/Campaigns";
 import CampaignDetail from "./pages/CampaignDetail";
@@ -38,6 +39,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <CustomCursor />
         <BrowserRouter>
           <BackgroundWithVariant />
           <Routes>
