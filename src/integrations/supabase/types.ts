@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action_type: string
+          admin_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           badge_type: Database["public"]["Enums"]["badge_type"]
@@ -426,6 +456,114 @@ export type Database = {
         }
         Relationships: []
       }
+      kyc_requests: {
+        Row: {
+          additional_docs: Json | null
+          business_license_url: string | null
+          created_at: string
+          id: string
+          id_document_url: string | null
+          rejection_reason: string | null
+          requested_role: Database["public"]["Enums"]["user_role"]
+          status: Database["public"]["Enums"]["kyc_status"]
+          updated_at: string
+          user_id: string
+          verified_by: string | null
+        }
+        Insert: {
+          additional_docs?: Json | null
+          business_license_url?: string | null
+          created_at?: string
+          id?: string
+          id_document_url?: string | null
+          rejection_reason?: string | null
+          requested_role: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["kyc_status"]
+          updated_at?: string
+          user_id: string
+          verified_by?: string | null
+        }
+        Update: {
+          additional_docs?: Json | null
+          business_license_url?: string | null
+          created_at?: string
+          id?: string
+          id_document_url?: string | null
+          rejection_reason?: string | null
+          requested_role?: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["kyc_status"]
+          updated_at?: string
+          user_id?: string
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email_campaigns: boolean | null
+          email_donations: boolean | null
+          email_social: boolean | null
+          id: string
+          push_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_campaigns?: boolean | null
+          email_donations?: boolean | null
+          email_social?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_campaigns?: boolean | null
+          email_donations?: boolean | null
+          email_social?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          is_read: boolean | null
+          message: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           content: string
@@ -597,6 +735,51 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          description: string | null
+          evidence_urls: Json | null
+          id: string
+          report_type: Database["public"]["Enums"]["report_type"]
+          reporter_id: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          evidence_urls?: Json | null
+          id?: string
+          report_type: Database["public"]["Enums"]["report_type"]
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id: string
+          target_type: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          evidence_urls?: Json | null
+          id?: string
+          report_type?: Database["public"]["Enums"]["report_type"]
+          reporter_id?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          target_id?: string
+          target_type?: string
+        }
+        Relationships: []
+      }
       reputation_events: {
         Row: {
           created_at: string
@@ -765,6 +948,17 @@ export type Database = {
         | "completed"
         | "failed"
         | "refunded"
+      kyc_status: "pending" | "approved" | "rejected" | "expired"
+      notification_type:
+        | "donation_received"
+        | "donation_confirmed"
+        | "campaign_approved"
+        | "campaign_rejected"
+        | "campaign_funded"
+        | "badge_earned"
+        | "friend_request"
+        | "comment_reply"
+        | "system_announcement"
       payment_method:
         | "fiat_card"
         | "fiat_bank_transfer"
@@ -772,6 +966,14 @@ export type Database = {
         | "crypto_btc"
         | "crypto_usdt"
         | "crypto_other"
+      report_status: "pending" | "investigating" | "resolved" | "dismissed"
+      report_type:
+        | "fraud"
+        | "spam"
+        | "inappropriate_content"
+        | "fake_campaign"
+        | "misuse_of_funds"
+        | "other"
       user_role: "donor" | "volunteer" | "ngo" | "beneficiary"
     }
     CompositeTypes: {
@@ -944,6 +1146,18 @@ export const Constants = {
         "failed",
         "refunded",
       ],
+      kyc_status: ["pending", "approved", "rejected", "expired"],
+      notification_type: [
+        "donation_received",
+        "donation_confirmed",
+        "campaign_approved",
+        "campaign_rejected",
+        "campaign_funded",
+        "badge_earned",
+        "friend_request",
+        "comment_reply",
+        "system_announcement",
+      ],
       payment_method: [
         "fiat_card",
         "fiat_bank_transfer",
@@ -951,6 +1165,15 @@ export const Constants = {
         "crypto_btc",
         "crypto_usdt",
         "crypto_other",
+      ],
+      report_status: ["pending", "investigating", "resolved", "dismissed"],
+      report_type: [
+        "fraud",
+        "spam",
+        "inappropriate_content",
+        "fake_campaign",
+        "misuse_of_funds",
+        "other",
       ],
       user_role: ["donor", "volunteer", "ngo", "beneficiary"],
     },
