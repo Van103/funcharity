@@ -17,7 +17,8 @@ interface WalletConnectModalProps {
 
 export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: WalletConnectModalProps) {
   const [isMetaMaskInstalled, setIsMetaMaskInstalled] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
+  const [isBitgetInstalled, setIsBitgetInstalled] = useState(false);
+  const [isConnecting, setIsConnecting] = useState<string | null>(null);
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null);
   const [manualAddress, setManualAddress] = useState("");
   const [showManualInput, setShowManualInput] = useState(false);
@@ -26,9 +27,8 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
   const { toast } = useToast();
 
   useEffect(() => {
-    checkMetaMaskInstalled();
+    checkWalletsInstalled();
     loadSavedWallet();
-    // Reset edit mode when modal opens
     if (open) {
       setIsEditMode(false);
       setShowManualInput(false);
@@ -36,8 +36,13 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
     }
   }, [open]);
 
-  const checkMetaMaskInstalled = () => {
-    setIsMetaMaskInstalled(typeof window.ethereum !== "undefined" && window.ethereum.isMetaMask === true);
+  const checkWalletsInstalled = () => {
+    // Check MetaMask
+    setIsMetaMaskInstalled(typeof window.ethereum !== "undefined" && window.ethereum?.isMetaMask === true);
+    
+    // Check Bitget Wallet (can be window.bitkeep or window.bitget)
+    const bitgetProvider = (window as any).bitkeep?.ethereum || (window as any).bitget?.ethereum;
+    setIsBitgetInstalled(!!bitgetProvider);
   };
 
   const loadSavedWallet = async () => {
@@ -65,7 +70,7 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
       return;
     }
 
-    setIsConnecting(true);
+    setIsConnecting("metamask");
     try {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
@@ -79,7 +84,7 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
         onWalletConnected?.(address);
         toast({
           title: "Kết nối thành công!",
-          description: `Ví ${shortenAddress(address)} đã được kết nối.`,
+          description: `Ví ${shortenAddress(address)} đã được kết nối qua MetaMask.`,
         });
       }
     } catch (error: unknown) {
@@ -98,7 +103,56 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
         });
       }
     } finally {
-      setIsConnecting(false);
+      setIsConnecting(null);
+    }
+  };
+
+  const connectBitget = async () => {
+    const bitgetProvider = (window as any).bitkeep?.ethereum || (window as any).bitget?.ethereum;
+    
+    if (!bitgetProvider) {
+      toast({
+        title: "Bitget Wallet không được cài đặt",
+        description: "Vui lòng cài đặt Bitget Wallet extension để tiếp tục.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsConnecting("bitget");
+    try {
+      const accounts = await bitgetProvider.request({
+        method: "eth_requestAccounts",
+      }) as string[];
+
+      if (accounts && accounts.length > 0) {
+        const address = accounts[0];
+        await saveWalletAddress(address);
+        setConnectedAddress(address);
+        setIsEditMode(false);
+        onWalletConnected?.(address);
+        toast({
+          title: "Kết nối thành công!",
+          description: `Ví ${shortenAddress(address)} đã được kết nối qua Bitget Wallet.`,
+        });
+      }
+    } catch (error: unknown) {
+      const err = error as { code?: number; message?: string };
+      if (err.code === 4001) {
+        toast({
+          title: "Bị từ chối",
+          description: "Bạn đã từ chối yêu cầu kết nối.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lỗi kết nối",
+          description: "Không thể kết nối với Bitget Wallet. Vui lòng thử lại.",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsConnecting(null);
     }
   };
 
@@ -131,7 +185,6 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
   const handleManualSubmit = async () => {
     const trimmedAddress = manualAddress.trim();
     
-    // Validate Ethereum address format
     if (!trimmedAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
       toast({
         title: "Địa chỉ không hợp lệ",
@@ -189,14 +242,14 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 font-display">
             <Wallet className="w-5 h-5 text-secondary" />
             Kết Nối Ví Web3
           </DialogTitle>
           <DialogDescription>
-            Kết nối ví MetaMask hoặc nhập địa chỉ ví thủ công
+            Kết nối ví MetaMask, Bitget Wallet hoặc nhập địa chỉ ví thủ công
           </DialogDescription>
         </DialogHeader>
 
@@ -270,8 +323,8 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={connectMetaMask}
-                disabled={isConnecting}
-                className="w-full p-4 rounded-xl border-2 border-secondary/30 hover:border-secondary/60 bg-secondary/5 hover:bg-secondary/10 transition-all flex items-center gap-4"
+                disabled={isConnecting !== null}
+                className="w-full p-4 rounded-xl border-2 border-secondary/30 hover:border-secondary/60 bg-secondary/5 hover:bg-secondary/10 transition-all flex items-center gap-4 disabled:opacity-50"
               >
                 <div className="w-12 h-12 rounded-xl bg-[#F6851B]/10 flex items-center justify-center">
                   <img 
@@ -288,24 +341,65 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {isConnecting ? "Đang kết nối..." : "Kết nối ví MetaMask của bạn"}
+                    {isConnecting === "metamask" ? "Đang kết nối..." : "Kết nối ví MetaMask của bạn"}
                   </p>
                 </div>
               </motion.button>
 
-              {!isMetaMaskInstalled && (
+              {/* Bitget Wallet Connect Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={connectBitget}
+                disabled={isConnecting !== null}
+                className="w-full p-4 rounded-xl border-2 border-[#00D4AA]/30 hover:border-[#00D4AA]/60 bg-[#00D4AA]/5 hover:bg-[#00D4AA]/10 transition-all flex items-center gap-4 disabled:opacity-50"
+              >
+                <div className="w-12 h-12 rounded-xl bg-[#00D4AA]/10 flex items-center justify-center">
+                  <svg viewBox="0 0 32 32" className="w-8 h-8" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#00D4AA"/>
+                    <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" strokeWidth="2" fill="none"/>
+                    <path d="M16 8V24" stroke="white" strokeWidth="2"/>
+                    <path d="M8 12L24 20" stroke="white" strokeWidth="2"/>
+                    <path d="M24 12L8 20" stroke="white" strokeWidth="2"/>
+                  </svg>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="font-semibold flex items-center gap-2">
+                    Bitget Wallet
+                    {isBitgetInstalled && (
+                      <Badge className="text-xs bg-[#00D4AA] text-white">Đã cài đặt</Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {isConnecting === "bitget" ? "Đang kết nối..." : "Kết nối ví Bitget của bạn"}
+                  </p>
+                </div>
+              </motion.button>
+
+              {/* Installation warnings */}
+              {!isMetaMaskInstalled && !isBitgetInstalled && (
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
                   <AlertCircle className="w-5 h-5 text-amber-500 mt-0.5" />
                   <div className="text-sm">
-                    <p className="font-medium text-amber-600">MetaMask chưa được cài đặt</p>
-                    <a 
-                      href="https://metamask.io/download/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-amber-600 underline hover:no-underline"
-                    >
-                      Tải MetaMask tại đây
-                    </a>
+                    <p className="font-medium text-amber-600">Chưa có ví nào được cài đặt</p>
+                    <div className="flex flex-col gap-1 mt-1">
+                      <a 
+                        href="https://metamask.io/download/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-amber-600 underline hover:no-underline"
+                      >
+                        Tải MetaMask
+                      </a>
+                      <a 
+                        href="https://web3.bitget.com/en/wallet-download" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-amber-600 underline hover:no-underline"
+                      >
+                        Tải Bitget Wallet
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
