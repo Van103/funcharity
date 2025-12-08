@@ -10,6 +10,8 @@ import { CreatePostBox } from "@/components/social/CreatePostBox";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Helmet } from "react-helmet-async";
+import { useFeedPosts } from "@/hooks/useFeedPosts";
+import { Loader2 } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -19,67 +21,12 @@ interface Profile {
   wallet_address: string | null;
 }
 
-// Mock posts data
-const mockPosts = [
-  {
-    id: "1",
-    user: {
-      name: "Camly Duong",
-      verified: true,
-      location: "Love House Đà Lạt",
-    },
-    content: `THƯỢNG ĐẾ CÓ MỘT THOẢ THUẬN,
-VỚI BẠN.
-
-Bạn đang nhận từ Ngài rất rất nhiều.
-Ngài sẽ còn cho bạn thêm nhiều nhiều nữa.
-Với 1 thỏa thuận:
-Bạn phải luôn chia sẻ, cho đi nhiều người khác.
-Luôn cho đi, không ngưng nghỉ. Với tâm hoan hỉ, vui vẻ, yêu thương và biết ơn.
-Nếu bạn ngưng cho đi, thì bạn sẽ ngưng nhận thêm. Và những gì bạn có sẽ từ từ bốc hơi, qua nhiều cách khác nhau, bị mất, bị lửa, bị hack, bị hao hụt, bị suy thoái, bị phá sản...
-Bạn phải tiếp tục cho đi, cho đi, với tâm yêu thương và biết ơn. Càng cho đi, bạn sẽ càng nhận lại nhiều hơn.
-Chúc bạn luôn giàu có, đủ đầy và thịnh vượng!`,
-    media: [
-      {
-        url: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800&auto=format&fit=crop",
-        type: "image" as const,
-      },
-    ],
-    earnAmount: "99,999 ₫",
-    createdAt: "1 ngày",
-    reactions: {
-      total: 1800000000,
-      types: ["😍", "🥰", "😢", "❤️", "👍"],
-    },
-    comments: 3700000000,
-    shares: 1000000000,
-  },
-  {
-    id: "2",
-    user: {
-      name: "Lê Minh Trí",
-      verified: true,
-    },
-    content: `Hôm nay là một ngày tuyệt vời để chia sẻ yêu thương! 💜
-
-Cảm ơn FUN Charity đã tạo ra một nền tảng minh bạch để kết nối những tấm lòng nhân ái. 
-
-#FUNCharity #BlockchainForGood #TransparentGiving`,
-    earnAmount: "50,000 ₫",
-    createdAt: "2 giờ",
-    reactions: {
-      total: 2500,
-      types: ["❤️", "👍", "😍"],
-    },
-    comments: 128,
-    shares: 45,
-  },
-];
-
 export default function SocialFeed() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
   const navigate = useNavigate();
+  
+  const { data: posts, isLoading: postsLoading } = useFeedPosts();
 
   useEffect(() => {
     fetchProfile();
@@ -106,11 +53,11 @@ export default function SocialFeed() {
     } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
     }
   };
 
-  if (loading) {
+  if (profileLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -147,9 +94,20 @@ export default function SocialFeed() {
                 
                 {/* Posts Feed */}
                 <div className="space-y-6">
-                  {mockPosts.map((post) => (
-                    <SocialPostCard key={post.id} post={post} />
-                  ))}
+                  {postsLoading ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <Loader2 className="w-8 h-8 animate-spin text-secondary mb-4" />
+                      <p className="text-muted-foreground">Đang tải bài viết...</p>
+                    </div>
+                  ) : posts && posts.length > 0 ? (
+                    posts.map((post) => (
+                      <SocialPostCard key={post.id} post={post} />
+                    ))
+                  ) : (
+                    <div className="glass-card p-12 text-center">
+                      <p className="text-muted-foreground">Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

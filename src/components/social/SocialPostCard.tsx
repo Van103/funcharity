@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,45 +9,38 @@ import {
   MessageCircle,
   Share2,
   Gift,
-  Send,
   Image as ImageIcon,
   Smile,
   Coins,
+  MapPin,
+  CheckCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
-
-interface MediaItem {
-  url: string;
-  type: "image" | "video";
-}
-
-interface SocialPost {
-  id: string;
-  user: {
-    name: string;
-    avatar?: string;
-    verified?: boolean;
-    location?: string;
-  };
-  content: string;
-  media?: MediaItem[];
-  earnAmount?: string;
-  createdAt: string;
-  reactions: {
-    total: number;
-    types: string[];
-  };
-  comments: number;
-  shares: number;
-}
+import { FeedPost } from "@/hooks/useFeedPosts";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
 
 interface SocialPostCardProps {
-  post: SocialPost;
+  post: FeedPost;
 }
 
 export function SocialPostCard({ post }: SocialPostCardProps) {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [commentText, setCommentText] = useState("");
+
+  // Parse media_urls - handle both string[] and {url, type}[] formats
+  const mediaUrls = (post.media_urls || []).map((item) => {
+    if (typeof item === 'string') {
+      const isVideo = item.match(/\.(mp4|webm|mov)$/i);
+      return { url: item, type: isVideo ? 'video' : 'image' };
+    }
+    return item as { url: string; type: string };
+  });
+
+  const timeAgo = formatDistanceToNow(new Date(post.created_at), { 
+    addSuffix: false, 
+    locale: vi 
+  });
 
   return (
     <motion.div
@@ -61,31 +53,38 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10 border-2 border-secondary/30">
-              <AvatarImage src={post.user.avatar} />
+              <AvatarImage src={post.profiles?.avatar_url || ""} />
               <AvatarFallback className="bg-secondary/20">
-                {post.user.name.charAt(0)}
+                {post.profiles?.full_name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground">{post.user.name}</span>
-                {post.user.verified && <span className="text-secondary">💜</span>}
-                {post.user.location && (
+                <span className="font-semibold text-foreground">
+                  {post.profiles?.full_name || "Người dùng"}
+                </span>
+                {post.profiles?.is_verified && (
+                  <CheckCircle className="w-4 h-4 text-secondary fill-secondary/20" />
+                )}
+                {post.location && (
                   <>
-                    <span className="text-muted-foreground text-sm">cùng với</span>
-                    <span className="text-secondary text-sm font-medium">{post.user.location}</span>
+                    <span className="text-muted-foreground text-sm">tại</span>
+                    <span className="text-secondary text-sm font-medium flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {post.location}
+                    </span>
                   </>
                 )}
               </div>
-              <span className="text-xs text-muted-foreground">{post.createdAt}</span>
+              <span className="text-xs text-muted-foreground">{timeAgo}</span>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            {post.earnAmount && (
+            {post.target_amount && post.target_amount > 0 && (
               <Badge variant="outline" className="text-secondary border-secondary/30 gap-1">
                 <Coins className="w-3 h-3" />
-                Đã EARN {post.earnAmount}
+                {post.target_amount.toLocaleString()} ₫
               </Badge>
             )}
             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -95,6 +94,13 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
         </div>
       </div>
 
+      {/* Title */}
+      {post.title && (
+        <div className="px-4 pb-2">
+          <h3 className="font-semibold text-lg">{post.title}</h3>
+        </div>
+      )}
+
       {/* Content */}
       <div className="px-4 pb-3">
         <div className="whitespace-pre-wrap text-sm leading-relaxed">
@@ -103,33 +109,33 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
       </div>
 
       {/* Media */}
-      {post.media && post.media.length > 0 && (
+      {mediaUrls.length > 0 && (
         <div className="relative">
-          {post.media.length === 1 ? (
-            post.media[0].type === "video" ? (
+          {mediaUrls.length === 1 ? (
+            mediaUrls[0].type === "video" ? (
               <video
-                src={post.media[0].url}
+                src={mediaUrls[0].url}
                 controls
                 className="w-full max-h-[500px] object-cover"
               />
             ) : (
               <img
-                src={post.media[0].url}
+                src={mediaUrls[0].url}
                 alt=""
                 className="w-full max-h-[500px] object-cover"
               />
             )
           ) : (
             <div className={`grid gap-1 ${
-              post.media.length === 2 ? "grid-cols-2" :
-              post.media.length === 3 ? "grid-cols-2" :
+              mediaUrls.length === 2 ? "grid-cols-2" :
+              mediaUrls.length === 3 ? "grid-cols-2" :
               "grid-cols-2"
             }`}>
-              {post.media.slice(0, 4).map((item, i) => (
+              {mediaUrls.slice(0, 4).map((item, i) => (
                 <div 
                   key={i}
                   className={`relative ${
-                    post.media!.length === 3 && i === 0 ? "row-span-2" : ""
+                    mediaUrls.length === 3 && i === 0 ? "row-span-2" : ""
                   }`}
                 >
                   {item.type === "video" ? (
@@ -144,10 +150,10 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
                       className="w-full h-full object-cover aspect-square"
                     />
                   )}
-                  {i === 3 && post.media!.length > 4 && (
+                  {i === 3 && mediaUrls.length > 4 && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                       <span className="text-white text-2xl font-bold">
-                        +{post.media!.length - 4}
+                        +{mediaUrls.length - 4}
                       </span>
                     </div>
                   )}
@@ -162,15 +168,14 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
       <div className="px-4 py-2 flex items-center justify-between text-sm text-muted-foreground">
         <div className="flex items-center gap-1">
           <div className="flex -space-x-1">
-            {post.reactions.types.map((type, i) => (
-              <span key={i} className="text-base">{type}</span>
-            ))}
+            <span className="text-base">❤️</span>
+            <span className="text-base">👍</span>
+            <span className="text-base">😍</span>
           </div>
-          <span>{post.reactions.total.toLocaleString()} người đã bày tỏ cảm xúc</span>
+          <span>{post.reactions_count || 0} người đã bày tỏ cảm xúc</span>
         </div>
         <div className="flex items-center gap-4">
-          <span>{post.comments.toLocaleString()} Bình luận</span>
-          <span>{post.shares.toLocaleString()} lượt chia sẻ</span>
+          <span>{post.comments_count || 0} Bình luận</span>
         </div>
       </div>
 
@@ -207,27 +212,6 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
         <div className="px-4 py-3 border-t border-border bg-muted/30">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
             <span>Xem thêm bình luận</span>
-          </div>
-
-          {/* Sample comment */}
-          <div className="flex gap-2 mb-3">
-            <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-primary/10 text-xs">L</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="bg-muted/50 rounded-2xl px-3 py-2">
-                <div className="flex items-center gap-1">
-                  <span className="font-medium text-sm">Lê Minh Trí</span>
-                  <span className="text-secondary">💜</span>
-                </div>
-                <p className="text-sm">Dạ biết ơn lời dạy của Cha và của chị q!!! 🥰🥰</p>
-              </div>
-              <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground px-2">
-                <span>1 ngày</span>
-                <button className="hover:underline">Thích</button>
-                <button className="hover:underline">Phản hồi</button>
-              </div>
-            </div>
           </div>
 
           {/* Comment input */}
