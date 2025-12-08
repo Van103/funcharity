@@ -1,4 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+@import "@fontsource/plus-jakarta-sans/400.css";
+@import "@fontsource/plus-jakarta-sans/500.css";
+@import "@fontsource/plus-jakarta-sans/600.css";
+@import "@fontsource/plus-jakarta-sans/700.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
 
 @tailwind base;
 @tailwind components;
@@ -6,8 +11,8 @@
 
 @layer base {
   :root {
-    /* Brand Colors - Deep Purple #4B0082 + Metallic Gold #FFD700 */
-    --background: 270 100% 99%;
+    /* Brand Colors - Deep Purple + Metallic Gold - Luxury Tech Feel */
+    --background: 270 25% 98%;
     --foreground: 270 50% 10%;
 
     --card: 0 0% 100%;
@@ -16,21 +21,21 @@
     --popover: 0 0% 100%;
     --popover-foreground: 270 50% 10%;
 
-    /* Primary - Deep Purple (#4B0082) */
-    --primary: 275 100% 25%;
-    --primary-foreground: 45 100% 95%;
-    --primary-light: 275 80% 35%;
-    --primary-dark: 275 100% 15%;
+    /* Primary - Deep Purple (Royal, Trustworthy) */
+    --primary: 275 70% 18%;
+    --primary-foreground: 45 60% 95%;
+    --primary-light: 275 60% 30%;
+    --primary-dark: 275 80% 12%;
 
-    /* Secondary - Metallic Gold (#FFD700) */
-    --secondary: 51 100% 50%;
-    --secondary-foreground: 270 100% 15%;
-    --secondary-light: 51 100% 60%;
-    --secondary-dark: 43 100% 40%;
+    /* Secondary - Metallic Gold (Luxury, Achievement) */
+    --secondary: 43 55% 52%;
+    --secondary-foreground: 270 50% 10%;
+    --secondary-light: 43 65% 62%;
+    --secondary-dark: 43 50% 42%;
 
     /* Accent - Warm Gold Glow */
-    --accent: 51 100% 50%;
-    --accent-foreground: 270 100% 15%;
+    --accent: 43 70% 55%;
+    --accent-foreground: 270 50% 10%;
 
     /* Muted - Soft lavender */
     --muted: 270 20% 94%;
@@ -46,82 +51,80 @@
 
     --border: 270 20% 90%;
     --input: 270 20% 90%;
-    --ring: 275 100% 25%;
+    --ring: 275 70% 18%;
 
     --radius: 0.75rem;
 
     /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(275 100% 25%), hsl(275 80% 35%));
-    --gradient-secondary: linear-gradient(135deg, hsl(51 100% 50%), hsl(51 100% 60%));
-    --gradient-gold: linear-gradient(135deg, hsl(51 100% 50%), hsl(43 100% 55%), hsl(51 100% 50%));
-    --gradient-luxury: linear-gradient(135deg, hsl(275 100% 25%), hsl(275 80% 30%), hsl(51 100% 50%));
-    --gradient-hero: linear-gradient(135deg, hsl(275 100% 20% / 0.95), hsl(275 80% 25% / 0.9));
+    --gradient-primary: linear-gradient(135deg, hsl(275 70% 18%), hsl(275 60% 30%));
+    --gradient-secondary: linear-gradient(135deg, hsl(43 55% 52%), hsl(43 65% 62%));
+    --gradient-gold: linear-gradient(135deg, hsl(43 55% 52%), hsl(38 70% 60%), hsl(43 55% 52%));
+    --gradient-luxury: linear-gradient(135deg, hsl(275 70% 18%), hsl(275 50% 25%), hsl(43 55% 52%));
+    --gradient-hero: linear-gradient(135deg, hsl(275 70% 18% / 0.95), hsl(275 60% 25% / 0.9));
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(270 25% 98%));
     --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.9), hsl(0 0% 100% / 0.6));
-    --gradient-shimmer: linear-gradient(90deg, transparent, hsl(51 100% 50% / 0.3), transparent);
-    --gradient-universe: linear-gradient(135deg, hsl(275 100% 15%), hsl(275 80% 25%), hsl(280 70% 30%), hsl(51 100% 50% / 0.1));
+    --gradient-shimmer: linear-gradient(90deg, transparent, hsl(43 55% 52% / 0.3), transparent);
 
     /* Shadows */
     --shadow-sm: 0 1px 2px hsl(270 50% 10% / 0.05);
     --shadow-md: 0 4px 12px hsl(270 50% 10% / 0.08);
     --shadow-lg: 0 8px 24px hsl(270 50% 10% / 0.12);
     --shadow-xl: 0 16px 48px hsl(270 50% 10% / 0.16);
-    --shadow-glow: 0 0 40px hsl(51 100% 50% / 0.35);
-    --shadow-glow-purple: 0 0 40px hsl(275 100% 25% / 0.3);
-    --shadow-glow-gold: 0 0 30px hsl(51 100% 50% / 0.5);
+    --shadow-glow: 0 0 40px hsl(43 55% 52% / 0.35);
+    --shadow-glow-purple: 0 0 40px hsl(275 70% 18% / 0.3);
 
     /* Sidebar */
-    --sidebar-background: 275 100% 20%;
-    --sidebar-foreground: 45 100% 95%;
-    --sidebar-primary: 51 100% 50%;
-    --sidebar-primary-foreground: 270 100% 15%;
-    --sidebar-accent: 275 80% 30%;
-    --sidebar-accent-foreground: 45 100% 95%;
-    --sidebar-border: 275 80% 25%;
-    --sidebar-ring: 51 100% 50%;
+    --sidebar-background: 275 70% 18%;
+    --sidebar-foreground: 45 60% 95%;
+    --sidebar-primary: 43 55% 52%;
+    --sidebar-primary-foreground: 270 50% 10%;
+    --sidebar-accent: 275 60% 25%;
+    --sidebar-accent-foreground: 45 60% 95%;
+    --sidebar-border: 275 50% 25%;
+    --sidebar-ring: 43 55% 52%;
   }
 
   .dark {
-    --background: 275 100% 5%;
-    --foreground: 45 100% 95%;
+    --background: 270 40% 6%;
+    --foreground: 45 30% 95%;
 
-    --card: 275 80% 10%;
-    --card-foreground: 45 100% 95%;
+    --card: 270 35% 10%;
+    --card-foreground: 45 30% 95%;
 
-    --popover: 275 80% 10%;
-    --popover-foreground: 45 100% 95%;
+    --popover: 270 35% 10%;
+    --popover-foreground: 45 30% 95%;
 
-    --primary: 51 100% 50%;
-    --primary-foreground: 275 100% 10%;
+    --primary: 43 55% 52%;
+    --primary-foreground: 270 50% 10%;
 
-    --secondary: 275 80% 35%;
-    --secondary-foreground: 45 100% 95%;
+    --secondary: 275 50% 30%;
+    --secondary-foreground: 45 60% 95%;
 
-    --accent: 51 100% 55%;
-    --accent-foreground: 275 100% 10%;
+    --accent: 43 65% 55%;
+    --accent-foreground: 270 50% 10%;
 
-    --muted: 275 50% 15%;
-    --muted-foreground: 270 20% 60%;
+    --muted: 270 30% 15%;
+    --muted-foreground: 270 15% 60%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 275 50% 18%;
-    --input: 275 50% 18%;
-    --ring: 51 100% 50%;
+    --border: 270 30% 18%;
+    --input: 270 30% 18%;
+    --ring: 43 55% 52%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(275 100% 8%), hsl(275 80% 15%));
-    --gradient-card: linear-gradient(180deg, hsl(275 80% 12%), hsl(275 100% 8%));
-    --gradient-glass: linear-gradient(135deg, hsl(275 80% 15% / 0.8), hsl(275 80% 12% / 0.4));
+    --gradient-hero: linear-gradient(135deg, hsl(270 40% 8%), hsl(275 50% 15%));
+    --gradient-card: linear-gradient(180deg, hsl(270 35% 12%), hsl(270 40% 8%));
+    --gradient-glass: linear-gradient(135deg, hsl(270 35% 15% / 0.8), hsl(270 35% 12% / 0.4));
 
-    --sidebar-background: 275 100% 8%;
-    --sidebar-foreground: 45 100% 95%;
-    --sidebar-primary: 51 100% 50%;
-    --sidebar-primary-foreground: 275 100% 10%;
-    --sidebar-accent: 275 80% 20%;
-    --sidebar-accent-foreground: 45 100% 95%;
-    --sidebar-border: 275 50% 18%;
-    --sidebar-ring: 51 100% 50%;
+    --sidebar-background: 270 40% 8%;
+    --sidebar-foreground: 45 30% 95%;
+    --sidebar-primary: 43 55% 52%;
+    --sidebar-primary-foreground: 270 50% 10%;
+    --sidebar-accent: 275 50% 20%;
+    --sidebar-accent-foreground: 45 30% 95%;
+    --sidebar-border: 270 30% 18%;
+    --sidebar-ring: 43 55% 52%;
   }
 }
 
@@ -132,29 +135,28 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Segoe UI', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Segoe UI', 'Helvetica Neue', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     @apply font-semibold tracking-tight;
   }
 
-  /* High contrast text for animated backgrounds */
+  /* High contrast text for animated backgrounds - WCAG AA compliance */
   .text-high-contrast {
     text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
   }
 
+  /* Ensure readable text over animated background */
   .dark body {
-    --foreground: 45 100% 98%;
+    --foreground: 45 40% 98%;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl;
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl;
     box-shadow: var(--shadow-md);
   }
 
@@ -169,44 +171,29 @@
 
   .gradient-text {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(51 100% 50%), hsl(43 100% 55%), hsl(51 100% 45%));
+    background-image: linear-gradient(135deg, hsl(43 75% 45%), hsl(38 85% 50%), hsl(43 70% 40%));
   }
 
   .gradient-text-luxury {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(51 100% 45%), hsl(43 100% 52%), hsl(51 100% 40%));
+    background-image: linear-gradient(135deg, hsl(43 80% 42%), hsl(38 90% 48%), hsl(43 75% 38%));
   }
 
-  /* Logo FUN text - Gold shimmer */
-  .logo-fun-text {
-    @apply bg-clip-text text-transparent font-bold;
-    background-image: linear-gradient(
-      90deg,
-      hsl(51 100% 50%) 0%,
-      hsl(43 100% 55%) 30%,
-      hsl(51 100% 60%) 50%,
-      hsl(43 100% 55%) 70%,
-      hsl(51 100% 50%) 100%
-    );
-    background-size: 200% 100%;
-    animation: logo-shimmer 3s ease-in-out infinite;
-    filter: drop-shadow(0 0 10px hsl(51 100% 50% / 0.5));
-  }
-
+  /* Logo "Charity" text - purple-gold gradient with shimmer */
   .logo-charity-text {
     @apply bg-clip-text text-transparent font-bold;
     background-image: linear-gradient(
       90deg,
-      hsl(275 100% 40%) 0%,
-      hsl(280 90% 50%) 20%,
-      hsl(51 100% 50%) 40%,
-      hsl(43 100% 55%) 60%,
-      hsl(280 90% 50%) 80%,
-      hsl(275 100% 40%) 100%
+      hsl(275 80% 35%) 0%,
+      hsl(280 75% 45%) 20%,
+      hsl(43 85% 48%) 40%,
+      hsl(38 90% 52%) 60%,
+      hsl(280 75% 45%) 80%,
+      hsl(275 80% 35%) 100%
     );
     background-size: 300% 100%;
     animation: logo-shimmer 4s ease-in-out infinite;
-    filter: drop-shadow(0 0 10px hsl(51 100% 55% / 0.4)) drop-shadow(0 0 20px hsl(275 100% 50% / 0.3));
+    filter: drop-shadow(0 0 10px hsl(43 70% 60% / 0.4)) drop-shadow(0 0 20px hsl(275 70% 50% / 0.3));
   }
 
   @keyframes logo-shimmer {
@@ -230,19 +217,15 @@
     background-image: var(--gradient-luxury);
   }
 
-  .gradient-bg-universe {
-    background-image: var(--gradient-universe);
-  }
-
-  /* Navbar username - purple + gold gradient */
+  /* Navbar username - deep purple + gold gradient */
   .navbar-username {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(
       90deg,
-      hsl(275 100% 40%) 0%,
-      hsl(280 90% 50%) 30%,
-      hsl(51 100% 55%) 70%,
-      hsl(43 100% 60%) 100%
+      hsl(275 80% 35%) 0%,
+      hsl(280 70% 45%) 30%,
+      hsl(43 85% 55%) 70%,
+      hsl(38 90% 60%) 100%
     );
   }
 
@@ -262,104 +245,17 @@
     animation: glow 2s ease-in-out infinite alternate;
   }
 
-  .animate-glow-gold {
-    animation: glow-gold 2s ease-in-out infinite alternate;
-  }
-
   .animate-shimmer {
     animation: shimmer 3s ease-in-out infinite;
   }
 
   .luxury-border {
     @apply border border-secondary/30;
-    box-shadow: inset 0 1px 0 0 hsl(51 100% 50% / 0.1);
+    box-shadow: inset 0 1px 0 0 hsl(43 55% 52% / 0.1);
   }
 
   .crown-glow {
-    filter: drop-shadow(0 0 8px hsl(51 100% 50% / 0.6));
-  }
-
-  /* Mobile bottom navigation */
-  .mobile-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border z-50;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .mobile-nav-item {
-    @apply flex flex-col items-center justify-center py-2 px-3 text-xs font-medium transition-colors;
-  }
-
-  .mobile-nav-item.active {
-    @apply text-secondary;
-  }
-
-  /* Universe background effect */
-  .bg-universe {
-    background: linear-gradient(135deg, 
-      hsl(275 100% 10%) 0%, 
-      hsl(275 80% 18%) 25%, 
-      hsl(280 70% 22%) 50%, 
-      hsl(275 80% 18%) 75%, 
-      hsl(275 100% 10%) 100%
-    );
-    position: relative;
-  }
-
-  .bg-universe::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: 
-      radial-gradient(2px 2px at 20% 30%, hsl(51 100% 80% / 0.4) 0%, transparent 100%),
-      radial-gradient(2px 2px at 40% 70%, hsl(51 100% 80% / 0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 60% 20%, hsl(51 100% 80% / 0.4) 0%, transparent 100%),
-      radial-gradient(1px 1px at 80% 60%, hsl(51 100% 80% / 0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 10% 80%, hsl(51 100% 80% / 0.2) 0%, transparent 100%),
-      radial-gradient(1px 1px at 90% 10%, hsl(51 100% 80% / 0.3) 0%, transparent 100%);
-    pointer-events: none;
-  }
-
-  /* Mantras carousel */
-  .mantras-carousel {
-    @apply overflow-hidden whitespace-nowrap;
-    mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
-  }
-
-  .mantras-track {
-    @apply inline-flex gap-12;
-    animation: scroll-mantras 60s linear infinite;
-  }
-
-  @keyframes scroll-mantras {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-
-  /* Honor board tabs */
-  .honor-tab {
-    @apply px-4 py-2 text-sm font-medium rounded-lg transition-all;
-  }
-
-  .honor-tab.active {
-    @apply bg-secondary text-secondary-foreground;
-  }
-
-  /* Diamond rank icon */
-  .diamond-rank {
-    @apply inline-flex items-center justify-center w-6 h-6 rounded-full bg-secondary/20;
-    filter: drop-shadow(0 0 4px hsl(51 100% 50% / 0.5));
-  }
-
-  /* Touch-friendly buttons for mobile */
-  @media (max-width: 768px) {
-    .touch-target {
-      min-height: 44px;
-      min-width: 44px;
-    }
+    filter: drop-shadow(0 0 8px hsl(43 55% 52% / 0.5));
   }
 }
 
@@ -371,15 +267,6 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-
-  /* Safe area padding for mobile */
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .safe-top {
-    padding-top: env(safe-area-inset-top);
   }
 }
 
@@ -394,19 +281,10 @@
 
 @keyframes glow {
   from {
-    box-shadow: 0 0 20px hsl(275 100% 25% / 0.3);
+    box-shadow: 0 0 20px hsl(43 55% 52% / 0.3);
   }
   to {
-    box-shadow: 0 0 40px hsl(275 100% 25% / 0.6);
-  }
-}
-
-@keyframes glow-gold {
-  from {
-    box-shadow: 0 0 20px hsl(51 100% 50% / 0.3);
-  }
-  to {
-    box-shadow: 0 0 40px hsl(51 100% 50% / 0.6);
+    box-shadow: 0 0 40px hsl(43 55% 52% / 0.6);
   }
 }
 
@@ -432,10 +310,4 @@
 
 .animate-sparkle {
   animation: sparkle 2s ease-in-out infinite;
-}
-
-/* Smooth scroll for mobile */
-html {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
 }
