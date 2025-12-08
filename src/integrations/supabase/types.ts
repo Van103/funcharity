@@ -432,6 +432,245 @@ export type Database = {
           },
         ]
       }
+      feed_comments: {
+        Row: {
+          content: string
+          created_at: string
+          feed_post_id: string
+          id: string
+          image_url: string | null
+          parent_comment_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feed_post_id: string
+          id?: string
+          image_url?: string | null
+          parent_comment_id?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feed_post_id?: string
+          id?: string
+          image_url?: string | null
+          parent_comment_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_comments_feed_post_id_fkey"
+            columns: ["feed_post_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "feed_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_matches: {
+        Row: {
+          accepted_at: string | null
+          category_score: number | null
+          completed_at: string | null
+          geo_score: number | null
+          id: string
+          match_score: number
+          need_post_id: string
+          notes: string | null
+          reputation_score: number | null
+          status: string
+          suggested_at: string
+          supply_post_id: string
+          urgency_score: number | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          category_score?: number | null
+          completed_at?: string | null
+          geo_score?: number | null
+          id?: string
+          match_score?: number
+          need_post_id: string
+          notes?: string | null
+          reputation_score?: number | null
+          status?: string
+          suggested_at?: string
+          supply_post_id: string
+          urgency_score?: number | null
+        }
+        Update: {
+          accepted_at?: string | null
+          category_score?: number | null
+          completed_at?: string | null
+          geo_score?: number | null
+          id?: string
+          match_score?: number
+          need_post_id?: string
+          notes?: string | null
+          reputation_score?: number | null
+          status?: string
+          suggested_at?: string
+          supply_post_id?: string
+          urgency_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_matches_need_post_id_fkey"
+            columns: ["need_post_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_matches_supply_post_id_fkey"
+            columns: ["supply_post_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_posts: {
+        Row: {
+          beneficiaries_count: number | null
+          campaign_id: string | null
+          category: Database["public"]["Enums"]["campaign_category"] | null
+          content: string | null
+          created_at: string
+          estimated_delivery: string | null
+          expires_at: string | null
+          fulfilled_amount: number | null
+          id: string
+          is_active: boolean | null
+          is_matched: boolean | null
+          latitude: number | null
+          location: string | null
+          longitude: number | null
+          matched_with_id: string | null
+          media_urls: Json | null
+          offered_skills: string[] | null
+          post_type: Database["public"]["Enums"]["feed_post_type"]
+          region: string | null
+          required_skills: string[] | null
+          target_amount: number | null
+          title: string | null
+          updated_at: string
+          urgency: Database["public"]["Enums"]["urgency_level"] | null
+          user_id: string
+        }
+        Insert: {
+          beneficiaries_count?: number | null
+          campaign_id?: string | null
+          category?: Database["public"]["Enums"]["campaign_category"] | null
+          content?: string | null
+          created_at?: string
+          estimated_delivery?: string | null
+          expires_at?: string | null
+          fulfilled_amount?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_matched?: boolean | null
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          matched_with_id?: string | null
+          media_urls?: Json | null
+          offered_skills?: string[] | null
+          post_type?: Database["public"]["Enums"]["feed_post_type"]
+          region?: string | null
+          required_skills?: string[] | null
+          target_amount?: number | null
+          title?: string | null
+          updated_at?: string
+          urgency?: Database["public"]["Enums"]["urgency_level"] | null
+          user_id: string
+        }
+        Update: {
+          beneficiaries_count?: number | null
+          campaign_id?: string | null
+          category?: Database["public"]["Enums"]["campaign_category"] | null
+          content?: string | null
+          created_at?: string
+          estimated_delivery?: string | null
+          expires_at?: string | null
+          fulfilled_amount?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_matched?: boolean | null
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          matched_with_id?: string | null
+          media_urls?: Json | null
+          offered_skills?: string[] | null
+          post_type?: Database["public"]["Enums"]["feed_post_type"]
+          region?: string | null
+          required_skills?: string[] | null
+          target_amount?: number | null
+          title?: string | null
+          updated_at?: string
+          urgency?: Database["public"]["Enums"]["urgency_level"] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_posts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feed_posts_matched_with_id_fkey"
+            columns: ["matched_with_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_reactions: {
+        Row: {
+          created_at: string
+          feed_post_id: string
+          id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feed_post_id: string
+          id?: string
+          reaction_type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feed_post_id?: string
+          id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_reactions_feed_post_id_fkey"
+            columns: ["feed_post_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           created_at: string
@@ -948,6 +1187,7 @@ export type Database = {
         | "completed"
         | "failed"
         | "refunded"
+      feed_post_type: "need" | "supply" | "update" | "story"
       kyc_status: "pending" | "approved" | "rejected" | "expired"
       notification_type:
         | "donation_received"
@@ -974,6 +1214,7 @@ export type Database = {
         | "fake_campaign"
         | "misuse_of_funds"
         | "other"
+      urgency_level: "low" | "medium" | "high" | "critical"
       user_role: "donor" | "volunteer" | "ngo" | "beneficiary"
     }
     CompositeTypes: {
@@ -1146,6 +1387,7 @@ export const Constants = {
         "failed",
         "refunded",
       ],
+      feed_post_type: ["need", "supply", "update", "story"],
       kyc_status: ["pending", "approved", "rejected", "expired"],
       notification_type: [
         "donation_received",
@@ -1175,6 +1417,7 @@ export const Constants = {
         "misuse_of_funds",
         "other",
       ],
+      urgency_level: ["low", "medium", "high", "critical"],
       user_role: ["donor", "volunteer", "ngo", "beneficiary"],
     },
   },
