@@ -2,12 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MotionProvider } from "@/contexts/MotionContext";
 import { CursorProvider } from "@/contexts/CursorContext";
-import { AnimatedBackground } from "@/components/background/AnimatedBackground";
-import CustomCursor from "@/components/cursor/CustomCursor";
-import CursorSettings from "@/components/cursor/CursorSettings";
 import Index from "./pages/Index";
 import Campaigns from "./pages/Campaigns";
 import CampaignDetail from "./pages/CampaignDetail";
@@ -17,23 +14,10 @@ import Profiles from "./pages/Profiles";
 import Reviews from "./pages/Reviews";
 import Auth from "./pages/Auth";
 import UserProfile from "./pages/UserProfile";
+import Feed from "./pages/Feed";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
-
-// Background variant selector based on route
-function BackgroundWithVariant() {
-  const location = useLocation();
-  
-  const getVariant = () => {
-    if (location.pathname === "/") return "home";
-    if (location.pathname === "/profile") return "profile";
-    if (location.pathname.includes("/campaigns")) return "default";
-    return "default";
-  };
-
-  return <AnimatedBackground variant={getVariant()} intensity="medium" />;
-}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -42,10 +26,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <CustomCursor />
-          <CursorSettings />
           <BrowserRouter>
-            <BackgroundWithVariant />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/campaigns" element={<Campaigns />} />
@@ -56,6 +37,7 @@ const App = () => (
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/feed" element={<Feed />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

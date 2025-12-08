@@ -7,15 +7,26 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
         "2xl": "1400px",
       },
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        sans: ["'Segoe UI'", "'Helvetica Neue'", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        display: ["'Segoe UI'", "'Helvetica Neue'", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+      },
+      fontSize: {
+        'xs': ['12px', { lineHeight: '1.4' }],
+        'sm': ['14px', { lineHeight: '1.5' }],
+        'base': ['15px', { lineHeight: '1.5' }],
+        'lg': ['17px', { lineHeight: '1.5' }],
+        'xl': ['20px', { lineHeight: '1.4' }],
+        '2xl': ['24px', { lineHeight: '1.3' }],
+        '3xl': ['30px', { lineHeight: '1.2' }],
+        '4xl': ['36px', { lineHeight: '1.1' }],
+        '5xl': ['48px', { lineHeight: '1.1' }],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -73,15 +84,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Brand specific colors
+        // Brand specific colors (exact HEX as requested)
         purple: {
-          deep: "#2E0F4A",
-          light: "#4A2070",
+          deep: "#4B0082",
+          light: "#6B238E",
+          dark: "#2D0050",
         },
         gold: {
-          metallic: "#C9A23D",
-          light: "#D4B85A",
-          dark: "#A88A2D",
+          metallic: "#FFD700",
+          light: "#FFE14D",
+          dark: "#CCB000",
         },
       },
       borderRadius: {
@@ -95,6 +107,7 @@ export default {
       boxShadow: {
         'glow': 'var(--shadow-glow)',
         'glow-purple': 'var(--shadow-glow-purple)',
+        'glow-gold': 'var(--shadow-glow-gold)',
       },
       keyframes: {
         "accordion-down": {
@@ -129,6 +142,10 @@ export default {
           "0%, 100%": { opacity: "0.3", transform: "scale(0.8)" },
           "50%": { opacity: "1", transform: "scale(1.2)" },
         },
+        "pulse-glow": {
+          "0%, 100%": { boxShadow: "0 0 20px hsl(51 100% 50% / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsl(51 100% 50% / 0.6)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -139,6 +156,11 @@ export default {
         "slide-in-right": "slide-in-right 0.4s ease-out forwards",
         "shimmer": "shimmer 3s ease-in-out infinite",
         "sparkle": "sparkle 2s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+      },
+      spacing: {
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-top': 'env(safe-area-inset-top)',
       },
     },
   },
