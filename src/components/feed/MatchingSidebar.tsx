@@ -36,7 +36,7 @@ interface MatchResult {
 
 export function MatchingSidebar({ selectedNeedId, onClose }: MatchingSidebarProps) {
   const { data: matches, isLoading } = useFeedMatches(selectedNeedId || undefined);
-  const { data: supplyPosts } = useFeedPosts("supply");
+  const { data: supplyPosts } = useFeedPosts({ postType: "supply" });
 
   const getSupplyPost = (supplyId: string) => {
     return supplyPosts?.find((p) => p.id === supplyId);

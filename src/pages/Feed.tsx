@@ -25,7 +25,7 @@ const Feed = () => {
   const postType: FeedPostType | undefined =
     activeTab === "all" ? undefined : (activeTab as FeedPostType);
 
-  const { data: posts, isLoading, error } = useFeedPosts(postType);
+  const { data: posts, isLoading, error } = useFeedPosts({ postType });
 
   const handleShowMatches = (postId: string) => {
     setSelectedNeedId(postId);
