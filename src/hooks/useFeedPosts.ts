@@ -68,11 +68,18 @@ export interface CreateFeedPostInput {
   expires_at?: string;
 }
 
-export function useFeedPosts(postType?: FeedPostType) {
+export interface FeedFilters {
+  postType?: FeedPostType;
+  category?: string;
+  location?: string;
+  search?: string;
+}
+
+export function useFeedPosts(filters?: FeedFilters) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ["feed-posts", postType],
+    queryKey: ["feed-posts", filters],
     queryFn: async () => {
       let baseQuery = supabase
         .from("feed_posts")
@@ -80,8 +87,21 @@ export function useFeedPosts(postType?: FeedPostType) {
         .eq("is_active", true)
         .order("created_at", { ascending: false });
 
-      if (postType) {
-        baseQuery = baseQuery.eq("post_type", postType);
+      // Apply filters
+      if (filters?.postType) {
+        baseQuery = baseQuery.eq("post_type", filters.postType);
+      }
+      
+      if (filters?.category) {
+        baseQuery = baseQuery.eq("category", filters.category as any);
+      }
+      
+      if (filters?.location) {
+        baseQuery = baseQuery.ilike("location", `%${filters.location}%`);
+      }
+      
+      if (filters?.search) {
+        baseQuery = baseQuery.or(`title.ilike.%${filters.search}%,content.ilike.%${filters.search}%`);
       }
 
       const { data, error } = await baseQuery;
