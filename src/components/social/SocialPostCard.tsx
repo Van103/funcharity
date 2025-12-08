@@ -1,15 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   MoreHorizontal,
   MessageCircle,
   Share2,
   Gift,
-  Image as ImageIcon,
-  Smile,
   Coins,
   MapPin,
   CheckCircle,
@@ -20,14 +17,30 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { FeedReactionPicker, REACTIONS } from "./FeedReactionPicker";
 import { usePostReactions } from "@/hooks/useFeedReactions";
+import { FeedComments } from "./FeedComments";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SocialPostCardProps {
   post: FeedPost;
 }
 
 export function SocialPostCard({ post }: SocialPostCardProps) {
-  const [showCommentInput, setShowCommentInput] = useState(false);
-  const [commentText, setCommentText] = useState("");
+  const [showComments, setShowComments] = useState(false);
+  const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
+
+  // Fetch current user avatar
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+        setCurrentUserAvatar(profile?.avatar_url || null);
+      }
+    });
+  }, []);
 
   // Reactions hook
   const {
@@ -219,8 +232,8 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
         />
         <Button 
           variant="ghost" 
-          className="flex-1 gap-2 text-muted-foreground hover:text-foreground"
-          onClick={() => setShowCommentInput(!showCommentInput)}
+          className={`flex-1 gap-2 ${showComments ? "text-secondary" : "text-muted-foreground hover:text-foreground"}`}
+          onClick={() => setShowComments(!showComments)}
         >
           <MessageCircle className="w-5 h-5" />
           Bình luận
@@ -236,38 +249,8 @@ export function SocialPostCard({ post }: SocialPostCardProps) {
       </div>
 
       {/* Comments Section */}
-      {showCommentInput && (
-        <div className="px-4 py-3 border-t border-border bg-muted/30">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-            <span>Xem thêm bình luận</span>
-          </div>
-
-          {/* Comment input */}
-          <div className="flex items-center gap-2">
-            <Avatar className="w-8 h-8">
-              <AvatarFallback className="bg-secondary/20 text-xs">U</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 flex items-center gap-2 bg-muted/50 rounded-full px-3 py-2">
-              <Input
-                placeholder="Viết bình luận..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="border-none bg-transparent p-0 h-auto focus-visible:ring-0 text-sm"
-              />
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <Smile className="w-4 h-4 text-muted-foreground" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7">
-                  <Gift className="w-4 h-4 text-muted-foreground" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {showComments && (
+        <FeedComments postId={post.id} currentUserAvatar={currentUserAvatar} />
       )}
     </motion.div>
   );
