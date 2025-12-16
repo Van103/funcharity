@@ -335,12 +335,23 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      hsl(0 0% 0% / 0.1) 100%
-    );
+    background-image: 
+      radial-gradient(circle at 10% 10%, hsl(38 86% 85% / 0.8) 0%, transparent 4%),
+      radial-gradient(circle at 30% 70%, hsl(38 86% 90% / 0.7) 0%, transparent 3%),
+      radial-gradient(circle at 75% 25%, hsl(0 0% 100% / 0.9) 0%, transparent 3%),
+      radial-gradient(circle at 55% 85%, hsl(38 86% 85% / 0.6) 0%, transparent 4%),
+      radial-gradient(circle at 95% 50%, hsl(38 86% 90% / 0.7) 0%, transparent 3%),
+      radial-gradient(circle at 45% 15%, hsl(0 0% 100% / 0.8) 0%, transparent 2%),
+      radial-gradient(circle at 80% 75%, hsl(38 86% 85% / 0.5) 0%, transparent 3%),
+      radial-gradient(circle at 20% 45%, hsl(0 0% 100% / 0.7) 0%, transparent 2%);
     pointer-events: none;
+    animation: sparkle-shimmer 3s ease-in-out infinite;
+  }
+
+  /* Third layer for extra depth */
+  .luxury-sparkle-card > * {
+    position: relative;
+    z-index: 1;
   }
 
   /* Hover effect for other cards */
@@ -369,6 +380,25 @@
   100% {
     opacity: 1;
     transform: translateY(-3px) scale(1.02);
+  }
+}
+
+@keyframes sparkle-shimmer {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.1) rotate(2deg);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.95) rotate(-1deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: scale(1.05) rotate(1deg);
   }
 }
 
