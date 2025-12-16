@@ -28,12 +28,24 @@ import {
   User as UserIcon,
   Settings,
   Check,
+  Home,
+  ChevronDown,
+  Layers,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const navItems = [
+const platformItems = [
   { name: "Chiến Dịch", path: "/campaigns", icon: Newspaper },
   { name: "Bản Đồ Nhu Cầu", path: "/needs-map", icon: MapPin },
   { name: "Tổng Quan", path: "/dashboard", icon: LayoutDashboard },
+];
+
+const navItems = [
   { name: "Hồ Sơ", path: "/profiles", icon: Users },
   { name: "Đánh Giá", path: "/reviews", icon: Star },
 ];
@@ -97,13 +109,45 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <Logo size="md" />
-          </Link>
+          {/* Logo + Home Button */}
+          <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 group">
+              <Logo size="md" />
+            </Link>
+            <Link to="/social">
+              <Button variant="ghost" size="sm" className="gap-1">
+                <Home className="w-4 h-4" />
+                Trang Chủ
+              </Button>
+            </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
+            {/* Platform Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1">
+                  <Layers className="w-4 h-4" />
+                  Nền Tảng
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {platformItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <DropdownMenuItem key={item.path} asChild>
+                      <Link to={item.path} className="flex items-center gap-2">
+                        <Icon className="w-4 h-4" />
+                        {item.name}
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -235,6 +279,33 @@ export function Navbar() {
             className="lg:hidden bg-background border-b border-border"
           >
             <div className="container mx-auto px-4 py-4 space-y-2">
+              <Link to="/social" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start gap-3">
+                  <Home className="w-5 h-5" />
+                  Trang Chủ
+                </Button>
+              </Link>
+              
+              {/* Platform items */}
+              <div className="py-2">
+                <p className="px-3 text-xs font-semibold text-muted-foreground mb-1">Nền Tảng</p>
+                {platformItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Button variant="ghost" className="w-full justify-start gap-3">
+                        <Icon className="w-5 h-5" />
+                        {item.name}
+                      </Button>
+                    </Link>
+                  );
+                })}
+              </div>
+
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (

@@ -11,16 +11,22 @@ import {
   Globe,
   Coins,
   Edit,
+  Sprout,
+  Gamepad2,
+  MessageCircle,
 } from "lucide-react";
 
 const menuItems = [
   { icon: User, label: "Fun Profile", href: "/profile" },
+  { icon: Sprout, label: "Fun Farm", href: "/farm" },
+  { icon: Globe, label: "Fun Planet", href: "/planet" },
+  { icon: Gamepad2, label: "Fun Play", href: "/play" },
+  { icon: MessageCircle, label: "Fun Chat", href: "/chat" },
   { icon: GraduationCap, label: "Fun Academy", href: "/academy" },
   { icon: TrendingUp, label: "Fun Trading", href: "/trading" },
   { icon: PiggyBank, label: "Fun Investment", href: "/investment" },
   { icon: Heart, label: "Fun Life", href: "/life" },
   { icon: Scale, label: "Fun Legal", href: "/legal" },
-  { icon: Globe, label: "Fun Planet", href: "/planet" },
 ];
 
 interface LeftSidebarProps {
