@@ -8,18 +8,15 @@ import { StoriesSection } from "@/components/social/StoriesSection";
 import { FriendRequestsSection } from "@/components/social/FriendRequestsSection";
 import { CreatePostBox } from "@/components/social/CreatePostBox";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
-import { FeedFilters } from "@/components/social/FeedFilters";
 import { PostCardSkeletonList, PostCardSkeleton } from "@/components/social/PostCardSkeleton";
 import { PullToRefresh } from "@/components/social/PullToRefresh";
 import { supabase } from "@/integrations/supabase/client";
 import { Helmet } from "react-helmet-async";
 import { 
   useInfiniteFeedPosts, 
-  useIntersectionObserver,
-  FeedFilters as FeedFiltersType 
+  useIntersectionObserver
 } from "@/hooks/useFeedPosts";
 import { useQueryClient } from "@tanstack/react-query";
-import { SearchX } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -32,7 +29,6 @@ interface Profile {
 export default function SocialFeed() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
-  const [filters, setFilters] = useState<FeedFiltersType>({});
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -42,7 +38,7 @@ export default function SocialFeed() {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteFeedPosts(filters);
+  } = useInfiniteFeedPosts({});
 
   // Pull to refresh handler
   const handleRefresh = useCallback(async () => {
@@ -89,8 +85,6 @@ export default function SocialFeed() {
     }
   };
 
-  const hasActiveFilters = filters.postType || filters.category || filters.location || filters.search;
-
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -127,9 +121,6 @@ export default function SocialFeed() {
                     <StoriesSection />
                     <CreatePostBox profile={profile} />
                     
-                    {/* Search & Filters */}
-                    <FeedFilters filters={filters} onFiltersChange={setFilters} />
-                    
                     <FriendRequestsSection />
                     
                     {/* Posts Feed */}
@@ -156,24 +147,9 @@ export default function SocialFeed() {
                         </>
                       ) : (
                         <div className="glass-card p-12 text-center">
-                          {hasActiveFilters ? (
-                            <>
-                              <SearchX className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                              <p className="text-muted-foreground mb-2">
-                                Không tìm thấy bài viết phù hợp với bộ lọc
-                              </p>
-                              <button 
-                                onClick={() => setFilters({})}
-                                className="text-secondary hover:underline text-sm"
-                              >
-                                Xóa bộ lọc
-                              </button>
-                            </>
-                          ) : (
-                            <p className="text-muted-foreground">
-                              Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!
-                            </p>
-                          )}
+                          <p className="text-muted-foreground">
+                            Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!
+                          </p>
                         </div>
                       )}
                     </div>
