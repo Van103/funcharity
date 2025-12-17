@@ -72,9 +72,8 @@ export function Logo({ size = "md", showText = true, className = "" }: LogoProps
       </div>
 
       {showText && (
-        <span className={`font-display font-bold ${s.text}`}>
-          <span className="gradient-text">FUN</span>
-          <span className="logo-charity-text">Charity</span>
+        <span className={`font-display font-bold ${s.text} bg-gradient-to-r from-purple-dark via-primary to-secondary bg-clip-text text-transparent tracking-tight`}>
+          FUNCHARITY
         </span>
       )}
     </div>
