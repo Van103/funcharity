@@ -19,6 +19,7 @@ import { LanguageToggle } from "./LanguageToggle";
 import CursorSettings from "@/components/cursor/CursorSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFriendRequestNotifications } from "@/hooks/useFriendNotifications";
+import { usePostNotifications } from "@/hooks/usePostNotifications";
 import {
   Menu,
   X,
@@ -64,8 +65,9 @@ export function Navbar() {
   const navigate = useNavigate();
   const { t } = useLanguage();
 
-  // Enable realtime friend request notifications
+  // Enable realtime notifications
   useFriendRequestNotifications(user?.id || null);
+  usePostNotifications(user?.id || null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {

@@ -298,12 +298,12 @@ export function NotificationDropdown() {
                   onClick={() => markAsRead(notification.id)}
                 >
                   <div className="flex gap-3">
-                    {/* Show avatar for friend requests, icon for others */}
-                    {notification.type === "friend_request" && notification.data?.sender_avatar_url ? (
+                    {/* Show avatar for notifications with sender info */}
+                    {notification.data?.sender_avatar_url ? (
                       <Avatar className="w-8 h-8 flex-shrink-0">
                         <AvatarImage src={notification.data.sender_avatar_url} />
-                        <AvatarFallback className="bg-blue-100">
-                          <User className="w-4 h-4 text-blue-500" />
+                        <AvatarFallback className="bg-primary/10">
+                          <User className="w-4 h-4 text-primary" />
                         </AvatarFallback>
                       </Avatar>
                     ) : (
