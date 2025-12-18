@@ -55,6 +55,12 @@ interface Friendship {
   status: string;
 }
 
+interface UserPresence {
+  user_id: string;
+  is_online: boolean;
+  last_seen: string | null;
+}
+
 const Profiles = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("donors");
@@ -64,7 +70,9 @@ const Profiles = () => {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [friendships, setFriendships] = useState<Friendship[]>([]);
+  const [allFriendships, setAllFriendships] = useState<Friendship[]>([]);
   const [loadingFriendship, setLoadingFriendship] = useState<string | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
   // Search, filter, and sort states
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,6 +82,8 @@ const Profiles = () => {
   useEffect(() => {
     fetchCurrentUser();
     fetchProfiles();
+    fetchOnlineUsers();
+    fetchAllFriendships();
   }, []);
 
   useEffect(() => {
@@ -82,10 +92,56 @@ const Profiles = () => {
     }
   }, [currentUserId]);
 
+  // Subscribe to presence updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('online-users')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_presence'
+        },
+        () => {
+          fetchOnlineUsers();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const fetchCurrentUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setCurrentUserId(user.id);
+    }
+  };
+
+  const fetchOnlineUsers = async () => {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { data, error } = await supabase
+      .from("user_presence")
+      .select("user_id")
+      .eq("is_online", true)
+      .gte("updated_at", fiveMinutesAgo);
+
+    if (!error && data) {
+      setOnlineUsers(new Set(data.map(p => p.user_id)));
+    }
+  };
+
+  const fetchAllFriendships = async () => {
+    const { data, error } = await supabase
+      .from("friendships")
+      .select("*")
+      .eq("status", "accepted");
+
+    if (!error && data) {
+      setAllFriendships(data);
     }
   };
 
@@ -100,6 +156,39 @@ const Profiles = () => {
     if (!error && data) {
       setFriendships(data);
     }
+  };
+
+  // Get mutual friends count between current user and another user
+  const getMutualFriendsCount = (profileUserId: string): number => {
+    if (!currentUserId || profileUserId === currentUserId) return 0;
+
+    // Get current user's friends
+    const currentUserFriends = new Set(
+      allFriendships
+        .filter(f => f.status === "accepted" && (f.user_id === currentUserId || f.friend_id === currentUserId))
+        .map(f => f.user_id === currentUserId ? f.friend_id : f.user_id)
+    );
+
+    // Get profile user's friends
+    const profileUserFriends = new Set(
+      allFriendships
+        .filter(f => f.status === "accepted" && (f.user_id === profileUserId || f.friend_id === profileUserId))
+        .map(f => f.user_id === profileUserId ? f.friend_id : f.user_id)
+    );
+
+    // Find intersection
+    let mutualCount = 0;
+    currentUserFriends.forEach(friendId => {
+      if (profileUserFriends.has(friendId)) {
+        mutualCount++;
+      }
+    });
+
+    return mutualCount;
+  };
+
+  const isUserOnline = (userId: string): boolean => {
+    return onlineUsers.has(userId);
   };
 
   const fetchProfiles = async () => {
@@ -311,6 +400,8 @@ const Profiles = () => {
     const friendshipStatus = getFriendshipStatus(profile.user_id);
     const isLoading = loadingFriendship === profile.user_id;
     const isOwnProfile = profile.user_id === currentUserId;
+    const isOnline = isUserOnline(profile.user_id);
+    const mutualFriends = getMutualFriendsCount(profile.user_id);
     
     return (
       <motion.div
@@ -319,13 +410,20 @@ const Profiles = () => {
         className="glass-card p-6 luxury-border hover:shadow-lg transition-shadow"
       >
         <div className="flex items-start gap-4 mb-4">
-          <Link to={`/user/${profile.user_id}`}>
+          <Link to={`/user/${profile.user_id}`} className="relative">
             <Avatar className={`w-16 h-16 border-2 ${borderColor} cursor-pointer hover:opacity-80 transition-opacity`}>
               <AvatarImage src={profile.avatar_url || ""} />
               <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(profile.full_name || "U")} text-white font-medium`}>
                 {profile.full_name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
+            {/* Online status indicator */}
+            <span 
+              className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${
+                isOnline ? "bg-green-500" : "bg-gray-400"
+              }`}
+              title={isOnline ? "Đang hoạt động" : "Không hoạt động"}
+            />
           </Link>
           <div className="flex-1">
             <div className="flex items-center gap-2">
@@ -333,6 +431,9 @@ const Profiles = () => {
                 <h3 className="font-display font-semibold">{profile.full_name || "Người dùng"}</h3>
               </Link>
               {profile.is_verified && <Verified className="w-4 h-4 text-secondary" />}
+              {isOnline && (
+                <span className="text-xs text-green-600 font-medium">● Online</span>
+              )}
             </div>
             {profile.wallet_address && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground font-mono">
@@ -349,7 +450,15 @@ const Profiles = () => {
 
         {/* Bio */}
         {profile.bio && (
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{profile.bio}</p>
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{profile.bio}</p>
+        )}
+
+        {/* Mutual Friends */}
+        {!isOwnProfile && currentUserId && mutualFriends > 0 && (
+          <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
+            <Users className="w-4 h-4" />
+            <span>{mutualFriends} bạn chung</span>
+          </div>
         )}
 
         {/* Reputation */}
