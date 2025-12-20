@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { SwipeIndicator } from "@/components/layout/SwipeIndicator";
 import { LeftSidebar } from "@/components/social/LeftSidebar";
 import { RightSidebar } from "@/components/social/RightSidebar";
 import { StoriesSection } from "@/components/social/StoriesSection";
@@ -185,6 +186,7 @@ export default function SocialFeed() {
 
         <Footer />
         <MobileBottomNav />
+        <SwipeIndicator />
       </div>
     </>
   );

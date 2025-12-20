@@ -1,19 +1,18 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Home,
   Newspaper,
   Users,
   MessageCircle,
   Menu,
-  Bell,
-  User,
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  User,
   Sprout,
   Globe,
   Gamepad2,
@@ -61,8 +60,8 @@ export function MobileBottomNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
-      <div className="flex items-center justify-around h-16 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border md:hidden safe-area-bottom">
+      <div className="flex items-center justify-around h-16 px-1">
         {mainNavItems.map((item) => {
           const isActive = location.pathname === item.href;
           const Icon = item.icon;
@@ -70,14 +69,34 @@ export function MobileBottomNav() {
             <Link
               key={item.href}
               to={item.href}
-              className={`flex flex-col items-center justify-center flex-1 h-full py-2 transition-colors ${
-                isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className="flex flex-col items-center justify-center flex-1 h-full py-1.5 relative"
             >
-              <Icon className={`w-6 h-6 ${isActive ? "text-primary" : ""}`} />
-              <span className="text-[10px] mt-1 font-medium truncate max-w-[60px]">
+              {/* Active indicator dot */}
+              <AnimatePresence>
+                {isActive && (
+                  <motion.div 
+                    className="absolute -top-0.5 w-1 h-1 rounded-full bg-primary"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    layoutId="activeIndicator"
+                  />
+                )}
+              </AnimatePresence>
+              
+              <motion.div
+                whileTap={{ scale: 0.9 }}
+                className={`p-1.5 rounded-xl transition-colors ${
+                  isActive ? "bg-primary/10" : ""
+                }`}
+              >
+                <Icon className={`w-6 h-6 transition-colors ${
+                  isActive ? "text-primary" : "text-muted-foreground"
+                }`} />
+              </motion.div>
+              <span className={`text-[10px] mt-0.5 font-medium truncate max-w-[56px] transition-colors ${
+                isActive ? "text-primary" : "text-muted-foreground"
+              }`}>
                 {t(item.labelKey)}
               </span>
             </Link>
@@ -87,10 +106,17 @@ export function MobileBottomNav() {
         {/* Menu Button with Sheet */}
         <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <SheetTrigger asChild>
-            <button className="flex flex-col items-center justify-center flex-1 h-full py-2 text-muted-foreground hover:text-foreground transition-colors">
-              <Menu className="w-6 h-6" />
-              <span className="text-[10px] mt-1 font-medium">{t("common.menu")}</span>
-            </button>
+            <motion.button 
+              whileTap={{ scale: 0.9 }}
+              className="flex flex-col items-center justify-center flex-1 h-full py-1.5"
+            >
+              <div className="p-1.5 rounded-xl">
+                <Menu className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <span className="text-[10px] mt-0.5 font-medium text-muted-foreground">
+                {t("common.menu")}
+              </span>
+            </motion.button>
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
             <SheetHeader className="pb-4 border-b border-border">
