@@ -39,8 +39,46 @@ interface GiftDonateModalProps {
   trigger?: React.ReactNode;
 }
 
-// VND to ETH conversion rate (simplified - in production use real API)
-const VND_TO_ETH_RATE = 0.000000012; // ~1 ETH = 83M VND
+// VND to crypto conversion rates (simplified - in production use real API)
+const CRYPTO_RATES: Record<string, number> = {
+  ETH: 0.000000012, // ~1 ETH = 83M VND
+  BNB: 0.000001429, // ~1 BNB = 700K VND
+  MATIC: 0.000027, // ~1 MATIC = 37K VND
+};
+
+// Supported blockchain networks
+const SUPPORTED_NETWORKS = [
+  { 
+    id: 'ethereum', 
+    name: 'Ethereum', 
+    symbol: 'ETH', 
+    chainId: '0x1',
+    rpcUrl: 'https://mainnet.infura.io/v3/',
+    explorer: 'https://etherscan.io/tx/',
+    color: '#627EEA',
+    icon: '⟠'
+  },
+  { 
+    id: 'bsc', 
+    name: 'BSC', 
+    symbol: 'BNB', 
+    chainId: '0x38',
+    rpcUrl: 'https://bsc-dataseed.binance.org/',
+    explorer: 'https://bscscan.com/tx/',
+    color: '#F0B90B',
+    icon: '🔶'
+  },
+  { 
+    id: 'polygon', 
+    name: 'Polygon', 
+    symbol: 'MATIC', 
+    chainId: '0x89',
+    rpcUrl: 'https://polygon-rpc.com/',
+    explorer: 'https://polygonscan.com/tx/',
+    color: '#8247E5',
+    icon: '🟣'
+  },
+];
 
 const PRESET_AMOUNTS = [
   { value: 50000, label: "50K", impact: "1 bữa ăn" },
@@ -55,7 +93,7 @@ const PAYMENT_METHODS = [
   {
     id: "crypto_eth",
     label: "Ví Crypto",
-    sublabel: "ETH via MetaMask",
+    sublabel: "Multi-chain",
     icon: Wallet,
   },
   {
@@ -78,12 +116,16 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState<string | null>(null);
+  const [selectedNetwork, setSelectedNetwork] = useState(SUPPORTED_NETWORKS[0]);
+  const [currentChainId, setCurrentChainId] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [recipientWallet, setRecipientWallet] = useState<string | null>(null);
   const { toast } = useToast();
 
   const amount = customAmount ? parseInt(customAmount) : selectedAmount || 0;
-  const ethAmount = (amount * VND_TO_ETH_RATE).toFixed(6);
+  const cryptoRate = CRYPTO_RATES[selectedNetwork.symbol] || CRYPTO_RATES.ETH;
+  const cryptoAmount = (amount * cryptoRate).toFixed(6);
   const selectedPreset = PRESET_AMOUNTS.find(p => p.value === selectedAmount);
 
   // Load recipient wallet address from profile
@@ -107,7 +149,111 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
     }
   }, [open, post.user_id]);
 
-  // Check MetaMask connection
+  // Fetch wallet balance
+  const fetchWalletBalance = async (address: string) => {
+    if (typeof window.ethereum === "undefined") return;
+    
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const balance = await provider.getBalance(address);
+      const formattedBalance = ethers.formatEther(balance);
+      setWalletBalance(parseFloat(formattedBalance).toFixed(4));
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      setWalletBalance(null);
+    }
+  };
+
+  // Get current chain ID
+  const getCurrentChainId = async () => {
+    if (typeof window.ethereum === "undefined") return;
+    
+    try {
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
+      setCurrentChainId(chainId);
+      
+      // Update selected network based on current chain
+      const network = SUPPORTED_NETWORKS.find(n => n.chainId === chainId);
+      if (network) {
+        setSelectedNetwork(network);
+      }
+    } catch (error) {
+      console.error("Error getting chain ID:", error);
+    }
+  };
+
+  // Switch blockchain network
+  const switchNetwork = async (network: typeof SUPPORTED_NETWORKS[0]) => {
+    if (typeof window.ethereum === "undefined") {
+      toast({
+        title: "MetaMask chưa được cài đặt",
+        description: "Vui lòng cài đặt MetaMask để tiếp tục",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: network.chainId }],
+      });
+      
+      setSelectedNetwork(network);
+      setCurrentChainId(network.chainId);
+      
+      // Refresh balance for new network
+      if (walletAddress) {
+        await fetchWalletBalance(walletAddress);
+      }
+      
+      toast({
+        title: `Đã chuyển sang ${network.name}`,
+        description: `Mạng hiện tại: ${network.symbol}`,
+      });
+    } catch (error: any) {
+      // If network doesn't exist, try to add it
+      if (error.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: network.chainId,
+              chainName: network.name,
+              nativeCurrency: {
+                name: network.symbol,
+                symbol: network.symbol,
+                decimals: 18,
+              },
+              rpcUrls: [network.rpcUrl],
+              blockExplorerUrls: [network.explorer.replace('/tx/', '')],
+            }],
+          });
+          
+          setSelectedNetwork(network);
+          toast({
+            title: `Đã thêm mạng ${network.name}`,
+          });
+        } catch (addError) {
+          console.error("Error adding network:", addError);
+          toast({
+            title: "Không thể thêm mạng",
+            description: "Vui lòng thêm mạng thủ công trong MetaMask",
+            variant: "destructive",
+          });
+        }
+      } else {
+        console.error("Error switching network:", error);
+        toast({
+          title: "Không thể chuyển mạng",
+          description: error.message || "Vui lòng thử lại",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  // Check MetaMask connection and listen for changes
   useEffect(() => {
     const checkWalletConnection = async () => {
       if (typeof window.ethereum !== "undefined") {
@@ -116,7 +262,33 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
           if (accounts.length > 0) {
             setWalletConnected(true);
             setWalletAddress(accounts[0]);
+            await fetchWalletBalance(accounts[0]);
+            await getCurrentChainId();
           }
+
+          // Listen for account changes
+          window.ethereum.on('accountsChanged', (accounts: string[]) => {
+            if (accounts.length > 0) {
+              setWalletAddress(accounts[0]);
+              fetchWalletBalance(accounts[0]);
+            } else {
+              setWalletConnected(false);
+              setWalletAddress(null);
+              setWalletBalance(null);
+            }
+          });
+
+          // Listen for chain changes
+          window.ethereum.on('chainChanged', (chainId: string) => {
+            setCurrentChainId(chainId);
+            const network = SUPPORTED_NETWORKS.find(n => n.chainId === chainId);
+            if (network) {
+              setSelectedNetwork(network);
+            }
+            if (walletAddress) {
+              fetchWalletBalance(walletAddress);
+            }
+          });
         } catch (error) {
           console.error("Error checking wallet:", error);
         }
@@ -126,6 +298,10 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
     if (open && paymentMethod === "crypto_eth") {
       checkWalletConnection();
     }
+
+    return () => {
+      // Cleanup is handled by component unmount
+    };
   }, [open, paymentMethod]);
 
   const handleAmountSelect = (value: number) => {
@@ -170,6 +346,8 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
       if (accounts && accounts.length > 0) {
         setWalletConnected(true);
         setWalletAddress(accounts[0]);
+        await fetchWalletBalance(accounts[0]);
+        await getCurrentChainId();
         toast({
           title: "✅ Đã kết nối ví thành công!",
           description: `Địa chỉ: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)}`,
@@ -234,7 +412,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
       
       const tx = await signer.sendTransaction({
         to: recipientWallet,
-        value: ethers.parseEther(ethAmount),
+        value: ethers.parseEther(cryptoAmount),
       });
 
       toast({
@@ -249,7 +427,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
       
       toast({
         title: "Giao dịch thành công! 🎉",
-        description: `Đã gửi ${ethAmount} ETH`,
+        description: `Đã gửi ${cryptoAmount} ${selectedNetwork.symbol}`,
       });
 
       setTimeout(() => {
@@ -587,18 +765,62 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                           />
                         </Button>
                       ) : (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-sm">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            <span className="text-muted-foreground">Đã kết nối:</span>
-                            <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
-                              {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
+                        <div className="space-y-3">
+                          {/* Wallet info */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-sm">
+                              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                              <span className="text-muted-foreground">Đã kết nối:</span>
+                              <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
+                                {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Wallet balance */}
+                          <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#84D9BA]/10 to-primary/10 border border-[#84D9BA]/20">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{selectedNetwork.icon}</span>
+                              <span className="text-sm text-muted-foreground">Số dư:</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="font-bold text-[#84D9BA] text-lg">{walletBalance || '0.0000'}</span>
+                              <span className="text-sm text-muted-foreground ml-1">{selectedNetwork.symbol}</span>
+                            </div>
+                          </div>
+
+                          {/* Network selector */}
+                          <div className="space-y-2">
+                            <Label className="text-xs text-muted-foreground">Chọn mạng blockchain:</Label>
+                            <div className="grid grid-cols-3 gap-2">
+                              {SUPPORTED_NETWORKS.map((network) => (
+                                <motion.button
+                                  key={network.id}
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.98 }}
+                                  onClick={() => switchNetwork(network)}
+                                  className={`flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all ${
+                                    selectedNetwork.id === network.id
+                                      ? 'border-[#84D9BA] bg-[#84D9BA]/10'
+                                      : 'border-border hover:border-muted-foreground/50 bg-card'
+                                  }`}
+                                >
+                                  <span className="text-lg">{network.icon}</span>
+                                  <span className="text-xs font-medium">{network.name}</span>
+                                  <span className="text-[10px] text-muted-foreground">{network.symbol}</span>
+                                </motion.button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Donation amount preview */}
+                          <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                            <span className="text-sm text-muted-foreground">Số tiền đóng góp:</span>
+                            <span className="font-bold" style={{ color: selectedNetwork.color }}>
+                              {cryptoAmount} {selectedNetwork.symbol}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">Số ETH:</span>
-                            <span className="font-bold text-[#84D9BA]">{ethAmount} ETH</span>
-                          </div>
+
                           {!recipientWallet && (
                             <div className="flex items-center gap-2 text-amber-500 text-xs p-2 bg-amber-500/10 rounded-lg">
                               <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -668,7 +890,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
 
                 <p className="text-xs text-center text-muted-foreground mt-3">
                   {paymentMethod === "crypto_eth" 
-                    ? "Giao dịch ETH qua mạng Ethereum • Phí gas áp dụng 🔒"
+                    ? `Giao dịch ${selectedNetwork.symbol} qua mạng ${selectedNetwork.name} • Phí gas áp dụng 🔒`
                     : "Thanh toán được bảo mật qua Stripe 🔒"
                   }
                 </p>
