@@ -71,10 +71,16 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
     }
 
     setIsConnecting("metamask");
+    
     try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      }) as string[];
+      // Use Promise wrapper to ensure all rejections are caught
+      const accounts = await new Promise<string[]>((resolve, reject) => {
+        window.ethereum!.request({
+          method: "eth_requestAccounts",
+        })
+          .then((result: string[]) => resolve(result))
+          .catch((err: unknown) => reject(err));
+      });
 
       if (accounts && accounts.length > 0) {
         const address = accounts[0];
@@ -88,17 +94,34 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
         });
       }
     } catch (error: unknown) {
+      console.log("MetaMask connection error:", error);
       const err = error as { code?: number; message?: string };
+      
       if (err.code === 4001) {
+        // User rejected the request
         toast({
           title: "Bị từ chối",
           description: "Bạn đã từ chối yêu cầu kết nối.",
           variant: "destructive",
         });
+      } else if (err.code === -32002) {
+        // Request already pending
+        toast({
+          title: "Yêu cầu đang chờ",
+          description: "Vui lòng mở MetaMask và xác nhận yêu cầu kết nối.",
+          variant: "destructive",
+        });
+      } else if (err.message?.includes("Failed to connect")) {
+        // MetaMask internal connection failure
+        toast({
+          title: "Không thể kết nối",
+          description: "MetaMask từ chối kết nối. Vui lòng mở khóa ví và thử lại.",
+          variant: "destructive",
+        });
       } else {
         toast({
           title: "Lỗi kết nối",
-          description: "Không thể kết nối với MetaMask. Vui lòng thử lại.",
+          description: err.message || "Không thể kết nối với MetaMask. Vui lòng thử lại.",
           variant: "destructive",
         });
       }
