@@ -43,9 +43,23 @@ export function WalletQuickView({ walletAddress, onChangeWallet }: WalletQuickVi
     setLoading(true);
     try {
       const ethereum = window.ethereum;
-      if (!ethereum) return;
+      if (!ethereum) {
+        // No MetaMask, use public RPC instead
+        setTokens([{ address: "native", name: "Ethereum", symbol: "ETH", decimals: 18, balance: "0.0000" }]);
+        setLoading(false);
+        return;
+      }
 
-      const provider = new ethers.BrowserProvider(ethereum);
+      let provider;
+      try {
+        provider = new ethers.BrowserProvider(ethereum);
+      } catch (providerError) {
+        console.warn("Could not create BrowserProvider:", providerError);
+        setTokens([{ address: "native", name: "Ethereum", symbol: "ETH", decimals: 18, balance: "0.0000" }]);
+        setLoading(false);
+        return;
+      }
+
       const updatedTokens: TokenBalance[] = [];
 
       const savedCustomTokens = localStorage.getItem(`customTokens_${walletAddress}`);
@@ -76,6 +90,8 @@ export function WalletQuickView({ walletAddress, onChangeWallet }: WalletQuickVi
       setTokens(updatedTokens);
     } catch (error) {
       console.error("Error fetching balances:", error);
+      // Don't crash, just show empty state
+      setTokens([{ address: "native", name: "Ethereum", symbol: "ETH", decimals: 18, balance: "0.0000" }]);
     } finally {
       setLoading(false);
     }
