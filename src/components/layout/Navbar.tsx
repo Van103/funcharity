@@ -194,21 +194,36 @@ export function Navbar() {
               <Logo size="md" />
             </Link>
             
-            {/* Home Button - Facebook style icon with tooltip */}
+            {/* Home Button - Facebook style icon with tooltip and animations */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link to="/social">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full ${
-                      location.pathname === "/social" 
-                        ? "bg-primary text-white hover:bg-primary/90" 
-                        : "text-primary hover:bg-primary/10 hover:text-primary"
-                    }`}
+                  <motion.div
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <Home className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
-                  </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ${
+                        location.pathname === "/social" 
+                          ? "bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30 hover:shadow-primary/50" 
+                          : "text-primary hover:bg-primary/15 hover:text-primary hover:shadow-md"
+                      }`}
+                    >
+                      <Home className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.5} />
+                      {location.pathname === "/social" && (
+                        <motion.div
+                          layoutId="nav-indicator"
+                          className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1 bg-primary rounded-full"
+                          initial={{ opacity: 0, scale: 0 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        />
+                      )}
+                    </Button>
+                  </motion.div>
                 </Link>
               </TooltipTrigger>
               <TooltipContent className="bg-foreground text-background font-semibold">
@@ -222,42 +237,57 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Center Navigation - Facebook style icon buttons */}
-          <div className="hidden lg:flex items-center gap-1">
-            {/* Platform Dropdown - Icon only with tooltip */}
+          {/* Center Navigation - Facebook style icon buttons with animations */}
+          <div className="hidden lg:flex items-center gap-2">
+            {/* Platform Dropdown - Icon only with tooltip and animation */}
             <DropdownMenu>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="w-11 h-11 rounded-full text-primary hover:bg-primary/10"
+                    <motion.div
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
-                      <Layers className="w-7 h-7" strokeWidth={2.5} />
-                    </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="w-12 h-12 rounded-full text-primary hover:bg-primary/15 hover:shadow-md transition-all duration-300"
+                      >
+                        <Layers className="w-7 h-7" strokeWidth={2.5} />
+                      </Button>
+                    </motion.div>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
                 <TooltipContent className="bg-foreground text-background font-semibold">
                   {t("nav.platform")}
                 </TooltipContent>
               </Tooltip>
-              <DropdownMenuContent align="center" className="w-56 bg-background border border-border shadow-lg">
-                {platformItems.map((item) => {
+              <DropdownMenuContent align="center" className="w-56 bg-background border border-border shadow-xl rounded-xl p-1">
+                {platformItems.map((item, index) => {
                   const Icon = item.icon;
                   return (
-                    <DropdownMenuItem key={item.path} asChild className="cursor-pointer">
-                      <Link to={item.path} className="flex items-center gap-3 py-2.5">
-                        <Icon className="w-5 h-5 text-primary" />
-                        <span className="font-medium">{t(item.nameKey)}</span>
-                      </Link>
-                    </DropdownMenuItem>
+                    <motion.div
+                      key={item.path}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <DropdownMenuItem asChild className="cursor-pointer rounded-lg">
+                        <Link to={item.path} className="flex items-center gap-3 py-3 px-3 hover:bg-primary/10 transition-colors">
+                          <div className="p-2 rounded-full bg-primary/10">
+                            <Icon className="w-5 h-5 text-primary" />
+                          </div>
+                          <span className="font-semibold text-foreground">{t(item.nameKey)}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </motion.div>
                   );
                 })}
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Community - Icon only with tooltip */}
+            {/* Community - Icon only with tooltip and animation */}
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -265,17 +295,32 @@ export function Navbar() {
                 <Tooltip key={item.path}>
                   <TooltipTrigger asChild>
                     <Link to={item.path}>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className={`w-11 h-11 rounded-full ${
-                          isActive 
-                            ? "bg-primary text-white hover:bg-primary/90" 
-                            : "text-primary hover:bg-primary/10"
-                        }`}
+                      <motion.div
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       >
-                        <Icon className="w-7 h-7" strokeWidth={2.5} />
-                      </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={`relative w-12 h-12 rounded-full transition-all duration-300 ${
+                            isActive 
+                              ? "bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg shadow-primary/30 hover:shadow-primary/50" 
+                              : "text-primary hover:bg-primary/15 hover:shadow-md"
+                          }`}
+                        >
+                          <Icon className="w-7 h-7" strokeWidth={2.5} />
+                          {isActive && (
+                            <motion.div
+                              layoutId="nav-indicator-community"
+                              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-1 bg-primary rounded-full"
+                              initial={{ opacity: 0, scale: 0 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            />
+                          )}
+                        </Button>
+                      </motion.div>
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent className="bg-foreground text-background font-semibold">
@@ -286,18 +331,24 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Right Actions - Facebook style */}
+          {/* Right Actions - Facebook style with animations */}
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* Sparkles/Activity - Icon only with tooltip */}
+            {/* Sparkles/Activity - Icon only with tooltip and animation */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="hidden md:flex w-10 h-10 rounded-full text-primary hover:bg-primary/10"
+                <motion.div
+                  whileHover={{ scale: 1.08, rotate: 5 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <Sparkles className="w-6 h-6" strokeWidth={2.5} />
-                </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="hidden md:flex w-11 h-11 rounded-full text-primary hover:bg-primary/15 hover:shadow-md transition-all duration-300"
+                  >
+                    <Sparkles className="w-6 h-6" strokeWidth={2.5} />
+                  </Button>
+                </motion.div>
               </TooltipTrigger>
               <TooltipContent className="bg-foreground text-background font-semibold">
                 {t("nav.activity") || "Hoạt động"}
