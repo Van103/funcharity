@@ -203,7 +203,7 @@ export function Navbar() {
                   </motion.div>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-foreground text-background font-bold text-base px-4 py-2">
+              <TooltipContent side="bottom" className="bg-primary text-secondary font-bold text-base px-4 py-2">
                 FUNCHARITY
               </TooltipContent>
             </Tooltip>
@@ -241,7 +241,7 @@ export function Navbar() {
                   </motion.div>
                 </Link>
               </TooltipTrigger>
-              <TooltipContent className="bg-foreground text-background font-semibold">
+              <TooltipContent className="bg-primary text-primary-foreground font-semibold">
                 {t("nav.home")}
               </TooltipContent>
             </Tooltip>
@@ -267,7 +267,7 @@ export function Navbar() {
                     </motion.div>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
-                <TooltipContent className="bg-foreground text-background font-semibold">
+                <TooltipContent className="bg-primary text-primary-foreground font-semibold">
                   {t("nav.platform")}
                 </TooltipContent>
               </Tooltip>
@@ -324,7 +324,7 @@ export function Navbar() {
                       </motion.div>
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent className="bg-foreground text-background font-semibold">
+                  <TooltipContent className="bg-primary text-primary-foreground font-semibold">
                     {t(item.nameKey)}
                   </TooltipContent>
                 </Tooltip>
@@ -372,7 +372,7 @@ export function Navbar() {
                         </motion.button>
                       </DropdownMenuTrigger>
                     </TooltipTrigger>
-                    <TooltipContent className="bg-foreground text-background font-semibold">
+                    <TooltipContent className="bg-primary text-primary-foreground font-semibold">
                       {user.user_metadata?.full_name || user.email?.split('@')[0]}
                     </TooltipContent>
                   </Tooltip>
