@@ -95,7 +95,7 @@ export function RightSidebar() {
   return (
     <aside className="w-80 shrink-0 space-y-4">
       {/* Honor Board */}
-      <div className="rounded-2xl overflow-hidden border-2 border-yellow-400/60 shadow-lg relative">
+      <div className="rounded-2xl overflow-hidden relative golden-border-glow">
         {/* Video Background */}
         <video
           autoPlay
@@ -132,7 +132,7 @@ export function RightSidebar() {
       </div>
 
       {/* Top Ranking */}
-      <div className="rounded-2xl overflow-hidden border-2 border-yellow-400/60 shadow-lg relative">
+      <div className="rounded-2xl overflow-hidden relative golden-border-glow">
         {/* Video Background */}
         <video
           autoPlay
