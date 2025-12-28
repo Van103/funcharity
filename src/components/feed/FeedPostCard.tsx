@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { FeedPost, useFeedReaction } from "@/hooks/useFeedPosts";
 import { cn } from "@/lib/utils";
+import { formatPostContent } from "@/lib/formatContent";
 
 interface FeedPostCardProps {
   post: FeedPost;
@@ -181,7 +182,7 @@ export function FeedPostCard({ post, onShowMatches }: FeedPostCardProps) {
 
       {/* Content */}
       {post.content && (
-        <p className="text-foreground/90 whitespace-pre-wrap mb-4">{post.content}</p>
+        <p className="text-foreground/90 whitespace-pre-wrap mb-4">{formatPostContent(post.content)}</p>
       )}
 
       {/* Media */}

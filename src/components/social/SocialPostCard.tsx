@@ -26,6 +26,7 @@ import { EditFeedPostModal } from "./EditFeedPostModal";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatPostContent } from "@/lib/formatContent";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -259,7 +260,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
       {post.content && (
         <div className="px-4 pb-3">
           <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-            {post.content}
+            {formatPostContent(post.content)}
           </div>
         </div>
       )}
