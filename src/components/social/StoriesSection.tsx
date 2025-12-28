@@ -55,23 +55,21 @@ export function StoriesSection() {
 
         <TabsContent value="stories" className="mt-0">
           <div className="relative">
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
-              {/* Create Story */}
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {/* Create Story - Square Card */}
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 className="shrink-0 cursor-pointer"
               >
-                <div className="flex flex-col items-center gap-2">
-                  <div className="relative">
-                    <div className="w-16 h-16 rounded-full bg-muted border-2 border-dashed border-muted-foreground/40 flex items-center justify-center hover:border-primary/60 hover:bg-muted/80 transition-all">
-                      <Plus className="w-6 h-6 text-muted-foreground" />
-                    </div>
+                <div className="relative w-28 h-40 rounded-xl bg-gradient-to-br from-muted to-muted/50 border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:from-primary/5 hover:to-primary/10 transition-all overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-primary" />
                   </div>
                   <span className="text-xs text-foreground font-medium">Tạo tin</span>
                 </div>
               </motion.div>
 
-              {/* Story Items */}
+              {/* Story Items - Square Cards */}
               {mockStories.map((story, index) => (
                 <motion.div
                   key={story.id}
@@ -81,34 +79,51 @@ export function StoriesSection() {
                   whileHover={{ scale: 1.02 }}
                   className="shrink-0 cursor-pointer"
                 >
-                  <div className="flex flex-col items-center gap-2">
-                    {/* Avatar with gold ring for new stories */}
-                    <div className={`p-0.5 rounded-full ${
-                      story.hasNew 
-                        ? "bg-gradient-to-br from-gold-champagne via-gold-light to-gold-champagne" 
-                        : "bg-border"
-                    }`}>
-                      <div className="p-0.5 rounded-full bg-card">
-                        <Avatar className="w-14 h-14">
-                          <AvatarImage src={story.avatar} />
-                          <AvatarFallback className={`bg-gradient-to-br ${avatarGradients[index % avatarGradients.length]} text-white font-semibold text-lg`}>
-                            {story.userName.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
+                  <div className="relative w-28 h-40 rounded-xl overflow-hidden group">
+                    {/* Background gradient / placeholder */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${avatarGradients[index % avatarGradients.length]}`}>
+                      {story.avatar && (
+                        <img 
+                          src={story.avatar} 
+                          alt={story.userName} 
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                     </div>
+                    
+                    {/* Overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    
+                    {/* Ring indicator for new stories */}
+                    {story.hasNew && (
+                      <div className="absolute top-2 left-2">
+                        <div className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne via-gold-light to-gold-champagne">
+                          <div className="w-8 h-8 rounded-full bg-card border-2 border-card overflow-hidden">
+                            {story.avatar ? (
+                              <img src={story.avatar} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className={`w-full h-full bg-gradient-to-br ${avatarGradients[index % avatarGradients.length]} flex items-center justify-center text-white text-xs font-bold`}>
+                                {story.userName.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Live indicator */}
                     {story.isLive && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-destructive text-destructive-foreground text-[10px] rounded-full font-medium">
+                      <span className="absolute top-2 right-2 px-2 py-0.5 bg-destructive text-destructive-foreground text-[10px] rounded-full font-medium">
                         LIVE
                       </span>
                     )}
 
-                    {/* Name */}
-                    <span className="text-xs text-foreground font-medium line-clamp-1 max-w-[64px] text-center">
-                      {story.userName}
-                    </span>
+                    {/* Name at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 p-2">
+                      <span className="text-xs text-white font-medium line-clamp-2 drop-shadow-lg">
+                        {story.userName}
+                      </span>
+                    </div>
                   </div>
                 </motion.div>
               ))}

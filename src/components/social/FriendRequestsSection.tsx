@@ -281,81 +281,89 @@ export function FriendRequestsSection() {
         <div className="glass-card p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground">Lời mời kết bạn</h3>
-            <Link to="/friends" className="text-sm text-primary hover:underline flex items-center gap-1">
-              Xem tất cả <ChevronRight className="w-4 h-4" />
-            </Link>
+            <button className="text-muted-foreground hover:text-foreground">
+              •••
+            </button>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-            {friendRequests.map((request, index) => (
-              <motion.div
-                key={request.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="shrink-0 w-28 rounded-xl overflow-hidden bg-card border border-border/50 shadow-sm"
-              >
-                {/* Cover photo area */}
-                <div className={`h-12 ${getCoverStyle(index)} relative`}>
-                  <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-                    <div className="p-0.5 rounded-full bg-gradient-to-br from-primary to-primary-light">
-                      <Avatar className="w-10 h-10 border-2 border-background">
-                        <AvatarImage src={request.avatar} />
-                        <AvatarFallback className="bg-primary/10 text-sm">
+          <div className="relative">
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {friendRequests.map((request, index) => (
+                <motion.div
+                  key={request.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="shrink-0 w-36 rounded-xl overflow-hidden bg-card border border-border/50 shadow-sm"
+                >
+                  {/* Large photo area */}
+                  <div className="relative h-36 overflow-hidden">
+                    {request.avatar ? (
+                      <img 
+                        src={request.avatar} 
+                        alt={request.userName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className={`w-full h-full ${getCoverStyle(index)} flex items-center justify-center`}>
+                        <span className="text-4xl font-bold text-white/80">
                           {request.userName.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-3 flex flex-col">
+                    <Link to={`/user/${request.senderId}`} className="flex items-center gap-1 mb-1 hover:underline">
+                      <span className="font-semibold text-sm truncate text-foreground">
+                        {request.userName}
+                      </span>
+                      {request.verified && <span className="text-primary text-sm">💜</span>}
+                    </Link>
+                    <div className="flex items-center gap-1 mb-3">
+                      <div className="flex -space-x-1">
+                        <div className="w-4 h-4 rounded-full bg-primary/20 border border-background" />
+                        <div className="w-4 h-4 rounded-full bg-secondary/20 border border-background" />
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {request.mutualFriends} bạn chung
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Button 
+                        size="sm" 
+                        className="w-full h-8 text-xs bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg"
+                        onClick={() => handleAcceptRequest(request.id, request.senderId)}
+                        disabled={processingIds.has(request.id)}
+                      >
+                        {processingIds.has(request.id) ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          "Xác nhận"
+                        )}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="w-full h-8 text-xs rounded-lg"
+                        onClick={() => handleDeclineRequest(request.id)}
+                        disabled={processingIds.has(request.id)}
+                      >
+                        Xóa
+                      </Button>
                     </div>
                   </div>
-                </div>
-                
-                <div className="pt-6 pb-2 px-1.5 flex flex-col items-center text-center">
-                  <Link to={`/user/${request.senderId}`} className="flex items-center gap-0.5 mb-0.5 hover:underline">
-                    <span className="font-medium text-[11px] truncate max-w-full">
-                      {request.userName}
-                    </span>
-                    {request.verified && <span className="text-primary text-[10px]">💜</span>}
-                  </Link>
-                  <span className="text-[10px] text-muted-foreground mb-1.5">
-                    {request.mutualFriends} bạn chung
-                  </span>
-                  <div className="flex flex-col gap-1 w-full">
-                    <Button 
-                      size="sm" 
-                      className="w-full h-6 text-[10px] bg-primary hover:bg-primary/90 text-primary-foreground"
-                      onClick={() => handleAcceptRequest(request.id, request.senderId)}
-                      disabled={processingIds.has(request.id)}
-                    >
-                      {processingIds.has(request.id) ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      ) : (
-                        "Xác nhận"
-                      )}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="w-full h-6 text-[10px]"
-                      onClick={() => handleDeclineRequest(request.id)}
-                      disabled={processingIds.has(request.id)}
-                    >
-                      Xóa
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-            
-            {/* Navigation arrow */}
-            <Link 
-              to="/friends"
-              className="shrink-0 w-7 h-7 self-center rounded-full bg-background border border-border shadow-sm flex items-center justify-center hover:bg-muted transition-colors"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+                </motion.div>
+              ))}
+              
+              {/* Navigation arrow */}
+              <button className="shrink-0 w-8 h-8 self-center rounded-full bg-white shadow-md border border-border flex items-center justify-center hover:bg-muted transition-colors">
+                <ChevronRight className="w-4 h-4 text-foreground" />
+              </button>
+            </div>
           </div>
           
-          <Link to="/friends" className="text-xs text-primary hover:underline mt-2 mx-auto block text-center">
+          <Link to="/friends" className="text-sm text-primary hover:underline mt-3 mx-auto block text-center font-medium">
             Xem tất cả
           </Link>
         </div>
@@ -366,82 +374,90 @@ export function FriendRequestsSection() {
         <div className="glass-card p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground">Những người bạn có thể biết</h3>
-            <Link to="/friends" className="text-sm text-primary hover:underline flex items-center gap-1">
-              Xem tất cả <ChevronRight className="w-4 h-4" />
-            </Link>
+            <button className="text-muted-foreground hover:text-foreground">
+              •••
+            </button>
           </div>
 
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-            {suggestions.map((suggestion, index) => (
-              <motion.div
-                key={suggestion.userId}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="shrink-0 w-28 rounded-xl overflow-hidden bg-card border border-border/50 shadow-sm relative"
-              >
-                {/* Remove button */}
-                <button 
-                  className="absolute top-1 right-1 z-10 w-4 h-4 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-muted transition-colors"
-                  onClick={() => handleRemoveSuggestion(suggestion.userId)}
+          <div className="relative">
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {suggestions.map((suggestion, index) => (
+                <motion.div
+                  key={suggestion.userId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="shrink-0 w-36 rounded-xl overflow-hidden bg-card border border-border/50 shadow-sm relative"
                 >
-                  <X className="w-2.5 h-2.5 text-muted-foreground" />
-                </button>
-                
-                {/* Cover photo area */}
-                <div className={`h-12 ${getCoverStyle(index + 2)} relative`}>
-                  <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-                    <div className="p-0.5 rounded-full bg-gradient-to-br from-primary to-primary-light">
-                      <Avatar className="w-10 h-10 border-2 border-background">
-                        <AvatarImage src={suggestion.avatar} />
-                        <AvatarFallback className="bg-primary/10 text-sm">
-                          {suggestion.userName.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="pt-6 pb-2 px-1.5 flex flex-col items-center text-center">
-                  <Link to={`/user/${suggestion.userId}`} className="flex items-center gap-0.5 mb-0.5 hover:underline">
-                    <span className="font-medium text-[11px] truncate max-w-full">
-                      {suggestion.userName}
-                    </span>
-                    {suggestion.verified && <span className="text-primary text-[10px]">💜</span>}
-                  </Link>
-                  <span className="text-[10px] text-muted-foreground mb-1.5">
-                    {suggestion.mutualFriends} bạn chung
-                  </span>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full h-6 text-[10px] px-1.5"
-                    onClick={() => handleAddFriend(suggestion.userId)}
-                    disabled={processingIds.has(suggestion.userId)}
+                  {/* Remove button */}
+                  <button 
+                    className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center hover:bg-black/60 transition-colors"
+                    onClick={() => handleRemoveSuggestion(suggestion.userId)}
                   >
-                    {processingIds.has(suggestion.userId) ? (
-                      <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                    <X className="w-3.5 h-3.5 text-white" />
+                  </button>
+                  
+                  {/* Large photo area */}
+                  <div className="relative h-36 overflow-hidden">
+                    {suggestion.avatar ? (
+                      <img 
+                        src={suggestion.avatar} 
+                        alt={suggestion.userName}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
-                      <>
-                        <UserPlus className="w-2.5 h-2.5 mr-0.5" />
-                        Thêm bạn bè
-                      </>
+                      <div className={`w-full h-full ${getCoverStyle(index + 2)} flex items-center justify-center`}>
+                        <span className="text-4xl font-bold text-white/80">
+                          {suggestion.userName.charAt(0)}
+                        </span>
+                      </div>
                     )}
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
-            
-            {/* Navigation arrow */}
-            <Link 
-              to="/friends"
-              className="shrink-0 w-7 h-7 self-center rounded-full bg-background border border-border shadow-sm flex items-center justify-center hover:bg-muted transition-colors"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+                  </div>
+                  
+                  <div className="p-3 flex flex-col">
+                    <Link to={`/user/${suggestion.userId}`} className="flex items-center gap-1 mb-1 hover:underline">
+                      <span className="font-semibold text-sm truncate text-foreground">
+                        {suggestion.userName}
+                      </span>
+                      {suggestion.verified && <span className="text-primary text-sm">💜</span>}
+                    </Link>
+                    <div className="flex items-center gap-1 mb-3">
+                      <div className="flex -space-x-1">
+                        <div className="w-4 h-4 rounded-full bg-primary/20 border border-background" />
+                        <div className="w-4 h-4 rounded-full bg-secondary/20 border border-background" />
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {suggestion.mutualFriends} bạn chung
+                      </span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="w-full h-8 text-xs rounded-lg"
+                      onClick={() => handleAddFriend(suggestion.userId)}
+                      disabled={processingIds.has(suggestion.userId)}
+                    >
+                      {processingIds.has(suggestion.userId) ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <UserPlus className="w-3.5 h-3.5 mr-1" />
+                          Thêm bạn bè
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+              
+              {/* Navigation arrow */}
+              <button className="shrink-0 w-8 h-8 self-center rounded-full bg-white shadow-md border border-border flex items-center justify-center hover:bg-muted transition-colors">
+                <ChevronRight className="w-4 h-4 text-foreground" />
+              </button>
+            </div>
           </div>
           
-          <Link to="/friends" className="text-xs text-primary hover:underline mt-2 mx-auto block text-center">
+          <Link to="/friends" className="text-sm text-primary hover:underline mt-3 mx-auto block text-center font-medium">
             Xem tất cả
           </Link>
         </div>
