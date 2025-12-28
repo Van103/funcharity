@@ -188,11 +188,14 @@ export default function PublicProfile() {
     if (!currentUserId || !userId) return;
     setIsProcessing(true);
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("friendships")
-      .insert({ user_id: currentUserId, friend_id: userId, status: 'pending' });
+      .insert({ user_id: currentUserId, friend_id: userId, status: 'pending' })
+      .select()
+      .single();
 
-    if (!error) {
+    if (!error && data) {
+      setFriendshipId(data.id);
       setFriendshipStatus('pending_sent');
       toast({ title: "Đã gửi lời mời kết bạn" });
     }
