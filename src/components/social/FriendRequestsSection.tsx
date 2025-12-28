@@ -7,12 +7,19 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
+interface MutualFriend {
+  user_id: string;
+  avatar_url?: string;
+  full_name?: string;
+}
+
 interface FriendRequest {
   id: string;
   senderId: string;
   userName: string;
   avatar?: string;
   mutualFriends: number;
+  mutualFriendsList: MutualFriend[];
   verified?: boolean;
 }
 
@@ -21,6 +28,7 @@ interface UserSuggestion {
   userName: string;
   avatar?: string;
   mutualFriends: number;
+  mutualFriendsList: MutualFriend[];
   verified?: boolean;
 }
 
@@ -72,17 +80,18 @@ export function FriendRequestsSection() {
 
         const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
 
-        // Get mutual friends count for each sender
+        // Get mutual friends data for each sender
         const requestsWithMutual = await Promise.all(
           requests.map(async (req) => {
-            const mutualCount = await getMutualFriendsCount(user.id, req.user_id);
+            const mutualData = await getMutualFriendsData(user.id, req.user_id);
             const profile = profileMap.get(req.user_id);
             return {
               id: req.id,
               senderId: req.user_id,
               userName: profile?.full_name || "Người dùng",
               avatar: profile?.avatar_url || undefined,
-              mutualFriends: mutualCount,
+              mutualFriends: mutualData.count,
+              mutualFriendsList: mutualData.friends,
               verified: profile?.is_verified || false,
             };
           })
@@ -116,15 +125,16 @@ export function FriendRequestsSection() {
           p => !connectedUserIds.has(p.user_id)
         );
 
-        // Get mutual friends for suggestions
+        // Get mutual friends data for suggestions
         const suggestionsWithMutual = await Promise.all(
           nonConnectedProfiles.slice(0, 8).map(async (profile) => {
-            const mutualCount = await getMutualFriendsCount(user.id, profile.user_id);
+            const mutualData = await getMutualFriendsData(user.id, profile.user_id);
             return {
               userId: profile.user_id,
               userName: profile.full_name || "Người dùng",
               avatar: profile.avatar_url || undefined,
-              mutualFriends: mutualCount,
+              mutualFriends: mutualData.count,
+              mutualFriendsList: mutualData.friends,
               verified: profile.is_verified || false,
             };
           })
@@ -139,7 +149,7 @@ export function FriendRequestsSection() {
     }
   };
 
-  const getMutualFriendsCount = async (userId1: string, userId2: string): Promise<number> => {
+  const getMutualFriendsData = async (userId1: string, userId2: string): Promise<{ count: number; friends: MutualFriend[] }> => {
     try {
       // Get friends of user1
       const { data: friends1 } = await supabase
@@ -161,15 +171,26 @@ export function FriendRequestsSection() {
         .eq("status", "accepted")
         .or(`user_id.eq.${userId2},friend_id.eq.${userId2}`);
 
-      let mutualCount = 0;
+      const mutualFriendIds: string[] = [];
       friends2?.forEach(f => {
         const friendId = f.user_id === userId2 ? f.friend_id : f.user_id;
-        if (user1Friends.has(friendId)) mutualCount++;
+        if (user1Friends.has(friendId)) mutualFriendIds.push(friendId);
       });
 
-      return mutualCount;
+      // Fetch profiles of mutual friends (limit to 3 for display)
+      let mutualFriendsList: MutualFriend[] = [];
+      if (mutualFriendIds.length > 0) {
+        const { data: mutualProfiles } = await supabase
+          .from("profiles")
+          .select("user_id, avatar_url, full_name")
+          .in("user_id", mutualFriendIds.slice(0, 3));
+        
+        mutualFriendsList = mutualProfiles || [];
+      }
+
+      return { count: mutualFriendIds.length, friends: mutualFriendsList };
     } catch {
-      return 0;
+      return { count: 0, friends: [] };
     }
   };
 
@@ -320,15 +341,23 @@ export function FriendRequestsSection() {
                       </span>
                       {request.verified && <span className="text-primary text-sm">💜</span>}
                     </Link>
-                    <div className="flex items-center gap-1 mb-3">
-                      <div className="flex -space-x-1">
-                        <div className="w-4 h-4 rounded-full bg-primary/20 border border-background" />
-                        <div className="w-4 h-4 rounded-full bg-secondary/20 border border-background" />
+                    {request.mutualFriends > 0 && (
+                      <div className="flex items-center gap-1 mb-3">
+                        <div className="flex -space-x-1">
+                          {request.mutualFriendsList.slice(0, 3).map((friend, idx) => (
+                            <Avatar key={friend.user_id} className="w-4 h-4 border border-background">
+                              <AvatarImage src={friend.avatar_url} alt={friend.full_name || ""} />
+                              <AvatarFallback className="text-[6px] bg-primary/20">
+                                {friend.full_name?.charAt(0) || "?"}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {request.mutualFriends} bạn chung
+                        </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {request.mutualFriends} bạn chung
-                      </span>
-                    </div>
+                    )}
                     <div className="flex flex-col gap-2">
                       <Button 
                         size="sm" 
@@ -421,15 +450,23 @@ export function FriendRequestsSection() {
                       </span>
                       {suggestion.verified && <span className="text-primary text-sm">💜</span>}
                     </Link>
-                    <div className="flex items-center gap-1 mb-3">
-                      <div className="flex -space-x-1">
-                        <div className="w-4 h-4 rounded-full bg-primary/20 border border-background" />
-                        <div className="w-4 h-4 rounded-full bg-secondary/20 border border-background" />
+                    {suggestion.mutualFriends > 0 && (
+                      <div className="flex items-center gap-1 mb-3">
+                        <div className="flex -space-x-1">
+                          {suggestion.mutualFriendsList.slice(0, 3).map((friend, idx) => (
+                            <Avatar key={friend.user_id} className="w-4 h-4 border border-background">
+                              <AvatarImage src={friend.avatar_url} alt={friend.full_name || ""} />
+                              <AvatarFallback className="text-[6px] bg-primary/20">
+                                {friend.full_name?.charAt(0) || "?"}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {suggestion.mutualFriends} bạn chung
+                        </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {suggestion.mutualFriends} bạn chung
-                      </span>
-                    </div>
+                    )}
                     <Button 
                       size="sm" 
                       variant="outline" 
