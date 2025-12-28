@@ -451,7 +451,7 @@ label,
     transform: translateY(-1px);
   }
 
-  /* Golden 3D ring border - like real gold jewelry */
+  /* Golden 3D ring border - bright gold like title text */
   .golden-border-glow {
     position: relative;
     border-radius: 1rem;
@@ -465,14 +465,13 @@ label,
     padding: 5px;
     background: linear-gradient(
       165deg,
-      hsl(50 100% 75%) 0%,
-      hsl(45 95% 60%) 10%,
-      hsl(40 90% 45%) 25%,
-      hsl(35 85% 35%) 40%,
-      hsl(40 90% 50%) 55%,
-      hsl(45 95% 62%) 70%,
-      hsl(50 100% 72%) 85%,
-      hsl(45 95% 55%) 100%
+      hsl(51 100% 85%) 0%,
+      hsl(51 100% 60%) 15%,
+      hsl(48 100% 50%) 30%,
+      hsl(45 95% 45%) 50%,
+      hsl(48 100% 55%) 65%,
+      hsl(51 100% 65%) 80%,
+      hsl(51 100% 85%) 100%
     );
     -webkit-mask: 
       linear-gradient(#fff 0 0) content-box, 
@@ -480,40 +479,42 @@ label,
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     box-shadow: 
-      inset 2px 2px 4px hsl(50 100% 80% / 0.9),
-      inset -1px -1px 3px hsl(30 80% 25% / 0.6);
+      inset 2px 2px 4px hsl(51 100% 90% / 0.9),
+      inset -1px -1px 3px hsl(45 90% 35% / 0.5);
     pointer-events: none;
   }
 
+  /* Shimmer overlay */
   .golden-border-glow::after {
     content: '';
     position: absolute;
-    inset: -2px;
+    inset: -1px;
     border-radius: inherit;
-    padding: 7px;
+    padding: 6px;
     background: linear-gradient(
-      145deg,
-      hsl(45 90% 55% / 0.4) 0%,
-      transparent 30%,
-      transparent 70%,
-      hsl(35 80% 30% / 0.5) 100%
+      90deg,
+      transparent 0%,
+      hsl(51 100% 90% / 0.8) 25%,
+      hsl(51 100% 100% / 1) 50%,
+      hsl(51 100% 90% / 0.8) 75%,
+      transparent 100%
     );
+    background-size: 200% 100%;
     -webkit-mask: 
       linear-gradient(#fff 0 0) content-box, 
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
-    animation: golden-3d-shine 4s ease-in-out infinite;
+    animation: golden-shimmer-move 3s linear infinite;
   }
 
-  /* Outer glow for depth */
+  /* Outer glow */
   .golden-border-glow {
     box-shadow: 
-      0 4px 8px hsl(35 80% 25% / 0.5),
-      0 2px 4px hsl(35 80% 20% / 0.4),
-      0 8px 16px hsl(40 85% 30% / 0.3),
-      inset 0 1px 0 hsl(50 100% 75% / 0.3);
+      0 0 15px hsl(51 100% 50% / 0.6),
+      0 0 30px hsl(51 100% 50% / 0.4),
+      0 4px 8px hsl(45 90% 30% / 0.4);
   }
 }
 
@@ -547,14 +548,12 @@ label,
   }
 }
 
-@keyframes golden-3d-shine {
-  0%, 100% {
-    opacity: 0.6;
-    background-position: 0% 0%;
+@keyframes golden-shimmer-move {
+  0% {
+    background-position: -200% 0;
   }
-  50% {
-    opacity: 1;
-    background-position: 100% 100%;
+  100% {
+    background-position: 200% 0;
   }
 }
 
