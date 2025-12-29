@@ -21,106 +21,142 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Messenger-like ringtone generator using Web Audio API
+// Simulates the iconic Facebook Messenger "brrring brrring" sound pattern
 class MessengerRingtone {
   private audioContext: AudioContext | null = null;
   private oscillators: OscillatorNode[] = [];
   private gainNodes: GainNode[] = [];
   private isPlaying = false;
-  private intervalId: NodeJS.Timeout | null = null;
+  private timeoutIds: NodeJS.Timeout[] = [];
 
-  private playTone() {
+  private createRingSound(startTime: number, duration: number) {
+    if (!this.audioContext) return;
+    
+    // Messenger uses a characteristic "trill" pattern - rapid alternating tones
+    const baseFreq = 440; // A4
+    const oscillator = this.audioContext.createOscillator();
+    const gainNode = this.audioContext.createGain();
+    
+    // Use sine wave for clean, pleasant tone
+    oscillator.type = 'sine';
+    
+    // Create the "trill" effect by modulating frequency
+    const time = startTime;
+    const trillSpeed = 15; // Hz - speed of trill
+    const trillDepth = 50; // Hz - how much frequency varies
+    
+    // Create rapid frequency modulation for trill effect
+    for (let i = 0; i < duration * trillSpeed; i++) {
+      const t = time + (i / trillSpeed);
+      const freq = baseFreq + (i % 2 === 0 ? trillDepth : -trillDepth);
+      oscillator.frequency.setValueAtTime(freq, t);
+    }
+    
+    // Volume envelope
+    gainNode.gain.setValueAtTime(0, startTime);
+    gainNode.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
+    gainNode.gain.setValueAtTime(0.25, startTime + duration - 0.02);
+    gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(this.audioContext.destination);
+    
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration);
+    
+    this.oscillators.push(oscillator);
+    this.gainNodes.push(gainNode);
+  }
+
+  private playPattern() {
+    if (!this.isPlaying) return;
+    
     if (!this.audioContext) {
       this.audioContext = new AudioContext();
     }
-
-    // Stop any existing oscillators
-    this.stopTone();
-
-    // Messenger ringtone frequencies (characteristic dual-tone pattern)
-    const frequencies = [784, 880]; // G5 and A5
     
-    frequencies.forEach((freq, index) => {
-      const oscillator = this.audioContext!.createOscillator();
-      const gainNode = this.audioContext!.createGain();
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(freq, this.audioContext!.currentTime);
-      
-      gainNode.gain.setValueAtTime(0, this.audioContext!.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.15, this.audioContext!.currentTime + 0.05);
-      gainNode.gain.linearRampToValueAtTime(0.1, this.audioContext!.currentTime + 0.15);
-      gainNode.gain.linearRampToValueAtTime(0, this.audioContext!.currentTime + 0.3);
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext!.destination);
-      
-      oscillator.start(this.audioContext!.currentTime);
-      oscillator.stop(this.audioContext!.currentTime + 0.3);
-      
-      this.oscillators.push(oscillator);
-      this.gainNodes.push(gainNode);
-    });
-
-    // Second tone after short delay (the "ding-dong" effect)
-    setTimeout(() => {
-      if (!this.isPlaying || !this.audioContext) return;
-      
-      const frequencies2 = [659, 784]; // E5 and G5
-      
-      frequencies2.forEach((freq) => {
-        const oscillator = this.audioContext!.createOscillator();
-        const gainNode = this.audioContext!.createGain();
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(freq, this.audioContext!.currentTime);
-        
-        gainNode.gain.setValueAtTime(0, this.audioContext!.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.12, this.audioContext!.currentTime + 0.05);
-        gainNode.gain.linearRampToValueAtTime(0.08, this.audioContext!.currentTime + 0.2);
-        gainNode.gain.linearRampToValueAtTime(0, this.audioContext!.currentTime + 0.4);
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext!.destination);
-        
-        oscillator.start(this.audioContext!.currentTime);
-        oscillator.stop(this.audioContext!.currentTime + 0.4);
-        
-        this.oscillators.push(oscillator);
-        this.gainNodes.push(gainNode);
-      });
-    }, 350);
-  }
-
-  private stopTone() {
-    this.oscillators.forEach(osc => {
-      try { osc.stop(); } catch (e) {}
-    });
-    this.oscillators = [];
-    this.gainNodes = [];
+    // Resume context if suspended (browser autoplay policy)
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+    
+    const now = this.audioContext.currentTime;
+    
+    // Messenger pattern: "brrrring" (0.4s) - pause (0.2s) - "brrrring" (0.4s) - long pause (2s)
+    this.createRingSound(now, 0.4);
+    this.createRingSound(now + 0.6, 0.4);
+    
+    // Add a second layer for richer sound (higher octave)
+    const highOsc = this.audioContext.createOscillator();
+    const highGain = this.audioContext.createGain();
+    highOsc.type = 'sine';
+    highOsc.frequency.setValueAtTime(880, now); // A5
+    
+    highGain.gain.setValueAtTime(0, now);
+    highGain.gain.linearRampToValueAtTime(0.08, now + 0.02);
+    highGain.gain.setValueAtTime(0.08, now + 0.38);
+    highGain.gain.linearRampToValueAtTime(0, now + 0.4);
+    
+    highOsc.connect(highGain);
+    highGain.connect(this.audioContext.destination);
+    highOsc.start(now);
+    highOsc.stop(now + 0.4);
+    
+    // Second ring high octave
+    const highOsc2 = this.audioContext.createOscillator();
+    const highGain2 = this.audioContext.createGain();
+    highOsc2.type = 'sine';
+    highOsc2.frequency.setValueAtTime(880, now + 0.6);
+    
+    highGain2.gain.setValueAtTime(0, now + 0.6);
+    highGain2.gain.linearRampToValueAtTime(0.08, now + 0.62);
+    highGain2.gain.setValueAtTime(0.08, now + 0.98);
+    highGain2.gain.linearRampToValueAtTime(0, now + 1);
+    
+    highOsc2.connect(highGain2);
+    highGain2.connect(this.audioContext.destination);
+    highOsc2.start(now + 0.6);
+    highOsc2.stop(now + 1);
+    
+    this.oscillators.push(highOsc, highOsc2);
+    this.gainNodes.push(highGain, highGain2);
+    
+    // Schedule next ring pattern after 3 seconds
+    if (this.isPlaying) {
+      const timeoutId = setTimeout(() => {
+        this.playPattern();
+      }, 3000);
+      this.timeoutIds.push(timeoutId);
+    }
   }
 
   start() {
     if (this.isPlaying) return;
     this.isPlaying = true;
-    
-    // Play immediately
-    this.playTone();
-    
-    // Repeat every 3 seconds (like Messenger)
-    this.intervalId = setInterval(() => {
-      if (this.isPlaying) {
-        this.playTone();
-      }
-    }, 3000);
+    console.log("Starting Messenger ringtone...");
+    this.playPattern();
   }
 
   stop() {
+    console.log("Stopping Messenger ringtone...");
     this.isPlaying = false;
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
+    
+    // Clear all scheduled timeouts
+    this.timeoutIds.forEach(id => clearTimeout(id));
+    this.timeoutIds = [];
+    
+    // Stop all oscillators
+    this.oscillators.forEach(osc => {
+      try { osc.stop(); } catch (e) {}
+    });
+    this.oscillators = [];
+    this.gainNodes = [];
+    
+    // Close audio context
+    if (this.audioContext) {
+      this.audioContext.close().catch(() => {});
+      this.audioContext = null;
     }
-    this.stopTone();
   }
 }
 

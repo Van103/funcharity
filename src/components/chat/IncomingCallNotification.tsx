@@ -11,56 +11,116 @@ interface IncomingCallNotificationProps {
   onDecline: () => void;
 }
 
-// Create Messenger-style incoming call ringtone
-const createIncomingRingtone = (audioContext: AudioContext): OscillatorNode[] => {
-  const oscillators: OscillatorNode[] = [];
-  
-  // Messenger incoming call has a distinctive "ring ring" pattern
-  const frequencies = [440, 554.37]; // A4 and C#5 - pleasant chord
-  
-  frequencies.forEach(freq => {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+// Messenger-style incoming ringtone class with proper pattern
+class MessengerIncomingRingtone {
+  private audioContext: AudioContext | null = null;
+  private isPlaying = false;
+  private timeoutIds: NodeJS.Timeout[] = [];
+  private oscillators: OscillatorNode[] = [];
+
+  private createRingBurst(startTime: number) {
+    if (!this.audioContext) return;
     
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+    // Create the characteristic "brrring" trill sound
+    const baseFreq = 523.25; // C5 - slightly higher for incoming
+    const trillFreq = 659.25; // E5
     
-    // Create pulsing pattern
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    // Main trill oscillator
+    const osc1 = this.audioContext.createOscillator();
+    const gain1 = this.audioContext.createGain();
+    osc1.type = 'sine';
     
-    const patternDuration = 4; // 4 seconds per pattern
-    const ringDuration = 0.8;
-    const pauseDuration = 0.4;
+    // Rapid frequency alternation for trill effect
+    const trillSpeed = 12; // alternations per second
+    const duration = 0.5;
     
-    // Create repeating ring pattern
-    for (let i = 0; i < 100; i++) { // Repeat for up to 100 cycles
-      const cycleStart = i * patternDuration;
-      
-      // First ring
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime + cycleStart);
-      gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + cycleStart + 0.05);
-      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime + cycleStart + ringDuration);
-      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + cycleStart + ringDuration + 0.05);
-      
-      // Pause
-      const secondRingStart = cycleStart + ringDuration + pauseDuration;
-      
-      // Second ring
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime + secondRingStart);
-      gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + secondRingStart + 0.05);
-      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime + secondRingStart + ringDuration);
-      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + secondRingStart + ringDuration + 0.05);
+    for (let i = 0; i < duration * trillSpeed * 2; i++) {
+      const t = startTime + (i / (trillSpeed * 2));
+      osc1.frequency.setValueAtTime(i % 2 === 0 ? baseFreq : trillFreq, t);
     }
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    oscillator.start();
+    gain1.gain.setValueAtTime(0, startTime);
+    gain1.gain.linearRampToValueAtTime(0.2, startTime + 0.03);
+    gain1.gain.setValueAtTime(0.2, startTime + duration - 0.03);
+    gain1.gain.linearRampToValueAtTime(0, startTime + duration);
     
-    oscillators.push(oscillator);
-  });
-  
-  return oscillators;
-};
+    osc1.connect(gain1);
+    gain1.connect(this.audioContext.destination);
+    osc1.start(startTime);
+    osc1.stop(startTime + duration);
+    
+    this.oscillators.push(osc1);
+    
+    // Add harmonic overtone for richer sound
+    const osc2 = this.audioContext.createOscillator();
+    const gain2 = this.audioContext.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(baseFreq * 2, startTime); // Octave higher
+    
+    gain2.gain.setValueAtTime(0, startTime);
+    gain2.gain.linearRampToValueAtTime(0.05, startTime + 0.03);
+    gain2.gain.setValueAtTime(0.05, startTime + duration - 0.03);
+    gain2.gain.linearRampToValueAtTime(0, startTime + duration);
+    
+    osc2.connect(gain2);
+    gain2.connect(this.audioContext.destination);
+    osc2.start(startTime);
+    osc2.stop(startTime + duration);
+    
+    this.oscillators.push(osc2);
+  }
+
+  private playPattern() {
+    if (!this.isPlaying) return;
+    
+    if (!this.audioContext) {
+      this.audioContext = new AudioContext();
+    }
+    
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+    
+    const now = this.audioContext.currentTime;
+    
+    // Pattern: ring - short pause - ring - long pause (repeat)
+    this.createRingBurst(now);
+    this.createRingBurst(now + 0.7);
+    
+    // Schedule next pattern
+    if (this.isPlaying) {
+      const timeoutId = setTimeout(() => {
+        this.playPattern();
+      }, 3000);
+      this.timeoutIds.push(timeoutId);
+    }
+  }
+
+  start() {
+    if (this.isPlaying) return;
+    this.isPlaying = true;
+    console.log("Starting incoming ringtone...");
+    this.playPattern();
+  }
+
+  stop() {
+    console.log("Stopping incoming ringtone...");
+    this.isPlaying = false;
+    
+    this.timeoutIds.forEach(id => clearTimeout(id));
+    this.timeoutIds = [];
+    
+    this.oscillators.forEach(osc => {
+      try { osc.stop(); } catch (e) {}
+    });
+    this.oscillators = [];
+    
+    if (this.audioContext) {
+      this.audioContext.close().catch(() => {});
+      this.audioContext = null;
+    }
+  }
+}
 
 // Vibration pattern like Messenger (ring-ring pause ring-ring)
 const vibratePattern = () => {
@@ -83,6 +143,9 @@ const stopVibration = () => {
   }
 };
 
+// Create singleton instance
+const incomingRingtone = new MessengerIncomingRingtone();
+
 export function IncomingCallNotification({
   callerName,
   callerAvatar,
@@ -90,24 +153,10 @@ export function IncomingCallNotification({
   onAnswer,
   onDecline
 }: IncomingCallNotificationProps) {
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const oscillatorsRef = useRef<OscillatorNode[]>([]);
   const vibrationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const stopRingtone = useCallback(() => {
-    oscillatorsRef.current.forEach(osc => {
-      try {
-        osc.stop();
-      } catch (e) {
-        // Already stopped
-      }
-    });
-    oscillatorsRef.current = [];
-    
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
+    incomingRingtone.stop();
     
     stopVibration();
     if (vibrationIntervalRef.current) {
@@ -118,18 +167,13 @@ export function IncomingCallNotification({
 
   useEffect(() => {
     // Start ringtone
-    try {
-      audioContextRef.current = new AudioContext();
-      oscillatorsRef.current = createIncomingRingtone(audioContextRef.current);
-    } catch (error) {
-      console.error("Error playing ringtone:", error);
-    }
+    incomingRingtone.start();
     
     // Start vibration pattern (repeating)
     vibratePattern();
     vibrationIntervalRef.current = setInterval(() => {
       vibratePattern();
-    }, 3400); // Total pattern duration
+    }, 3000); // Match ringtone pattern
     
     return () => {
       stopRingtone();
