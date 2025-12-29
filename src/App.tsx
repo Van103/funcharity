@@ -13,7 +13,7 @@ import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
 import { usePushNotification } from "@/hooks/usePushNotification";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Index from "./pages/Index";
 import Campaigns from "./pages/Campaigns";
 import CampaignDetail from "./pages/CampaignDetail";
@@ -85,6 +85,12 @@ function IncomingCallListener() {
     return () => subscription.unsubscribe();
   }, [isSupported, permission, subscribe]);
 
+  // Callback to handle when a call ends (declined/missed) - triggers refresh
+  const handleCallEnded = useCallback(() => {
+    // Dispatch custom event to notify Messages page to refresh
+    window.dispatchEvent(new CustomEvent('call-ended-refresh'));
+  }, []);
+
   const { incomingCall, answerCall, declineCall } = useIncomingCallListener({
     userId,
     onAnswerCall: (call) => {
@@ -92,7 +98,8 @@ function IncomingCallListener() {
       if (location.pathname !== "/messages") {
         navigate(`/messages?answer=${call.id}&conversation=${call.conversationId}&type=${call.callType}`);
       }
-    }
+    },
+    onCallEnded: handleCallEnded
   });
 
   // Show notification on ALL pages including /messages (global singleton)

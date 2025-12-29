@@ -172,11 +172,32 @@ export default function Messages() {
     setShowVideoCall(true);
   }, []);
 
+  // Handle refresh when call ends (from global listener or local VideoCallModal)
+  const handleCallEnded = useCallback(() => {
+    if (currentUserId) {
+      loadConversations(currentUserId);
+      if (activeConversation?.id) {
+        loadMessages(activeConversation.id);
+      }
+    }
+  }, [currentUserId, activeConversation?.id]);
+
+  // Listen for call-ended-refresh event from global IncomingCallListener in App.tsx
+  useEffect(() => {
+    const handleGlobalCallEnded = () => {
+      console.log("Received call-ended-refresh event");
+      handleCallEnded();
+    };
+    
+    window.addEventListener('call-ended-refresh', handleGlobalCallEnded);
+    return () => window.removeEventListener('call-ended-refresh', handleGlobalCallEnded);
+  }, [handleCallEnded]);
+
   // Setup incoming call listener - REMOVED local notification, using global in App.tsx
-  // Note: We don't use onCallEnded here since useIncomingCallListener already handles refreshing
   const { incomingCall, answerCall, declineCall, dismissCall } = useIncomingCallListener({
     userId: currentUserId,
-    onAnswerCall: handleAnswerIncomingCall
+    onAnswerCall: handleAnswerIncomingCall,
+    onCallEnded: handleCallEnded
   });
 
   // Get message IDs for reactions
@@ -235,7 +256,10 @@ export default function Messages() {
 
   // Handle incoming call from URL params (when user clicks answer from notification)
   useEffect(() => {
-    if (!answerCallId || !answerConversationId || !currentUserId || isLoading) return;
+    // Only require answerCallId and answerConversationId - we'll wait for currentUserId separately
+    if (!answerCallId || !answerConversationId) return;
+    // Wait for currentUserId to be available (don't skip if still loading)
+    if (!currentUserId) return;
     
     const handleIncomingCallFromUrl = async () => {
       console.log("Handling incoming call from URL params:", answerCallId, answerConversationId, answerCallType);
