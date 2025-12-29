@@ -82,7 +82,15 @@ serve(async (req) => {
       if (filters.min_goal) query = query.gte('goal_amount', filters.min_goal);
       if (filters.max_goal) query = query.lte('goal_amount', filters.max_goal);
       if (filters.search) {
-        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
+        // Sanitize: escape PostgREST operators and limit length to prevent filter injection
+        const sanitized = filters.search
+          .replace(/[,.()|%*\\]/g, '') // Remove PostgREST operators and wildcards
+          .trim()
+          .slice(0, 100); // Length limit
+        
+        if (sanitized.length > 0) {
+          query = query.or(`title.ilike.%${sanitized}%,description.ilike.%${sanitized}%`);
+        }
       }
 
       // Pagination
