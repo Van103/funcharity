@@ -13,7 +13,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  User,
   Sprout,
   Globe,
   Gamepad2,
@@ -27,6 +26,7 @@ import {
   Star,
   ExternalLink,
 } from "lucide-react";
+import funProfileLogo from "@/assets/fun-profile-logo.webp";
 
 const mainNavItems = [
   { icon: Home, labelKey: "nav.home", href: "/social" },
@@ -35,8 +35,16 @@ const mainNavItems = [
   { icon: MessageCircle, labelKey: "menu.chat", href: "/messages" },
 ];
 
-const menuItems = [
-  { icon: User, labelKey: "menu.profile", href: "https://fun.rich/", external: true },
+interface MenuItem {
+  icon?: React.ComponentType<{ className?: string }>;
+  image?: string;
+  labelKey: string;
+  href: string;
+  external: boolean;
+}
+
+const menuItems: MenuItem[] = [
+  { image: funProfileLogo, labelKey: "menu.profile", href: "https://fun.rich/", external: true },
   { icon: Sprout, labelKey: "menu.farm", href: "https://funfarm.life/feed", external: true },
   { icon: Globe, labelKey: "menu.planet", href: "https://planet.fun.rich/", external: true },
   { icon: Gamepad2, labelKey: "menu.play", href: "https://play.fun.rich/", external: true },
@@ -228,8 +236,12 @@ export function MobileBottomNav() {
                           onClick={() => setIsMenuOpen(false)}
                           className="flex flex-col items-center p-3 rounded-xl hover:bg-muted transition-all relative"
                         >
-                          <div className="p-2.5 rounded-full bg-muted mb-2">
-                            <Icon className="w-5 h-5 text-primary" />
+                          <div className="p-2.5 rounded-full bg-muted mb-2 overflow-hidden">
+                            {item.image ? (
+                              <img src={item.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                            ) : Icon ? (
+                              <Icon className="w-5 h-5 text-primary" />
+                            ) : null}
                           </div>
                           <span className="text-xs font-medium text-center leading-tight">
                             {t(item.labelKey)}
@@ -250,10 +262,14 @@ export function MobileBottomNav() {
                             : "hover:bg-muted"
                         }`}
                       >
-                        <div className={`p-2.5 rounded-full mb-2 ${
+                        <div className={`p-2.5 rounded-full mb-2 overflow-hidden ${
                           isActive ? "bg-primary/20" : "bg-muted"
                         }`}>
-                          <Icon className="w-5 h-5" />
+                          {item.image ? (
+                            <img src={item.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                          ) : Icon ? (
+                            <Icon className="w-5 h-5" />
+                          ) : null}
                         </div>
                         <span className="text-xs font-medium text-center leading-tight">
                           {t(item.labelKey)}

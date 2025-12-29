@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
-  User,
   GraduationCap,
   TrendingUp,
   PiggyBank,
@@ -16,9 +15,18 @@ import {
   Gamepad2,
   MessageCircle,
 } from "lucide-react";
+import funProfileLogo from "@/assets/fun-profile-logo.webp";
 
-const menuItems = [
-  { icon: User, labelKey: "menu.profile", href: "https://fun.rich/", external: true },
+interface MenuItem {
+  icon?: React.ComponentType<{ className?: string }>;
+  image?: string;
+  labelKey: string;
+  href: string;
+  external: boolean;
+}
+
+const menuItems: MenuItem[] = [
+  { image: funProfileLogo, labelKey: "menu.profile", href: "https://fun.rich/", external: true },
   { icon: Sprout, labelKey: "menu.farm", href: "https://funfarm.life/feed", external: true },
   { icon: Globe, labelKey: "menu.planet", href: "https://planet.fun.rich/", external: true },
   { icon: Gamepad2, labelKey: "menu.play", href: "https://play.fun.rich/", external: true },
@@ -70,7 +78,11 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
                     rel="noopener noreferrer"
                     className={linkClasses}
                   >
-                    <item.icon className={`w-4 h-4 ${isActive ? "text-white" : "text-primary"}`} />
+                    {item.image ? (
+                      <img src={item.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                    ) : item.icon ? (
+                      <item.icon className={`w-4 h-4 ${isActive ? "text-white" : "text-primary"}`} />
+                    ) : null}
                     <span style={{ fontSize: '18px' }}>{t(item.labelKey)}</span>
                   </a>
                 );
@@ -82,7 +94,11 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
                   to={item.href}
                   className={linkClasses}
                 >
-                  <item.icon className={`w-4 h-4 ${isActive ? "text-white" : "text-primary"}`} />
+                  {item.image ? (
+                    <img src={item.image} alt="" className="w-5 h-5 rounded-full object-cover" />
+                  ) : item.icon ? (
+                    <item.icon className={`w-4 h-4 ${isActive ? "text-white" : "text-primary"}`} />
+                  ) : null}
                   <span style={{ fontSize: '18px' }}>{t(item.labelKey)}</span>
                 </Link>
               );
