@@ -575,8 +575,8 @@ export function VideoCallModal({
       duration = Math.floor((Date.now() - callStartTimeRef.current) / 1000);
     }
     
-    if (sessionIdRef.current) {
-      try {
+    try {
+      if (sessionIdRef.current) {
         await supabase
           .from("call_sessions")
           .update({ status: "ended", ended_at: new Date().toISOString() })
@@ -586,23 +586,30 @@ export function VideoCallModal({
           channelRef.current.send({
             type: "broadcast",
             event: "call-ended",
-            payload: {}
+            payload: { 
+              duration: duration || 0,
+              endedBy: currentUserId
+            }
           });
         }
-        
-        // Save call message if call was active (had duration)
-        if (duration && duration > 0) {
-          await saveCallMessage('completed', duration);
-        }
-      } catch (error) {
-        console.error("Error updating call session:", error);
       }
+      
+      // Always save call message - completed if had duration, otherwise missed/cancelled
+      if (duration && duration > 0) {
+        await saveCallMessage('completed', duration);
+      } else if (!isIncoming) {
+        // Caller ended before connection - save as cancelled/missed
+        await saveCallMessage('missed');
+      }
+    } catch (error) {
+      console.error("Error updating call session:", error);
+    } finally {
+      // Always cleanup after saving message
+      cleanup();
+      setCallStatus("ended");
+      onClose();
     }
-    
-    cleanup();
-    setCallStatus("ended");
-    onClose();
-  }, [onClose, cleanup, saveCallMessage]);
+  }, [onClose, cleanup, saveCallMessage, currentUserId, isIncoming]);
 
   // Initialize media stream
   const initializeMedia = useCallback(async () => {
@@ -864,8 +871,16 @@ export function VideoCallModal({
         }, 2000);
       });
 
-      channel.on("broadcast", { event: "call-ended" }, () => {
+      channel.on("broadcast", { event: "call-ended" }, async (msg) => {
         console.log("Call ended by remote");
+        const payload = msg.payload || {};
+        const duration = payload.duration || 0;
+        
+        // Save call message from receiver's perspective
+        if (duration && duration > 0) {
+          await saveCallMessage('completed', duration);
+        }
+        
         cleanup();
         setCallStatus("ended");
         onClose();
@@ -946,8 +961,16 @@ export function VideoCallModal({
        }
      });
 
-    channel.on("broadcast", { event: "call-ended" }, () => {
+    channel.on("broadcast", { event: "call-ended" }, async (msg) => {
       console.log("Call ended by remote");
+      const payload = msg.payload || {};
+      const duration = payload.duration || 0;
+      
+      // Save call message from callee's perspective when caller ends
+      if (duration && duration > 0) {
+        await saveCallMessage('completed', duration);
+      }
+      
       cleanup();
       setCallStatus("ended");
       onClose();
@@ -1010,8 +1033,8 @@ export function VideoCallModal({
   const declineCall = useCallback(async () => {
     console.log("Declining call...");
     
-    if (callSessionId) {
-      try {
+    try {
+      if (callSessionId) {
         await supabase
           .from("call_sessions")
           .update({ status: "declined", ended_at: new Date().toISOString() })
@@ -1024,15 +1047,18 @@ export function VideoCallModal({
             payload: {}
           });
         }
-      } catch (error) {
-        console.error("Error declining call:", error);
+        
+        // Save declined call message from callee's perspective
+        await saveCallMessage('declined');
       }
+    } catch (error) {
+      console.error("Error declining call:", error);
+    } finally {
+      cleanup();
+      setCallStatus("ended");
+      onClose();
     }
-    
-    cleanup();
-    setCallStatus("ended");
-    onClose();
-  }, [callSessionId, cleanup, onClose]);
+  }, [callSessionId, cleanup, onClose, saveCallMessage]);
 
   // Toggle mute
   const toggleMute = useCallback(() => {
