@@ -250,6 +250,59 @@ export function VideoCallModal({
     ]
   };
 
+  // Helper to serialize ICE candidate
+  const serializeIceCandidate = (c: RTCIceCandidate): RTCIceCandidateInit => ({
+    candidate: c.candidate,
+    sdpMid: c.sdpMid ?? undefined,
+    sdpMLineIndex: c.sdpMLineIndex ?? undefined,
+    usernameFragment: (c as any).usernameFragment ?? undefined,
+  });
+
+  // Subscribe to signaling channel with promise
+  const subscribeToChannel = useCallback((ch: ReturnType<typeof supabase.channel>) => {
+    return new Promise<void>((resolve, reject) => {
+      ch.subscribe((status) => {
+        console.log("Signaling channel status:", status);
+        if (status === "SUBSCRIBED") resolve();
+        if (status === "CHANNEL_ERROR") reject(new Error("CHANNEL_ERROR"));
+        if (status === "TIMED_OUT") reject(new Error("TIMED_OUT"));
+      });
+    });
+  }, []);
+
+  // Flush pending local ICE candidates
+  const flushPendingLocalIce = useCallback(() => {
+    if (!channelRef.current || !isChannelSubscribedRef.current) return;
+
+    const pending = pendingLocalIceRef.current.splice(0);
+    if (pending.length) console.log("Flushing local ICE candidates:", pending.length);
+
+    pending.forEach((candidate) => {
+      channelRef.current?.send({
+        type: "broadcast",
+        event: "ice-candidate",
+        payload: { candidate, from: currentUserId }
+      });
+    });
+  }, [currentUserId]);
+
+  // Flush pending remote ICE candidates
+  const flushPendingRemoteIce = useCallback(async () => {
+    const pc = peerConnectionRef.current;
+    if (!pc || pc.signalingState === "closed" || !pc.remoteDescription) return;
+
+    const pending = pendingRemoteIceRef.current.splice(0);
+    if (pending.length) console.log("Flushing remote ICE candidates:", pending.length);
+
+    for (const candidate of pending) {
+      try {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (e) {
+        console.error("Error adding buffered ICE candidate:", e);
+      }
+    }
+  }, []);
+
   // Format call duration
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -1119,6 +1172,11 @@ export function VideoCallModal({
         {/* Main video area */}
         <div className="flex-1 relative overflow-hidden">
           {/* Remote video/avatar */}
+          {/* Hidden audio element for audio-only calls */}
+          {callType === "audio" && (
+            <audio ref={remoteAudioRef} autoPlay playsInline />
+          )}
+
           {callType === "video" && remoteStream ? (
             <video
               ref={remoteVideoRef}
@@ -1129,7 +1187,7 @@ export function VideoCallModal({
           ) : (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black">
               <motion.div
-                animate={callStatus === "ringing" ? { scale: [1, 1.1, 1] } : {}}
+                animate={callStatus === "ringing" || callStatus === "connecting" ? { scale: [1, 1.1, 1] } : {}}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
                 <Avatar className="w-32 h-32 border-4 border-primary/30 shadow-2xl">
@@ -1174,7 +1232,7 @@ export function VideoCallModal({
                   </p>
                 </div>
               )}
-              {callStatus === "active" && callType === "audio" && (
+              {callStatus === "active" && (
                 <p className="text-green-400 mt-4 flex items-center gap-2">
                   <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
                   Đang trong cuộc gọi
