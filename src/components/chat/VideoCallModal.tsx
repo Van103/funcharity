@@ -250,6 +250,9 @@ export function VideoCallModal({
     ]
   };
 
+  // Ref to track call start time for duration calculation
+  const callStartTimeRef = useRef<number | null>(null);
+
   // Helper to serialize ICE candidate
   const serializeIceCandidate = (c: RTCIceCandidate): RTCIceCandidateInit => ({
     candidate: c.candidate,
@@ -257,6 +260,49 @@ export function VideoCallModal({
     sdpMLineIndex: c.sdpMLineIndex ?? undefined,
     usernameFragment: (c as any).usernameFragment ?? undefined,
   });
+
+  // Helper to save call info as a message in the chat
+  const saveCallMessage = useCallback(async (
+    status: 'completed' | 'missed' | 'declined' | 'no_answer',
+    duration?: number
+  ) => {
+    try {
+      let content = '';
+      const callTypeLabel = callType === 'video' ? 'Video' : 'Âm thanh';
+      
+      if (status === 'completed' && duration) {
+        const minutes = Math.floor(duration / 60);
+        const seconds = duration % 60;
+        const durationStr = minutes > 0 
+          ? `${minutes} phút ${seconds} giây` 
+          : `${seconds} giây`;
+        content = `📞 Cuộc gọi ${callTypeLabel.toLowerCase()} - ${durationStr}`;
+      } else if (status === 'missed') {
+        content = `📵 Cuộc gọi ${callTypeLabel.toLowerCase()} nhỡ`;
+      } else if (status === 'declined') {
+        content = `❌ Cuộc gọi ${callTypeLabel.toLowerCase()} bị từ chối`;
+      } else if (status === 'no_answer') {
+        content = `📵 Cuộc gọi ${callTypeLabel.toLowerCase()} không trả lời`;
+      }
+
+      await supabase.from('messages').insert({
+        conversation_id: conversationId,
+        sender_id: currentUserId,
+        content,
+        is_read: false
+      });
+
+      // Update conversation's last_message_at
+      await supabase
+        .from('conversations')
+        .update({ last_message_at: new Date().toISOString() })
+        .eq('id', conversationId);
+
+      console.log('Call message saved:', content);
+    } catch (error) {
+      console.error('Error saving call message:', error);
+    }
+  }, [conversationId, currentUserId, callType]);
 
   // Subscribe to signaling channel with promise
   const subscribeToChannel = useCallback((ch: ReturnType<typeof supabase.channel>) => {
@@ -474,6 +520,9 @@ export function VideoCallModal({
                       call_type: callType
                     }
                   });
+
+                  // Save no_answer call message to chat
+                  await saveCallMessage('no_answer');
                 } catch (e) {
                   console.error("Error marking call as no_answer:", e);
                 }
@@ -510,11 +559,17 @@ export function VideoCallModal({
         ringTimerRef.current = null;
       }
     };
-  }, [callStatus, isIncoming, playRingtone, stopRingtone, playCallEndSound, otherUser.full_name, toast, cleanup, onClose]);
+  }, [callStatus, isIncoming, playRingtone, stopRingtone, playCallEndSound, otherUser.full_name, toast, cleanup, onClose, saveCallMessage]);
 
   // End call
   const endCall = useCallback(async () => {
     console.log("Ending call...");
+    
+    // Calculate call duration if call was active
+    let duration: number | undefined;
+    if (callStartTimeRef.current) {
+      duration = Math.floor((Date.now() - callStartTimeRef.current) / 1000);
+    }
     
     if (sessionIdRef.current) {
       try {
@@ -530,6 +585,11 @@ export function VideoCallModal({
             payload: {}
           });
         }
+        
+        // Save call message if call was active (had duration)
+        if (duration && duration > 0) {
+          await saveCallMessage('completed', duration);
+        }
       } catch (error) {
         console.error("Error updating call session:", error);
       }
@@ -538,7 +598,7 @@ export function VideoCallModal({
     cleanup();
     setCallStatus("ended");
     onClose();
-  }, [onClose, cleanup]);
+  }, [onClose, cleanup, saveCallMessage]);
 
   // Initialize media stream
   const initializeMedia = useCallback(async () => {
@@ -642,6 +702,8 @@ export function VideoCallModal({
       console.log("Connection state:", pc.connectionState);
       if (pc.connectionState === "connected") {
         setCallStatus("active");
+        // Start tracking call start time when connected
+        callStartTimeRef.current = Date.now();
       } else if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
         console.log("Connection lost, ending call");
         endCall();
@@ -751,13 +813,17 @@ export function VideoCallModal({
         }
       });
 
-      channel.on("broadcast", { event: "call-declined" }, () => {
+      channel.on("broadcast", { event: "call-declined" }, async () => {
         stopRingtone();
         playCallEndSound();
         toast({
           title: "Cuộc gọi bị từ chối",
           description: `${otherUser.full_name || "Người dùng"} đã từ chối cuộc gọi`
         });
+        
+        // Save declined call message to chat
+        await saveCallMessage('declined');
+        
         setCallStatus("busy");
         setTimeout(() => {
           cleanup();
@@ -786,7 +852,7 @@ export function VideoCallModal({
       cleanup();
       onClose();
     }
-  }, [conversationId, currentUserId, callType, initializeMedia, createPeerConnection, otherUser, toast, cleanup, onClose]);
+  }, [conversationId, currentUserId, callType, initializeMedia, createPeerConnection, otherUser, toast, cleanup, onClose, saveCallMessage]);
 
   // Answer incoming call
   const answerCall = useCallback(async () => {
