@@ -38,6 +38,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
 import { CallsTab } from "@/components/chat/CallsTab";
+import { CallMessageBubble, isCallMessage } from "@/components/chat/CallMessageBubble";
 
 interface Conversation {
   id: string;
@@ -1216,36 +1217,45 @@ export default function Messages() {
                           )}
                           
                           <div className="relative">
-                            <div
-                              className={`rounded-2xl overflow-hidden ${
-                                isCurrentUser
-                                  ? 'bg-primary text-primary-foreground'
-                                  : 'bg-muted'
-                              }`}
-                            >
-                              {msg.image_url && (
-                                isVideoUrl(msg.image_url) ? (
-                                  <video 
-                                    src={msg.image_url} 
-                                    controls
-                                    className="max-w-full max-h-72 rounded-lg"
-                                    preload="metadata"
-                                  />
-                                ) : (
-                                  <img 
-                                    src={msg.image_url} 
-                                    alt="Shared image" 
-                                    className="max-w-full max-h-72 object-cover cursor-pointer"
-                                    onClick={() => window.open(msg.image_url!, '_blank')}
-                                  />
-                                )
-                              )}
-                              {msg.content && (
-                                <div className={`px-4 py-2 ${msg.content === '👍' ? 'text-4xl py-1' : ''}`}>
-                                  <p className="text-[15px] whitespace-pre-wrap break-words">{msg.content}</p>
-                                </div>
-                              )}
-                            </div>
+                            {/* Special UI for call messages */}
+                            {msg.content && isCallMessage(msg.content) ? (
+                              <CallMessageBubble
+                                content={msg.content}
+                                isCurrentUser={isCurrentUser}
+                                onCallback={(type) => startCall(type)}
+                              />
+                            ) : (
+                              <div
+                                className={`rounded-2xl overflow-hidden ${
+                                  isCurrentUser
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                {msg.image_url && (
+                                  isVideoUrl(msg.image_url) ? (
+                                    <video 
+                                      src={msg.image_url} 
+                                      controls
+                                      className="max-w-full max-h-72 rounded-lg"
+                                      preload="metadata"
+                                    />
+                                  ) : (
+                                    <img 
+                                      src={msg.image_url} 
+                                      alt="Shared image" 
+                                      className="max-w-full max-h-72 object-cover cursor-pointer"
+                                      onClick={() => window.open(msg.image_url!, '_blank')}
+                                    />
+                                  )
+                                )}
+                                {msg.content && (
+                                  <div className={`px-4 py-2 ${msg.content === '👍' ? 'text-4xl py-1' : ''}`}>
+                                    <p className="text-[15px] whitespace-pre-wrap break-words">{msg.content}</p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                             
                             {/* Reactions display */}
                             <MessageReactionsDisplay

@@ -215,7 +215,7 @@ export function VideoCallModal({
   autoAnswer = false
 }: VideoCallModalProps) {
   const { toast } = useToast();
-  const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "ringing" | "active" | "ended" | "no_answer" | "busy">("idle");
+  const [callStatus, setCallStatus] = useState<"idle" | "connecting" | "ringing" | "active" | "ended" | "no_answer" | "busy" | "failed">("idle");
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(callType === "audio");
   const [isScreenSharing, setIsScreenSharing] = useState(false);
@@ -223,6 +223,8 @@ export function VideoCallModal({
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [callDuration, setCallDuration] = useState(0);
   const [ringCount, setRingCount] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 2;
   
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -245,13 +247,34 @@ export function VideoCallModal({
 
   const configuration: RTCConfiguration = {
     iceServers: [
+      // Google STUN servers
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
       { urls: "stun:stun2.l.google.com:19302" },
       { urls: "stun:stun3.l.google.com:19302" },
       { urls: "stun:stun4.l.google.com:19302" },
+      // OpenRelay free TURN servers (https://www.metered.ca/tools/openrelay/)
+      {
+        urls: "stun:openrelay.metered.ca:80"
+      },
+      {
+        urls: "turn:openrelay.metered.ca:80",
+        username: "openrelayproject",
+        credential: "openrelayproject"
+      },
+      {
+        urls: "turn:openrelay.metered.ca:443",
+        username: "openrelayproject",
+        credential: "openrelayproject"
+      },
+      {
+        urls: "turn:openrelay.metered.ca:443?transport=tcp",
+        username: "openrelayproject",
+        credential: "openrelayproject"
+      }
     ],
-    iceCandidatePoolSize: 10
+    iceCandidatePoolSize: 10,
+    iceTransportPolicy: "all"
   };
 
   // Ref to track call start time for duration calculation
@@ -714,6 +737,7 @@ export function VideoCallModal({
       if (pc.connectionState === "connected") {
         console.log("WebRTC connection established successfully!");
         setCallStatus("active");
+        setRetryCount(0); // Reset retry count on successful connection
         // Start tracking call start time when connected
         callStartTimeRef.current = Date.now();
       } else if (pc.connectionState === "connecting") {
@@ -725,13 +749,13 @@ export function VideoCallModal({
         setTimeout(() => {
           if (peerConnectionRef.current?.connectionState === "disconnected" ||
               peerConnectionRef.current?.connectionState === "failed") {
-            console.log("Connection failed to recover, ending call");
-            endCall();
+            console.log("Connection failed to recover");
+            setCallStatus("failed");
           }
         }, 5000);
       } else if (pc.connectionState === "failed") {
-        console.log("Connection failed, ending call");
-        endCall();
+        console.log("Connection failed");
+        setCallStatus("failed");
       }
     };
 
@@ -1228,6 +1252,56 @@ export function VideoCallModal({
     }
   }, [isScreenSharing, toast]);
 
+  // Retry call after failure
+  const retryCall = useCallback(async () => {
+    if (retryCount >= MAX_RETRIES) {
+      toast({
+        title: "Không thể kết nối",
+        description: "Đã thử lại nhiều lần nhưng không thành công. Vui lòng kiểm tra mạng và thử lại sau.",
+        variant: "destructive"
+      });
+      cleanup();
+      onClose();
+      return;
+    }
+
+    console.log(`Retrying call... (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+    setRetryCount(prev => prev + 1);
+    
+    // Clean up existing connection
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+      peerConnectionRef.current = null;
+    }
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+    isChannelSubscribedRef.current = false;
+    pendingLocalIceRef.current = [];
+    pendingRemoteIceRef.current = [];
+    sessionIdRef.current = null;
+    
+    // Reset states but keep media stream
+    setRemoteStream(null);
+    setCallStatus("idle");
+    
+    // Restart the call
+    toast({
+      title: "Đang thử lại...",
+      description: `Lần thử ${retryCount + 1}/${MAX_RETRIES}`,
+    });
+    
+    // Small delay before retry
+    setTimeout(() => {
+      if (isIncoming) {
+        answerCall();
+      } else {
+        startCall();
+      }
+    }, 1000);
+  }, [retryCount, MAX_RETRIES, cleanup, onClose, toast, isIncoming, answerCall, startCall]);
+
   // Handle close button
   const handleClose = useCallback(() => {
     endCall();
@@ -1409,6 +1483,13 @@ export function VideoCallModal({
                   <p className="text-lg">Cuộc gọi bị từ chối</p>
                 </div>
               )}
+              {callStatus === "failed" && (
+                <div className="mt-4 flex flex-col items-center text-red-400">
+                  <PhoneOff className="w-10 h-10 mb-2" />
+                  <p className="text-lg">Kết nối thất bại</p>
+                  <p className="text-sm text-white/60 mt-1">Có thể do mạng không ổn định</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -1438,7 +1519,32 @@ export function VideoCallModal({
         {/* Call controls */}
         <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
           <div className="flex items-center justify-center gap-4">
-            {isIncoming && callStatus === "ringing" ? (
+            {callStatus === "failed" ? (
+              // Retry controls for failed calls
+              <>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={endCall}
+                  className="w-14 h-14 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center shadow-lg"
+                  title="Đóng"
+                >
+                  <X className="w-6 h-6 text-white" />
+                </motion.button>
+                
+                {retryCount < MAX_RETRIES && (
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={retryCall}
+                    className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 flex items-center justify-center shadow-lg"
+                    title="Thử lại"
+                  >
+                    <RotateCcw className="w-7 h-7 text-white" />
+                  </motion.button>
+                )}
+              </>
+            ) : isIncoming && callStatus === "ringing" ? (
               <>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
