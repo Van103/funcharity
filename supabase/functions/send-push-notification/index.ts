@@ -57,13 +57,21 @@ Deno.serve(async (req) => {
       .from("push_subscriptions")
       .select("*")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
 
-    if (subError || !subscription) {
+    if (subError) {
+      console.log("Error fetching push subscription:", subError.message);
+      return new Response(
+        JSON.stringify({ error: "Database error", details: subError.message }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!subscription) {
       console.log("No push subscription found for user:", userId);
       return new Response(
-        JSON.stringify({ error: "No subscription found", details: subError?.message }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ success: false, message: "User has no push subscription" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
