@@ -247,7 +247,11 @@ export function VideoCallModal({
     iceServers: [
       { urls: "stun:stun.l.google.com:19302" },
       { urls: "stun:stun1.l.google.com:19302" },
-    ]
+      { urls: "stun:stun2.l.google.com:19302" },
+      { urls: "stun:stun3.l.google.com:19302" },
+      { urls: "stun:stun4.l.google.com:19302" },
+    ],
+    iceCandidatePoolSize: 10
   };
 
   // Ref to track call start time for duration calculation
@@ -699,19 +703,48 @@ export function VideoCallModal({
     };
 
     pc.onconnectionstatechange = () => {
-      console.log("Connection state:", pc.connectionState);
+      console.log("Connection state changed:", pc.connectionState);
       if (pc.connectionState === "connected") {
+        console.log("WebRTC connection established successfully!");
         setCallStatus("active");
         // Start tracking call start time when connected
         callStartTimeRef.current = Date.now();
-      } else if (pc.connectionState === "disconnected" || pc.connectionState === "failed") {
-        console.log("Connection lost, ending call");
+      } else if (pc.connectionState === "connecting") {
+        console.log("WebRTC connection in progress...");
+        setCallStatus("connecting");
+      } else if (pc.connectionState === "disconnected") {
+        console.log("Connection disconnected, attempting to reconnect...");
+        // Give some time to reconnect before ending
+        setTimeout(() => {
+          if (peerConnectionRef.current?.connectionState === "disconnected" ||
+              peerConnectionRef.current?.connectionState === "failed") {
+            console.log("Connection failed to recover, ending call");
+            endCall();
+          }
+        }, 5000);
+      } else if (pc.connectionState === "failed") {
+        console.log("Connection failed, ending call");
         endCall();
       }
     };
 
     pc.oniceconnectionstatechange = () => {
       console.log("ICE connection state:", pc.iceConnectionState);
+      if (pc.iceConnectionState === "checking") {
+        console.log("ICE checking in progress...");
+      } else if (pc.iceConnectionState === "connected" || pc.iceConnectionState === "completed") {
+        console.log("ICE connection established!");
+      } else if (pc.iceConnectionState === "failed") {
+        console.log("ICE connection failed");
+      }
+    };
+
+    pc.onicegatheringstatechange = () => {
+      console.log("ICE gathering state:", pc.iceGatheringState);
+    };
+
+    pc.onsignalingstatechange = () => {
+      console.log("Signaling state:", pc.signalingState);
     };
 
     peerConnectionRef.current = pc;
@@ -948,7 +981,9 @@ export function VideoCallModal({
           .update({ status: "active" })
           .eq("id", callSessionId);
 
-        setCallStatus("active");
+        // Don't set to active here - let onconnectionstatechange handle it
+        // The connection will transition to "connected" once ICE completes
+        console.log("Answer sent, waiting for connection to establish...");
       } else {
         console.error("No offer found in call session");
         toast({
