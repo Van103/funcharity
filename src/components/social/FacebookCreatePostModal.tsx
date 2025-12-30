@@ -312,16 +312,18 @@ export function FacebookCreatePostModal({
       toast({ title: "Đã gắn thẻ", description: `${user.full_name} đã được gắn thẻ rồi` });
     } else {
       setMentionedUsers((prev) => [...prev, user]);
-      // Also add mention to content
-      const mentionText = `@[${user.full_name || "Người dùng"}](${user.user_id}) `;
-      setContent((prev) => prev + mentionText);
+      toast({ title: "Đã gắn thẻ", description: user.full_name || "Người dùng" });
     }
     setShowTagPicker(false);
     setTagSearchQuery("");
   };
 
   const removeTag = (userId: string) => {
+    const user = mentionedUsers.find((u) => u.user_id === userId);
     setMentionedUsers((prev) => prev.filter((u) => u.user_id !== userId));
+    if (user) {
+      toast({ title: "Đã bỏ gắn thẻ", description: user.full_name || "Người dùng" });
+    }
   };
 
   const generateAIContent = async () => {
@@ -538,22 +540,27 @@ export function FacebookCreatePostModal({
               disabled={isSubmitting}
             />
 
-            {/* Tagged Users Display */}
+            {/* Tagged Users Display - Facebook Style */}
             {mentionedUsers.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                <span className="text-sm text-muted-foreground">— cùng với</span>
-                {mentionedUsers.map((user) => (
-                  <span
-                    key={user.user_id}
-                    className="inline-flex items-center gap-1 text-sm text-primary font-medium bg-primary/10 px-2 py-0.5 rounded-full"
-                  >
-                    {user.full_name}
-                    <button
-                      onClick={() => removeTag(user.user_id)}
-                      className="hover:bg-primary/20 rounded-full p-0.5"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
+              <div className="flex flex-wrap items-center gap-1 mb-3 text-sm">
+                <span className="text-muted-foreground">— cùng với</span>
+                {mentionedUsers.map((user, index) => (
+                  <span key={user.user_id} className="inline-flex items-center">
+                    <span className="inline-flex items-center gap-1 text-primary font-semibold hover:underline cursor-pointer">
+                      {user.full_name}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeTag(user.user_id);
+                        }}
+                        className="w-4 h-4 flex items-center justify-center rounded-full bg-muted hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </span>
+                    {index < mentionedUsers.length - 1 && (
+                      <span className="text-muted-foreground ml-1">,</span>
+                    )}
                   </span>
                 ))}
               </div>
