@@ -104,6 +104,7 @@ export function FacebookCreatePostModal({
   const [tagSearchQuery, setTagSearchQuery] = useState("");
   const [selectedTagIndex, setSelectedTagIndex] = useState(0);
   const [mentionedUsers, setMentionedUsers] = useState<MentionUser[]>([]);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -236,8 +237,11 @@ export function FacebookCreatePostModal({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Bạn cần đăng nhập để đăng bài");
 
+    // Get session for authenticated upload
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại");
+
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     const uploadedUrls: string[] = [];
 
     for (const item of mediaItems) {
@@ -249,7 +253,11 @@ export function FacebookCreatePostModal({
         const controller = uploadFileWithProgress(
           `${supabaseUrl}/storage/v1/object/post-images/${filePath}`,
           item.file,
-          { Authorization: `Bearer ${supabaseKey}`, "x-upsert": "true" },
+          { 
+            Authorization: `Bearer ${session.access_token}`, 
+            "x-upsert": "true",
+            "Content-Type": item.file.type || "application/octet-stream"
+          },
           (progress) => {
             setMediaItems((prev) =>
               prev.map((m) => (m.id === item.id ? { ...m, uploadProgress: progress } : m))
@@ -266,7 +274,8 @@ export function FacebookCreatePostModal({
       } catch (error: any) {
         uploadControllersRef.current.delete(item.id);
         if (error.message === "Upload cancelled") continue;
-        throw new Error(`Failed to upload ${item.file.name}: ${error.message}`);
+        console.error("Upload error:", error);
+        throw new Error(`Lỗi tải ${item.file.name}: ${error.message}`);
       }
     }
 
@@ -306,6 +315,52 @@ export function FacebookCreatePostModal({
 
   const removeTag = (userId: string) => {
     setMentionedUsers((prev) => prev.filter((u) => u.user_id !== userId));
+  };
+
+  const generateAIContent = async () => {
+    setIsGeneratingAI(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Lỗi", description: "Vui lòng đăng nhập để sử dụng AI", variant: "destructive" });
+        return;
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-post-content`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          topic: content.trim() || undefined,
+          style: "thân thiện, ấm áp, truyền cảm hứng",
+        }),
+      });
+
+      if (response.status === 429) {
+        toast({ title: "Quá nhiều yêu cầu", description: "Vui lòng thử lại sau vài giây", variant: "destructive" });
+        return;
+      }
+      if (response.status === 402) {
+        toast({ title: "Hết credits", description: "Cần nạp thêm credits để sử dụng AI", variant: "destructive" });
+        return;
+      }
+      if (!response.ok) {
+        throw new Error("Không thể tạo nội dung AI");
+      }
+
+      const data = await response.json();
+      if (data.content) {
+        setContent(data.content);
+        toast({ title: "Đã tạo nội dung AI", description: "Bạn có thể chỉnh sửa trước khi đăng" });
+      }
+    } catch (error) {
+      console.error("AI generation error:", error);
+      toast({ title: "Lỗi", description: "Không thể tạo nội dung AI", variant: "destructive" });
+    } finally {
+      setIsGeneratingAI(false);
+    }
   };
 
   const resetForm = () => {
@@ -635,6 +690,20 @@ export function FacebookCreatePostModal({
                   title="GIF"
                 >
                   <span className="text-sm font-bold text-teal-500">GIF</span>
+                </button>
+
+                {/* AI Generate */}
+                <button
+                  onClick={generateAIContent}
+                  disabled={isSubmitting || isGeneratingAI}
+                  className="w-9 h-9 rounded-full hover:bg-muted flex items-center justify-center transition-colors disabled:opacity-50"
+                  title="Tạo bài viết bằng AI"
+                >
+                  {isGeneratingAI ? (
+                    <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-6 h-6 text-purple-500" />
+                  )}
                 </button>
 
                 {/* More */}
