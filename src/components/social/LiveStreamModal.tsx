@@ -379,9 +379,9 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   };
 
   const goLive = () => {
+    // Set default title if empty
     if (!streamTitle.trim()) {
-      toast.error("Vui lòng nhập tiêu đề cho buổi phát trực tiếp");
-      return;
+      setStreamTitle(`${profile?.full_name || 'Người dùng'} đang phát trực tiếp`);
     }
     // Start countdown
     setShowCountdown(true);
