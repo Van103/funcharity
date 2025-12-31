@@ -47,6 +47,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useCreateFeedPost } from "@/hooks/useFeedPosts";
+import { useLiveGifts } from "@/hooks/useLiveGifts";
 import { FriendExcludeSelector } from "./FriendExcludeSelector";
 import { LiveStreamMusicPanel } from "./LiveStreamMusicPanel";
 import { LiveStreamQAPanel, PinnedCommentDisplay, Question, PinnedComment } from "./LiveStreamQAPanel";
@@ -187,6 +188,9 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const createFeedPost = useCreateFeedPost();
+  
+  // Gift tracking - use profile.user_id as streamer ID
+  const { totalCoinsReceived } = useLiveGifts(profile?.user_id);
 
   const startCameraPreview = useCallback(async () => {
     try {
@@ -1034,6 +1038,11 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                             REC
                           </span>
                         )}
+                        {totalCoinsReceived > 0 && (
+                          <span className="text-yellow-400 text-xs flex items-center gap-1 bg-yellow-500/20 px-2 py-0.5 rounded-full">
+                            💰 {totalCoinsReceived.toLocaleString()} xu
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1320,6 +1329,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 onGiftSent={handleGiftSent}
                 senderName={profile?.full_name || 'Người xem'}
                 senderAvatar={profile?.avatar_url || undefined}
+                receiverId={profile?.user_id}
               />
 
               {/* Gift Animations */}
@@ -1361,7 +1371,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
               </h3>
               
               {/* Stream stats */}
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
                 <span className="flex items-center gap-1">
                   <Eye className="w-4 h-4" />
                   {peakViewers} người xem cao nhất
@@ -1370,6 +1380,11 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                   <Clock className="w-4 h-4" />
                   {formatDuration(streamDuration)}
                 </span>
+                {totalCoinsReceived > 0 && (
+                  <span className="flex items-center gap-1 text-yellow-600 bg-yellow-500/20 px-2 py-0.5 rounded-full">
+                    💰 {totalCoinsReceived.toLocaleString()} xu đã nhận
+                  </span>
+                )}
               </div>
               
               {recordedVideoUrl ? (
