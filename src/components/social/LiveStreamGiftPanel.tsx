@@ -2,8 +2,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { X, Coins, Crown } from "lucide-react";
-import { useState } from "react";
+import { X, Coins, Crown, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useLiveGifts, Gift } from "@/hooks/useLiveGifts";
 
 interface LiveStreamGiftPanelProps {
   open: boolean;
@@ -11,16 +12,11 @@ interface LiveStreamGiftPanelProps {
   onGiftSent: (gift: Gift) => void;
   senderName: string;
   senderAvatar?: string;
-  userCoins?: number;
+  receiverId?: string;
+  streamId?: string;
 }
 
-export interface Gift {
-  id: string;
-  name: string;
-  emoji: string;
-  price: number;
-  animation?: 'float' | 'burst' | 'rain' | 'spin';
-}
+export type { Gift };
 
 interface GiftAnimation {
   id: string;
@@ -141,28 +137,36 @@ export function LiveStreamGiftPanel({
   onGiftSent, 
   senderName, 
   senderAvatar,
-  userCoins = 1000 
+  receiverId,
+  streamId
 }: LiveStreamGiftPanelProps) {
   const [selectedGift, setSelectedGift] = useState<Gift | null>(null);
-  const [coins, setCoins] = useState(userCoins);
   const [sendingGift, setSendingGift] = useState(false);
+  
+  const { userCoins, sendGift, isLoading } = useLiveGifts(receiverId, streamId);
 
-  const handleSendGift = (gift: Gift) => {
-    if (coins < gift.price) {
+  const handleSendGift = async (gift: Gift) => {
+    if (!receiverId) {
+      toast.error('Không thể xác định người nhận');
+      return;
+    }
+
+    if (userCoins < gift.price) {
       toast.error('Không đủ xu! Vui lòng nạp thêm.');
       return;
     }
 
     setSendingGift(true);
-    setCoins(prev => prev - gift.price);
     
-    // Simulate sending
-    setTimeout(() => {
+    const success = await sendGift(gift, receiverId, streamId);
+    
+    if (success) {
       onGiftSent(gift);
       toast.success(`Đã gửi ${gift.emoji} ${gift.name}!`);
-      setSendingGift(false);
       setSelectedGift(null);
-    }, 300);
+    }
+    
+    setSendingGift(false);
   };
 
   return (
@@ -180,7 +184,11 @@ export function LiveStreamGiftPanel({
               <h3 className="font-semibold text-foreground">Gửi quà tặng</h3>
               <div className="flex items-center gap-1 bg-yellow-500/20 text-yellow-600 px-2 py-0.5 rounded-full text-sm">
                 <Coins className="w-3.5 h-3.5" />
-                <span className="font-medium">{coins.toLocaleString()}</span>
+                {isLoading ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <span className="font-medium">{userCoins.toLocaleString()}</span>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -218,7 +226,7 @@ export function LiveStreamGiftPanel({
                     selectedGift?.id === gift.id 
                       ? 'bg-primary/20 ring-2 ring-primary' 
                       : 'bg-muted/50 hover:bg-muted'
-                  } ${coins < gift.price ? 'opacity-50' : ''}`}
+                  } ${userCoins < gift.price ? 'opacity-50' : ''}`}
                 >
                   <span className="text-3xl">{gift.emoji}</span>
                   <span className="text-xs font-medium text-foreground truncate w-full text-center">
@@ -270,11 +278,14 @@ export function LiveStreamGiftPanel({
           <div className="p-4 pt-0">
             <Button
               onClick={() => selectedGift && handleSendGift(selectedGift)}
-              disabled={!selectedGift || sendingGift || coins < (selectedGift?.price || 0)}
+              disabled={!selectedGift || sendingGift || userCoins < (selectedGift?.price || 0)}
               className="w-full gap-2"
             >
               {sendingGift ? (
-                'Đang gửi...'
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Đang gửi...
+                </>
               ) : selectedGift ? (
                 <>
                   Gửi {selectedGift.emoji} {selectedGift.name}
