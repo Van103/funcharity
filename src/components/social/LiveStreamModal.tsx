@@ -193,36 +193,60 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   // Gift tracking - use profile.user_id as streamer ID
   const { totalCoinsReceived } = useLiveGifts(profile?.user_id);
 
+  const attachStreamToVideo = useCallback(async (stream: MediaStream) => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+
+    try {
+      // Ensure camera preview can autoplay on mobile browsers
+      videoEl.muted = true;
+      videoEl.playsInline = true;
+
+      // NOTE: video element is conditionally rendered per phase, so we must re-attach srcObject
+      if (videoEl.srcObject !== stream) {
+        videoEl.srcObject = stream;
+      }
+
+      // Give the browser a tick to bind srcObject before playing
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      await videoEl.play();
+    } catch (err) {
+      // Autoplay can be blocked; recording still works.
+      console.warn("Video preview play blocked:", err);
+    }
+  }, []);
+
   const startCameraPreview = useCallback(async () => {
     try {
       setIsCameraReady(false);
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode, width: 1280, height: 720 },
-        audio: true
+        audio: true,
       });
+
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        // Wait for video to be ready
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play().catch(console.error);
-          setIsCameraReady(true);
-        };
-      } else {
-        setIsCameraReady(true);
-      }
+      await attachStreamToVideo(stream);
+
+      // Mark ready once we have a valid stream (so the user can go live without extra clicks)
+      setIsCameraReady(true);
     } catch (error) {
       console.error("Camera access error:", error);
       toast.error("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.");
       setIsCameraReady(false);
     }
-  }, [facingMode]);
+  }, [facingMode, attachStreamToVideo]);
 
   const stopStream = useCallback(() => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+
     setIsCameraReady(false);
     if (viewerIntervalRef.current) clearInterval(viewerIntervalRef.current);
     if (chatIntervalRef.current) clearInterval(chatIntervalRef.current);
