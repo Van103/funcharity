@@ -329,6 +329,45 @@ export type Database = {
         }
         Relationships: []
       }
+      coin_purchases: {
+        Row: {
+          amount: number
+          coins_received: number
+          completed_at: string | null
+          created_at: string
+          currency: string
+          id: string
+          status: string
+          stripe_payment_id: string | null
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          coins_received: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          status?: string
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          coins_received?: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          status?: string
+          stripe_payment_id?: string | null
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       comment_reactions: {
         Row: {
           comment_id: string
@@ -814,6 +853,42 @@ export type Database = {
           id?: string
           status?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      gift_transactions: {
+        Row: {
+          created_at: string
+          gift_emoji: string
+          gift_id: string
+          gift_name: string
+          gift_price: number
+          id: string
+          receiver_id: string
+          sender_id: string
+          stream_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          gift_emoji: string
+          gift_id: string
+          gift_name: string
+          gift_price: number
+          id?: string
+          receiver_id: string
+          sender_id: string
+          stream_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          gift_emoji?: string
+          gift_id?: string
+          gift_name?: string
+          gift_price?: number
+          id?: string
+          receiver_id?: string
+          sender_id?: string
+          stream_id?: string | null
         }
         Relationships: []
       }
@@ -1412,6 +1487,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_coins: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          total_earned: number
+          total_spent: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          total_earned?: number
+          total_spent?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_presence: {
         Row: {
