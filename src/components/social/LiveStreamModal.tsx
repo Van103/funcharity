@@ -141,6 +141,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   // Recording states
   const [isRecording, setIsRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+  const [isCameraReady, setIsCameraReady] = useState(false);
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   
@@ -194,6 +195,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
 
   const startCameraPreview = useCallback(async () => {
     try {
+      setIsCameraReady(false);
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode, width: 1280, height: 720 },
         audio: true
@@ -201,10 +203,18 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        // Wait for video to be ready
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch(console.error);
+          setIsCameraReady(true);
+        };
+      } else {
+        setIsCameraReady(true);
       }
     } catch (error) {
       console.error("Camera access error:", error);
       toast.error("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.");
+      setIsCameraReady(false);
     }
   }, [facingMode]);
 
@@ -213,6 +223,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
+    setIsCameraReady(false);
     if (viewerIntervalRef.current) clearInterval(viewerIntervalRef.current);
     if (chatIntervalRef.current) clearInterval(chatIntervalRef.current);
     if (durationIntervalRef.current) clearInterval(durationIntervalRef.current);
@@ -702,6 +713,16 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                   }}
                 />
                 
+                {/* Loading state when camera not ready */}
+                {!isCameraReady && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                    <div className="text-center text-white">
+                      <Loader2 className="w-12 h-12 mx-auto mb-2 animate-spin opacity-50" />
+                      <p className="text-sm opacity-70">Đang kết nối camera...</p>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Active Stickers */}
                 {activeStickers.map(stickerId => {
                   const sticker = STICKERS.find(s => s.id === stickerId);
@@ -729,7 +750,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                   </div>
                 )}
                 
-                {!isVideoEnabled && (
+                {!isVideoEnabled && isCameraReady && (
                   <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
                     <div className="text-center text-white">
                       <VideoOff className="w-16 h-16 mx-auto mb-2 opacity-50" />
@@ -966,40 +987,53 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
 
               {/* Bottom section */}
               <div className="absolute bottom-0 left-0 right-0 z-30 p-4 bg-gradient-to-t from-black via-black/80 to-transparent">
-                {/* Description input */}
+                {/* Description input - optional */}
                 <div className="mb-3">
                   <Input
                     value={streamDescription}
                     onChange={(e) => setStreamDescription(e.target.value)}
-                    placeholder="Nhấn để thêm mô tả..."
+                    placeholder="Thêm mô tả (tùy chọn)..."
                     className="bg-transparent border-0 text-white placeholder:text-white/60 text-base p-0 h-auto focus-visible:ring-0"
                   />
                 </div>
 
-                {/* Share to story option */}
+                {/* Share to story toggle - Facebook style */}
                 <div className="flex items-center justify-between mb-4 py-3 border-t border-white/10">
                   <div className="flex items-center gap-3">
-                    <Share2 className="w-5 h-5 text-white/60" />
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      shareToStory ? 'bg-primary' : 'bg-white/20'
+                    }`}>
+                      <Share2 className={`w-5 h-5 ${shareToStory ? 'text-primary-foreground' : 'text-white/60'}`} />
+                    </div>
                     <div>
-                      <p className="text-white text-sm font-medium">Chia sẻ lên</p>
-                      <p className="text-white/60 text-xs">Tin: {shareToStory ? 'Bật' : 'Tắt'}</p>
+                      <p className="text-white text-sm font-medium">Chia sẻ lên tin</p>
+                      <p className="text-white/60 text-xs">
+                        {shareToStory ? 'Video sẽ được chia sẻ lên tin của bạn' : 'Không chia sẻ lên tin'}
+                      </p>
                     </div>
                   </div>
+                  {/* Toggle Switch */}
                   <button
                     onClick={() => setShareToStory(!shareToStory)}
-                    className="text-white/60 hover:text-white"
+                    className={`relative w-12 h-7 rounded-full transition-colors ${
+                      shareToStory ? 'bg-primary' : 'bg-white/30'
+                    }`}
                   >
-                    <ChevronDown className="w-5 h-5 rotate-[-90deg]" />
+                    <motion.div
+                      className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-md"
+                      animate={{ left: shareToStory ? '26px' : '4px' }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
                   </button>
                 </div>
 
-                {/* Go Live button */}
+                {/* Go Live button - always enabled when camera is ready */}
                 <Button
                   onClick={goLive}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6 text-base font-medium rounded-xl"
-                  disabled={!streamRef.current}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6 text-base font-medium rounded-xl disabled:opacity-50"
+                  disabled={!isCameraReady}
                 >
-                  Phát trực tiếp
+                  {isCameraReady ? 'Phát trực tiếp' : 'Đang kết nối camera...'}
                 </Button>
               </div>
             </>
