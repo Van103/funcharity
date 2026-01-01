@@ -6,15 +6,24 @@ import "./index.css";
 
 // Global error handler for unhandled promise rejections (e.g., MetaMask)
 window.addEventListener('unhandledrejection', (event) => {
-  // Suppress MetaMask connection errors to prevent blank screen
+  // Suppress MetaMask/wallet connection errors to prevent blank screen
   const reason = event.reason;
-  if (
-    reason?.message?.includes('MetaMask') ||
-    reason?.message?.includes('User rejected') ||
+  const message = reason?.message || String(reason);
+  
+  // Check for wallet-related errors
+  const isWalletError = 
+    message.includes('MetaMask') ||
+    message.includes('Failed to connect') ||
+    message.includes('User rejected') ||
+    message.includes('eth_requestAccounts') ||
+    message.includes('eth_accounts') ||
+    message.includes('wallet_') ||
     reason?.code === 4001 ||
-    reason?.message?.includes('eth_requestAccounts')
-  ) {
-    console.warn('MetaMask connection rejected or failed:', reason?.message);
+    reason?.code === -32002 || // Already pending
+    reason?.code === -32603;   // Internal error
+  
+  if (isWalletError) {
+    console.warn('Wallet connection error (suppressed):', message);
     event.preventDefault();
     return;
   }
