@@ -132,20 +132,50 @@
 @layer base {
   * {
     @apply border-border;
+    /* Prevent iOS zoom on input focus */
+    touch-action: manipulation;
+  }
+
+  html {
+    /* Smooth scrolling for better UX */
+    scroll-behavior: smooth;
+    /* Prevent overscroll bouncing on iOS */
+    overscroll-behavior: none;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
+    /* Mobile-first font size - slightly larger for readability */
+    font-size: 16px;
     line-height: 1.6;
+    /* Prevent text size adjustment on orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Remove tap highlight on mobile */
+    -webkit-tap-highlight-color: transparent;
   }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 18px;
-  @apply font-semibold tracking-tight;
-}
+  /* Mobile-first heading sizes */
+  h1 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply text-2xl sm:text-3xl font-bold tracking-tight;
+  }
+
+  h2 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply text-xl sm:text-2xl font-semibold tracking-tight;
+  }
+
+  h3 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply text-lg sm:text-xl font-semibold tracking-tight;
+  }
+
+  h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply text-base sm:text-lg font-semibold tracking-tight;
+  }
 
 /* Font weight 500 for important text elements */
 .font-medium,
@@ -567,20 +597,68 @@ label,
     display: none;
   }
 
-  /* Safe area for mobile bottom nav */
+  /* ========================================
+     MOBILE-FIRST UTILITIES
+     Facebook-style responsive design
+     ======================================== */
+
+  /* Safe areas for notched devices (iPhone X+, etc.) */
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  /* Touch-friendly tap targets */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .safe-area-x {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .safe-area-y {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Touch-friendly tap targets (min 44x44px as per Apple HIG) */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
 
-  /* Mobile-optimized text */
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Mobile-optimized text sizes */
   .mobile-readable {
     @apply text-base leading-relaxed;
+  }
+
+  .mobile-heading {
+    @apply text-xl sm:text-2xl font-bold leading-tight;
+  }
+
+  .mobile-subheading {
+    @apply text-lg sm:text-xl font-semibold;
+  }
+
+  .mobile-body {
+    @apply text-sm sm:text-base leading-relaxed;
+  }
+
+  .mobile-caption {
+    @apply text-xs sm:text-sm text-muted-foreground;
   }
 
   /* Hide on mobile */
@@ -602,6 +680,67 @@ label,
     .pb-mobile-nav {
       padding-bottom: 0;
     }
+  }
+
+  /* Full-width on mobile, contained on desktop */
+  .mobile-full {
+    @apply w-full -mx-2 sm:mx-0 sm:rounded-xl;
+  }
+
+  /* Card shadow optimized for mobile (lighter) */
+  .mobile-shadow {
+    @apply shadow-sm sm:shadow-md;
+  }
+
+  /* Touch-optimized buttons */
+  .btn-touch {
+    @apply min-h-[44px] px-4 py-3 text-base font-medium active:scale-[0.98] transition-transform;
+  }
+
+  /* Full-bleed images on mobile */
+  .img-mobile-full {
+    @apply w-[calc(100%+1rem)] -mx-2 sm:w-full sm:mx-0 sm:rounded-xl;
+  }
+
+  /* Smooth momentum scrolling for iOS */
+  .scroll-smooth-ios {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent text selection on interactive elements (better for touch) */
+  .no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Tap highlight removal for cleaner touch experience */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile-first card styles */
+  .mobile-card {
+    @apply bg-card rounded-none sm:rounded-xl border-x-0 sm:border-x border-y sm:border shadow-none sm:shadow-sm;
+  }
+
+  /* Sticky header with safe area */
+  .sticky-header {
+    @apply sticky top-0 z-40 bg-background/95 backdrop-blur-lg safe-area-top;
+  }
+
+  /* Mobile-optimized spacing */
+  .mobile-spacing {
+    @apply px-3 py-3 sm:px-4 sm:py-4;
+  }
+
+  /* Action bar (like Facebook bottom action buttons) */
+  .action-bar {
+    @apply flex items-center justify-around py-1 border-t border-border;
+  }
+
+  .action-bar-btn {
+    @apply flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted/50 active:bg-muted rounded-lg transition-colors touch-target no-tap-highlight;
   }
 }
 

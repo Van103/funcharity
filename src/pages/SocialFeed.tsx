@@ -126,18 +126,18 @@ export default function SocialFeed() {
       <div className="min-h-screen bg-background">
         <Navbar />
 
-        <main className="pt-16 sm:pt-20 pb-24 md:pb-12">
-          <div className="container mx-auto px-2 sm:px-4">
+        <main className="pt-14 sm:pt-16 pb-20 md:pb-8">
+          <div className="container mx-auto px-0 sm:px-4">
             <div className="flex gap-4 lg:gap-6">
               {/* Left Sidebar - Hidden on mobile/tablet */}
-              <div className="hidden lg:block h-[calc(100vh-6rem)] sticky top-20">
+              <div className="hidden lg:block h-[calc(100vh-5rem)] sticky top-16">
                 <LeftSidebar profile={profile} />
               </div>
 
-              {/* Main Feed - full width on mobile */}
+              {/* Main Feed - full width on mobile, edge-to-edge cards */}
               <div className="flex-1 w-full max-w-2xl mx-auto lg:mx-0">
                 <PullToRefresh onRefresh={handleRefresh}>
-                  <div className="space-y-4 sm:space-y-6">
+                  <div className="space-y-2 sm:space-y-4">
                     <CreatePostBox profile={profile} />
                     
                     <StoriesSection />
@@ -145,7 +145,7 @@ export default function SocialFeed() {
                     <FriendRequestsSection />
                     
                     {/* Posts Feed */}
-                    <div className="space-y-4 sm:space-y-6">
+                    <div className="space-y-2 sm:space-y-4">
                       {postsLoading ? (
                         <PostCardSkeletonList count={3} />
                       ) : posts && posts.length > 0 ? (
@@ -171,7 +171,7 @@ export default function SocialFeed() {
                           </div>
                         </>
                       ) : (
-                        <div className="glass-card p-8 sm:p-12 text-center">
+                        <div className="mobile-card p-6 sm:p-12 text-center">
                           <p className="text-muted-foreground text-sm sm:text-base">
                             Chưa có bài viết nào. Hãy là người đầu tiên chia sẻ!
                           </p>
@@ -183,7 +183,7 @@ export default function SocialFeed() {
               </div>
 
               {/* Right Sidebar - Hidden on mobile/tablet */}
-              <div className="hidden xl:block h-[calc(100vh-6rem)] sticky top-20 overflow-y-auto scrollbar-purple pr-1">
+              <div className="hidden xl:block h-[calc(100vh-5rem)] sticky top-16 overflow-y-auto scrollbar-purple pr-1">
                 <RightSidebar />
               </div>
             </div>

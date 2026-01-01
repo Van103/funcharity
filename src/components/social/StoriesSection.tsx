@@ -30,18 +30,18 @@ export function StoriesSection() {
 
   return (
     <>
-      <div className="glass-card p-4 bg-white">
+      <div className="mobile-card p-3 sm:p-4 bg-card">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-2 mb-4 bg-muted p-1 rounded-xl border border-border">
+          <TabsList className="grid w-full grid-cols-2 mb-3 sm:mb-4 bg-muted p-1 rounded-xl border border-border">
             <TabsTrigger 
               value="stories" 
-              className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
+              className="rounded-lg text-sm sm:text-base text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all touch-target"
             >
               📖 Stories
             </TabsTrigger>
             <TabsTrigger 
               value="live" 
-              className="rounded-lg text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all"
+              className="rounded-lg text-sm sm:text-base text-muted-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all touch-target"
             >
               <Video className="w-4 h-4 mr-1" />
               Live
@@ -54,34 +54,34 @@ export function StoriesSection() {
           </TabsList>
 
           <TabsContent value="stories" className="mt-0">
-            <div className="relative">
-              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-                {/* Create Story - Square Card */}
+            <div className="relative -mx-1 sm:mx-0">
+              <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 px-1 sm:px-0 scroll-smooth-ios">
+                {/* Create Story - Square Card, touch-friendly */}
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="shrink-0 cursor-pointer"
+                  whileTap={{ scale: 0.95 }}
+                  className="shrink-0 cursor-pointer no-tap-highlight"
                   onClick={() => setShowCreateModal(true)}
                 >
-                  <div className="relative w-28 h-40 rounded-xl bg-gradient-to-br from-muted to-muted/50 border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:from-primary/5 hover:to-primary/10 transition-all overflow-hidden">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Plus className="w-5 h-5 text-primary" />
+                  <div className="relative w-24 sm:w-28 h-36 sm:h-40 rounded-xl bg-gradient-to-br from-muted to-muted/50 border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 hover:border-primary/50 hover:from-primary/5 hover:to-primary/10 transition-all overflow-hidden active:scale-95">
+                    <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Plus className="w-4 sm:w-5 h-4 sm:h-5 text-primary" />
                     </div>
                     <span className="text-xs text-foreground font-medium">Tạo tin</span>
                   </div>
                 </motion.div>
 
-                {/* Story Items - Square Cards */}
+                {/* Story Items - Square Cards, touch-friendly */}
                 {stories.map((storyGroup, index) => (
                   <motion.div
                     key={storyGroup.user_id}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    whileHover={{ scale: 1.02 }}
-                    className="shrink-0 cursor-pointer"
+                    whileTap={{ scale: 0.95 }}
+                    className="shrink-0 cursor-pointer no-tap-highlight"
                     onClick={() => setSelectedStoryGroup(storyGroup)}
                   >
-                    <div className="relative w-28 h-40 rounded-xl overflow-hidden group">
+                    <div className="relative w-24 sm:w-28 h-36 sm:h-40 rounded-xl overflow-hidden group active:scale-95 transition-transform">
                       {/* Background - first story media or gradient */}
                       <div className={`absolute inset-0 ${!storyGroup.stories[0]?.media_url ? `bg-gradient-to-br ${avatarGradients[index % avatarGradients.length]}` : ''}`}>
                         {storyGroup.stories[0]?.media_url && (
