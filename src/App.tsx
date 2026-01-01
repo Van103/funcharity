@@ -42,6 +42,7 @@ import AdminVerify from "./pages/AdminVerify";
 import Volunteer from "./pages/Volunteer";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
+import LiveStream from "./pages/LiveStream";
 
 const queryClient = new QueryClient();
 
@@ -163,6 +164,7 @@ const App = () => (
                 <Route path="/admin/verify" element={<AdminVerify />} />
                 <Route path="/volunteer" element={<Volunteer />} />
                 <Route path="/install" element={<Install />} />
+                <Route path="/live/:streamId" element={<LiveStream />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
