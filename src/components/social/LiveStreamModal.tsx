@@ -818,7 +818,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 )}
               </div>
 
-              {/* Right side toolbar - Facebook style */}
+              {/* Right side toolbar - Facebook style with purple background */}
               <div className="absolute right-3 top-1/2 -translate-y-1/2 z-30">
                 <AnimatePresence>
                   {showRightToolbar && (
@@ -826,7 +826,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
-                      className="flex flex-col gap-4"
+                      className="flex flex-col gap-2 bg-primary/40 backdrop-blur-md p-2 rounded-2xl"
                     >
                       {/* Flash */}
                       <button
@@ -834,127 +834,83 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                           setFlashEnabled(!flashEnabled);
                           toast.info(flashEnabled ? 'Đã tắt Flash' : 'Đã bật Flash');
                         }}
-                        className="flex items-center gap-2 group"
-                      >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          {flashEnabled ? 'Flash đang bật' : 'Flash đang tắt'}
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
                           flashEnabled ? 'bg-yellow-500' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          {flashEnabled ? <Zap className="w-5 h-5 text-black" /> : <ZapOff className="w-5 h-5 text-white" />}
-                        </div>
+                        }`}
+                        title={flashEnabled ? 'Flash đang bật' : 'Flash đang tắt'}
+                      >
+                        {flashEnabled ? <Zap className="w-5 h-5 text-black" /> : <ZapOff className="w-5 h-5 text-white" />}
                       </button>
 
                       {/* Mic */}
                       <button
                         onClick={toggleAudio}
-                        className="flex items-center gap-2 group"
-                      >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          {isAudioEnabled ? 'Tắt tiếng micrô' : 'Bật tiếng micrô'}
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
                           !isAudioEnabled ? 'bg-red-500' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          {isAudioEnabled ? <Mic className="w-5 h-5 text-white" /> : <MicOff className="w-5 h-5 text-white" />}
-                        </div>
+                        }`}
+                        title={isAudioEnabled ? 'Tắt micrô' : 'Bật micrô'}
+                      >
+                        {isAudioEnabled ? <Mic className="w-5 h-5 text-white" /> : <MicOff className="w-5 h-5 text-white" />}
                       </button>
 
-                      {/* Camera trước */}
+                      {/* Camera toggle - one button like Facebook */}
                       <button
-                        onClick={() => setFacingMode('user')}
-                        className="flex items-center gap-2 group"
+                        onClick={switchCamera}
+                        className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                        title={facingMode === 'user' ? 'Chuyển sang camera sau' : 'Chuyển sang camera trước'}
                       >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          Camera trước
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-                          facingMode === 'user' ? 'bg-primary ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          <Camera className="w-5 h-5 text-white" />
-                        </div>
-                      </button>
-
-                      {/* Camera sau */}
-                      <button
-                        onClick={() => setFacingMode('environment')}
-                        className="flex items-center gap-2 group"
-                      >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          Camera sau
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-                          facingMode === 'environment' ? 'bg-primary ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          <SwitchCamera className="w-5 h-5 text-white" />
-                        </div>
+                        <SwitchCamera className="w-5 h-5 text-white" />
                       </button>
 
                       {/* Stickers */}
                       <button
                         onClick={() => { setShowStickers(!showStickers); setShowFilters(false); }}
-                        className="flex items-center gap-2 group"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                          showStickers ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
+                        }`}
+                        title="Nhãn dán"
                       >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          Nhãn dán
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-                          showStickers ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          <Sparkles className="w-5 h-5 text-white" />
-                        </div>
+                        <Sparkles className="w-5 h-5 text-white" />
                       </button>
 
                       {/* Enhancement/Filter */}
                       <button
                         onClick={() => { setShowFilters(!showFilters); setShowStickers(false); }}
-                        className="flex items-center gap-2 group"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                          showFilters || selectedFilter !== 'none' ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
+                        }`}
+                        title="Bộ lọc"
                       >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          {showFilters ? 'Ẩn bộ lọc' : 'Tính năng cải thiện'}
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-                          showFilters || selectedFilter !== 'none' ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          <Palette className="w-5 h-5 text-white" />
-                        </div>
+                        <Palette className="w-5 h-5 text-white" />
                       </button>
 
                       {/* Text overlay */}
                       <button
                         onClick={() => setShowTextOverlay(!showTextOverlay)}
-                        className="flex items-center gap-2 group"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                          showTextOverlay || textOverlay ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
+                        }`}
+                        title="Văn bản"
                       >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          Văn bản
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-                          showTextOverlay || textOverlay ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          <Type className="w-5 h-5 text-white" />
-                        </div>
+                        <Type className="w-5 h-5 text-white" />
                       </button>
 
                       {/* Music */}
                       <button
                         onClick={() => setShowMusicPanel(!showMusicPanel)}
-                        className="flex items-center gap-2 group"
+                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                          showMusicPanel ? 'bg-white/40 ring-2 ring-white' : 'bg-white/20 hover:bg-white/30'
+                        }`}
+                        title="Nhạc nền"
                       >
-                        <span className="text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity text-right whitespace-nowrap">
-                          Nhạc nền
-                        </span>
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-all ${
-                          showMusicPanel ? 'bg-primary' : 'bg-white/20 hover:bg-white/30'
-                        }`}>
-                          <Music className="w-5 h-5 text-white" />
-                        </div>
+                        <Music className="w-5 h-5 text-white" />
                       </button>
 
                       {/* Collapse button */}
                       <button
                         onClick={() => setShowRightToolbar(false)}
-                        className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                        className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                        title="Thu gọn"
                       >
                         <ChevronUp className="w-5 h-5 text-white" />
                       </button>
@@ -966,7 +922,8 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
                 {!showRightToolbar && (
                   <button
                     onClick={() => setShowRightToolbar(true)}
-                    className="w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all"
+                    className="w-10 h-10 rounded-full bg-primary/40 backdrop-blur-md hover:bg-primary/60 flex items-center justify-center transition-all"
+                    title="Mở thanh công cụ"
                   >
                     <ChevronDown className="w-5 h-5 text-white" />
                   </button>
