@@ -1,6 +1,13 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useCursor, AngelStyle } from '@/contexts/CursorContext';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Danh sách các tiên nữ
+const FAIRY_IMAGES = [
+  '/cursors/fairy-pink.png',
+  '/cursors/fairy-yellow.png', 
+  '/cursors/fairy-purple.png',
+];
 
 interface Position {
   x: number;
@@ -136,6 +143,12 @@ const playFlyingSound = () => {
 
 const FlyingAngel = () => {
   const { cursorType, particlesEnabled, currentCursor } = useCursor();
+  
+  // Random chọn 1 tiên nữ khi component mount
+  const selectedFairy = useMemo(() => {
+    return FAIRY_IMAGES[Math.floor(Math.random() * FAIRY_IMAGES.length)];
+  }, []);
+  
   const [position, setPosition] = useState<Position>({ x: -100, y: -100 });
   const [targetPos, setTargetPos] = useState<Position>({ x: -100, y: -100 });
   const [isIdle, setIsIdle] = useState(false);
@@ -630,63 +643,138 @@ const FlyingAngel = () => {
           }}
         />
         
-        {/* Angel image */}
+        {/* Fairy image with wing animation */}
         <motion.div
           className="relative z-10"
           style={{
-            width: 80,
-            height: 80,
+            width: 100,
+            height: 100,
             transform: `scaleX(${direction === 'left' ? -1 : 1})`,
           }}
           animate={{
             rotate: isResting 
-              ? [0, -3, 0, 3, 0] // nhẹ nhàng khi đậu
+              ? [0, -2, 0, 2, 0]
               : isWaving 
-                ? [0, -8, 8, -8, 8, 0] 
-                : wingFlap * 0.3, // nghiêng theo cánh vẫy khi bay
-            y: isResting ? [0, -3, 0] : 0,
+                ? [0, -5, 5, -5, 5, 0] 
+                : [wingFlap * 0.2, -wingFlap * 0.2],
+            y: isResting ? [0, -5, 0] : [0, -3, 0, 3, 0],
           }}
           transition={{
             rotate: { 
-              duration: isResting ? 3 : isWaving ? 0.5 : 0.2, 
+              duration: isResting ? 4 : isWaving ? 0.5 : 0.15, 
               repeat: Infinity,
               ease: "easeInOut"
             },
-            y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+            y: { duration: isResting ? 3 : 0.3, repeat: Infinity, ease: "easeInOut" }
           }}
         >
+          {/* Main fairy image */}
           <motion.img 
-            src="/cursors/angel-cute.png"
-            alt="Flying Angel"
+            src={selectedFairy}
+            alt="Flying Fairy"
             className="w-full h-full object-contain"
             style={{
-              filter: `drop-shadow(0 0 15px ${theme.glow}) drop-shadow(0 0 30px ${theme.glow.replace('0.4', '0.3')}) ${getColorFilter(angelStyle)}`,
+              filter: `drop-shadow(0 0 12px ${theme.glow}) drop-shadow(0 0 25px ${theme.glow.replace('0.4', '0.25')})`,
             }}
             animate={{
-              scale: isResting ? [1, 1.02, 1] : [1, 1 + Math.abs(wingFlap) * 0.002, 1],
+              scaleY: isResting 
+                ? [1, 1.01, 1] 
+                : [1, 1.02, 1, 0.98, 1], // breathing/wing effect
+              scaleX: isResting 
+                ? [1, 1.01, 1] 
+                : [1, 1 + Math.abs(wingFlap) * 0.003, 1], // wing stretch
             }}
             transition={{
-              scale: { duration: isResting ? 2 : 0.3, repeat: Infinity, ease: "easeInOut" }
+              scaleY: { 
+                duration: isResting ? 2.5 : 0.2, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              },
+              scaleX: {
+                duration: isResting ? 2.5 : 0.15,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }
             }}
             draggable={false}
           />
           
-          {/* Wing flap effect - shimmering glow on sides */}
+          {/* Wing shimmer effect - left wing */}
           <motion.div
-            className="absolute inset-0 pointer-events-none"
+            className="absolute pointer-events-none"
             style={{
-              background: `radial-gradient(ellipse at ${direction === 'left' ? '80%' : '20%'} 50%, ${theme.glow.replace('0.4', '0.3')} 0%, transparent 50%)`,
+              left: '5%',
+              top: '25%',
+              width: '35%',
+              height: '45%',
+              background: `radial-gradient(ellipse at center, ${theme.glow.replace('0.4', '0.5')} 0%, transparent 70%)`,
+              borderRadius: '50%',
+              mixBlendMode: 'screen',
             }}
             animate={{
-              opacity: isResting ? [0.2, 0.4, 0.2] : [0.3, 0.6, 0.3],
-              scale: isResting ? 1 : [1, 1.1, 1],
+              opacity: isResting ? [0.1, 0.25, 0.1] : [0.2, 0.5, 0.2],
+              scale: isResting ? [0.9, 1, 0.9] : [0.8, 1.15, 0.8],
+              rotate: isResting ? 0 : [-8, 8, -8],
             }}
             transition={{
-              duration: isResting ? 2 : 0.3,
+              duration: isResting ? 2.5 : 0.15,
               repeat: Infinity,
               ease: "easeInOut"
             }}
           />
+          
+          {/* Wing shimmer effect - right wing */}
+          <motion.div
+            className="absolute pointer-events-none"
+            style={{
+              right: '5%',
+              top: '25%',
+              width: '35%',
+              height: '45%',
+              background: `radial-gradient(ellipse at center, ${theme.glow.replace('0.4', '0.5')} 0%, transparent 70%)`,
+              borderRadius: '50%',
+              mixBlendMode: 'screen',
+            }}
+            animate={{
+              opacity: isResting ? [0.1, 0.25, 0.1] : [0.2, 0.5, 0.2],
+              scale: isResting ? [0.9, 1, 0.9] : [0.8, 1.15, 0.8],
+              rotate: isResting ? 0 : [8, -8, 8],
+            }}
+            transition={{
+              duration: isResting ? 2.5 : 0.15,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Sparkle dust around wings when flying */}
+          {!isResting && (
+            <>
+              {[...Array(4)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1.5 h-1.5 rounded-full"
+                  style={{
+                    left: `${15 + i * 20}%`,
+                    top: `${30 + (i % 2) * 25}%`,
+                    background: theme.halo,
+                    boxShadow: `0 0 6px ${theme.halo}`,
+                  }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0, 1.2, 0],
+                    y: [0, 15, 30],
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    delay: i * 0.15,
+                    repeat: Infinity,
+                    ease: "easeOut"
+                  }}
+                />
+              ))}
+            </>
+          )}
         </motion.div>
         
         {/* Sparkles around angel when waving */}
