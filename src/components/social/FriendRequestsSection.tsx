@@ -440,9 +440,9 @@ export function FriendRequestsSection() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="glass-card p-4">
-          <div className="flex items-center justify-center py-8">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="mobile-card p-3 sm:p-4">
+          <div className="flex items-center justify-center py-6 sm:py-8">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
         </div>
@@ -457,29 +457,29 @@ export function FriendRequestsSection() {
 
   return (
     <TooltipProvider delayDuration={200}>
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Friend Requests */}
       {friendRequests.length > 0 && (
-        <div className="glass-card p-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-foreground">Lời mời kết bạn</h3>
-            <button className="text-muted-foreground hover:text-foreground">
+        <div className="mobile-card p-3 sm:p-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="font-semibold text-foreground text-sm sm:text-base">Lời mời kết bạn</h3>
+            <button className="text-muted-foreground hover:text-foreground touch-target no-tap-highlight">
               •••
             </button>
           </div>
 
-          <div className="relative">
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+          <div className="relative -mx-1 sm:mx-0">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 px-1 sm:px-0 scroll-smooth-ios">
               {friendRequests.map((request, index) => (
                 <motion.div
                   key={request.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="shrink-0 w-36 rounded-xl overflow-hidden bg-card border border-border/50 shadow-sm"
+                  className="shrink-0 w-32 sm:w-36 rounded-xl overflow-hidden bg-card border border-border/50 shadow-sm"
                 >
                   {/* Large photo area */}
-                  <div className="relative h-36 overflow-hidden">
+                  <div className="relative h-32 sm:h-36 overflow-hidden">
                     {request.avatar ? (
                       <img 
                         src={request.avatar} 

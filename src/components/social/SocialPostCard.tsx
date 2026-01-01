@@ -201,27 +201,27 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
       ref={cardRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`glass-card overflow-hidden transition-all duration-500 ${
+      className={`mobile-card overflow-hidden transition-all duration-500 ${
         isHighlighted ? "ring-4 ring-primary/50 shadow-lg shadow-primary/20" : ""
       }`}
     >
-      {/* Header */}
-      <div className="p-4 pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
+      {/* Header - Mobile optimized padding */}
+      <div className="p-3 sm:p-4 pb-2 sm:pb-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
             {/* Avatar with gold ring - clickable to profile */}
             <Link 
               to={isOwnPost ? "/profile" : `/user/${post.user_id}`}
-              className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne to-gold-light"
+              className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne to-gold-light flex-shrink-0 touch-target no-tap-highlight"
             >
-              <Avatar className="w-11 h-11 border-2 border-card">
+              <Avatar className="w-10 h-10 sm:w-11 sm:h-11 border-2 border-card">
                 <AvatarImage src={post.profiles?.avatar_url || ""} />
-                <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(userName)} text-white font-semibold`}>
+                <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(userName)} text-white font-semibold text-sm sm:text-base`}>
                   {userName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <Link 
                   to={isOwnPost ? "/profile" : `/user/${post.user_id}`}
@@ -312,17 +312,17 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
         </div>
       </div>
 
-      {/* Title */}
+      {/* Title - Mobile optimized */}
       {post.title && (
-        <div className="px-4 pb-2">
-          <h3 className="font-semibold text-lg text-foreground">{post.title}</h3>
+        <div className="px-3 sm:px-4 pb-2">
+          <h3 className="font-semibold text-base sm:text-lg text-foreground">{post.title}</h3>
         </div>
       )}
 
-      {/* Content */}
+      {/* Content - Mobile optimized text size */}
       {post.content && (
-        <div className="px-4 pb-3">
-          <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+        <div className="px-3 sm:px-4 pb-3">
+          <div className="whitespace-pre-wrap text-sm sm:text-base leading-relaxed text-foreground">
             {formatPostContent(post.content)}
           </div>
         </div>
@@ -330,12 +330,12 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
 
       {/* Shared Post Preview (Facebook-style) */}
       {(post as any).shared_post_id && (
-        <div className="px-4 pb-3">
+        <div className="px-3 sm:px-4 pb-3">
           <SharedPostPreview sharedPostId={(post as any).shared_post_id} />
         </div>
       )}
 
-      {/* Media - Responsive size with click to open lightbox */}
+      {/* Media - Full-bleed on mobile, responsive on desktop */}
       {mediaUrls.length > 0 && (
         <div className="relative">
           {mediaUrls.length === 1 ? (
@@ -343,17 +343,19 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
               <video
                 src={mediaUrls[0].url}
                 controls
-                className="w-full max-h-[400px] object-cover"
+                playsInline
+                className="w-full max-h-[350px] sm:max-h-[450px] object-cover"
               />
             ) : (
               <img
                 src={mediaUrls[0].url}
                 alt=""
+                loading="lazy"
                 onClick={() => {
                   setLightboxIndex(0);
                   setLightboxOpen(true);
                 }}
-                className="w-full max-h-[400px] object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                className="w-full max-h-[350px] sm:max-h-[450px] object-cover cursor-pointer hover:opacity-95 transition-opacity"
               />
             )
           ) : (
@@ -422,8 +424,8 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
         onClose={() => setLightboxOpen(false)}
       />
 
-      {/* Stats */}
-      <div className="px-4 py-3 flex items-center justify-between text-sm text-muted-foreground border-b border-border">
+      {/* Stats - Mobile optimized */}
+      <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between text-xs sm:text-sm text-muted-foreground border-b border-border">
         <div className="flex items-center gap-1.5">
           {topReactions.length > 0 ? (
             <div className="flex -space-x-1">
@@ -432,7 +434,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
                   key={reaction?.type}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="text-base"
+                  className="text-sm sm:text-base"
                 >
                   {reaction?.emoji}
                 </motion.span>
@@ -440,23 +442,23 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
             </div>
           ) : (
             <div className="flex -space-x-1">
-              <span className="text-base">👍</span>
-              <span className="text-base">❤️</span>
-              <span className="text-base">😆</span>
+              <span className="text-sm sm:text-base">👍</span>
+              <span className="text-sm sm:text-base">❤️</span>
+              <span className="text-sm sm:text-base">😆</span>
             </div>
           )}
-          <span className="text-xs hover:underline cursor-pointer">
+          <span className="text-xs hover:underline cursor-pointer no-tap-highlight">
             {(totalReactions || post.reactions_count || 0).toLocaleString()} người
           </span>
         </div>
-        <div className="flex items-center gap-4 text-xs">
-          <span className="hover:underline cursor-pointer">{(post.comments_count || 0).toLocaleString()} bình luận</span>
-          <span className="hover:underline cursor-pointer">{((post as any).shares_count || 0).toLocaleString()} chia sẻ</span>
+        <div className="flex items-center gap-3 sm:gap-4 text-xs">
+          <span className="hover:underline cursor-pointer no-tap-highlight">{(post.comments_count || 0).toLocaleString()} bình luận</span>
+          <span className="hover:underline cursor-pointer no-tap-highlight">{((post as any).shares_count || 0).toLocaleString()} chia sẻ</span>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="px-2 py-1 flex items-center justify-between">
+      {/* Actions - Touch-friendly Facebook style */}
+      <div className="action-bar">
         <FeedReactionPicker
           currentReaction={userReaction}
           onReact={(type) => addReaction.mutate(type)}
@@ -466,11 +468,11 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
         <Button 
           variant="ghost" 
           size="sm"
-          className={`gap-2 text-sm rounded-lg flex-1 mx-1 ${showComments ? "text-primary bg-primary/5" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}`}
+          className={`action-bar-btn ${showComments ? "text-primary bg-primary/5" : ""}`}
           onClick={() => setShowComments(!showComments)}
         >
           <MessageCircle className="w-5 h-5" />
-          Bình luận
+          <span className="hidden xs:inline">Bình luận</span>
         </Button>
         <GiftDonateModal post={post} />
         <SharePopover post={post} currentUserAvatar={currentUserAvatar} />

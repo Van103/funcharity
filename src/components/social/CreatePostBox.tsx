@@ -32,13 +32,13 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
 
   return (
     <>
-      <div className="glass-card overflow-hidden">
-        {/* Main input area - Simple like Facebook */}
-        <div className="p-4">
-          <div className="flex gap-3 items-center">
-            {/* User Avatar with gold ring - clickable to profile */}
-            <Link to="/profile" className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne to-gold-light flex-shrink-0">
-              <Avatar className="w-10 h-10 border-2 border-card">
+      <div className="mobile-card overflow-hidden">
+        {/* Main input area - Simple like Facebook, mobile-optimized */}
+        <div className="p-3 sm:p-4">
+          <div className="flex gap-2.5 sm:gap-3 items-center">
+            {/* User Avatar with gold ring - touch-friendly */}
+            <Link to="/profile" className="p-0.5 rounded-full bg-gradient-to-br from-gold-champagne to-gold-light flex-shrink-0 touch-target no-tap-highlight">
+              <Avatar className="w-10 h-10 sm:w-11 sm:h-11 border-2 border-card">
                 <AvatarImage src={profile?.avatar_url || ""} />
                 <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(profile?.full_name || "U")} text-white font-medium`}>
                   {profile?.full_name?.charAt(0) || "U"}
@@ -46,22 +46,22 @@ export function CreatePostBox({ profile, onPostCreated }: CreatePostBoxProps) {
               </Avatar>
             </Link>
             
-            {/* Input button - opens Facebook modal */}
+            {/* Input button - opens Facebook modal, touch-friendly */}
             <button
               type="button"
               onClick={() => setShowFacebookModal(true)}
-              className="flex-1 bg-muted/30 border border-border rounded-full px-4 py-2.5 text-sm text-muted-foreground text-left hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all cursor-pointer"
+              className="flex-1 bg-muted/30 border border-border rounded-full px-4 py-3 text-sm sm:text-base text-muted-foreground text-left hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all cursor-pointer touch-target no-tap-highlight"
             >
               Bạn đang nghĩ gì?
             </button>
 
-            {/* Live Button */}
+            {/* Live Button - touch-friendly */}
             <button
               type="button"
               onClick={() => setShowLiveModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg"
+              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg touch-target no-tap-highlight"
             >
-              <Video className="w-4 h-4" />
+              <Video className="w-5 h-5" />
               <span className="hidden sm:inline">Live</span>
             </button>
           </div>
