@@ -5,11 +5,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Agora RTC Token Generator
-// Based on Agora's token generation algorithm
+// Agora Token Generation using official algorithm
+// Reference: https://github.com/AgoraIO/Tools/blob/master/DynamicKey/AgoraDynamicKey/
 
-const VERSION = "007";
-const VERSION_LENGTH = 3;
+const VERSION = "006";
 
 const Privileges = {
   kJoinChannel: 1,
@@ -18,60 +17,58 @@ const Privileges = {
   kPublishDataStream: 4,
 };
 
-function getTimestamp(): number {
-  return Math.floor(Date.now() / 1000);
-}
-
-function randomInt(): number {
-  return Math.floor(Math.random() * 0xFFFFFFFF);
-}
-
-async function hmacSha256(key: Uint8Array, message: Uint8Array): Promise<Uint8Array> {
-  const keyBuffer = key.buffer.slice(key.byteOffset, key.byteOffset + key.byteLength) as ArrayBuffer;
-  const messageBuffer = message.buffer.slice(message.byteOffset, message.byteOffset + message.byteLength) as ArrayBuffer;
+// CRC32 implementation
+function crc32(data: Uint8Array): number {
+  let crc = 0xFFFFFFFF;
+  const table = new Uint32Array(256);
   
-  const cryptoKey = await crypto.subtle.importKey(
-    "raw",
-    keyBuffer,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const signature = await crypto.subtle.sign("HMAC", cryptoKey, messageBuffer);
-  return new Uint8Array(signature);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let j = 0; j < 8; j++) {
+      c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    }
+    table[i] = c;
+  }
+  
+  for (let i = 0; i < data.length; i++) {
+    crc = table[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+  }
+  
+  return (crc ^ 0xFFFFFFFF) >>> 0;
 }
 
-function encodeUint16(value: number): Uint8Array {
+// Pack functions
+function packUint16(value: number): Uint8Array {
   const buffer = new ArrayBuffer(2);
   const view = new DataView(buffer);
-  view.setUint16(0, value, true); // little endian
+  view.setUint16(0, value, true);
   return new Uint8Array(buffer);
 }
 
-function encodeUint32(value: number): Uint8Array {
+function packUint32(value: number): Uint8Array {
   const buffer = new ArrayBuffer(4);
   const view = new DataView(buffer);
-  view.setUint32(0, value, true); // little endian
+  view.setUint32(0, value, true);
   return new Uint8Array(buffer);
 }
 
-function encodeString(str: string): Uint8Array {
+function packString(str: string): Uint8Array {
   const encoder = new TextEncoder();
   const strBytes = encoder.encode(str);
-  const lenBytes = encodeUint16(strBytes.length);
+  const lenBytes = packUint16(strBytes.length);
   const result = new Uint8Array(lenBytes.length + strBytes.length);
   result.set(lenBytes, 0);
   result.set(strBytes, lenBytes.length);
   return result;
 }
 
-function encodeMapUint32(map: Map<number, number>): Uint8Array {
+function packContent(privileges: Map<number, number>): Uint8Array {
   const parts: Uint8Array[] = [];
-  parts.push(encodeUint16(map.size));
+  parts.push(packUint16(privileges.size));
   
-  map.forEach((value, key) => {
-    parts.push(encodeUint16(key));
-    parts.push(encodeUint32(value));
+  privileges.forEach((value, key) => {
+    parts.push(packUint16(key));
+    parts.push(packUint32(value));
   });
   
   const totalLength = parts.reduce((sum, arr) => sum + arr.length, 0);
@@ -84,6 +81,37 @@ function encodeMapUint32(map: Map<number, number>): Uint8Array {
   return result;
 }
 
+function concatBytes(...arrays: Uint8Array[]): Uint8Array {
+  const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const arr of arrays) {
+    result.set(arr, offset);
+    offset += arr.length;
+  }
+  return result;
+}
+
+async function hmacSha256(key: Uint8Array, message: Uint8Array): Promise<Uint8Array> {
+  // Create new ArrayBuffers to avoid type issues with SharedArrayBuffer
+  const keyBuffer = new ArrayBuffer(key.length);
+  new Uint8Array(keyBuffer).set(key);
+  
+  const messageBuffer = new ArrayBuffer(message.length);
+  new Uint8Array(messageBuffer).set(message);
+  
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    keyBuffer,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", cryptoKey, messageBuffer);
+  return new Uint8Array(signature);
+}
+
+// Base64 encoding
 function base64Encode(bytes: Uint8Array): string {
   let binary = '';
   for (let i = 0; i < bytes.length; i++) {
@@ -92,22 +120,23 @@ function base64Encode(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-async function generateAccessToken(
+// Build Access Token
+async function buildAccessToken(
   appId: string,
   appCertificate: string,
   channelName: string,
-  uid: string,
+  uid: number,
   role: number,
   privilegeExpiredTs: number
 ): Promise<string> {
   const encoder = new TextEncoder();
   
-  // Create message
-  const salt = randomInt();
-  const ts = getTimestamp();
-  const uidStr = uid || "0";
-  
-  // Build privilege map
+  // Generate random salt and timestamp
+  const salt = Math.floor(Math.random() * 0xFFFFFFFF);
+  const ts = Math.floor(Date.now() / 1000);
+  const uidStr = uid.toString();
+
+  // Build privileges map
   const privileges = new Map<number, number>();
   privileges.set(Privileges.kJoinChannel, privilegeExpiredTs);
   if (role === 1) { // Publisher
@@ -115,74 +144,40 @@ async function generateAccessToken(
     privileges.set(Privileges.kPublishVideoStream, privilegeExpiredTs);
     privileges.set(Privileges.kPublishDataStream, privilegeExpiredTs);
   }
-  
+
   // Pack message
-  const messageParts: Uint8Array[] = [];
-  messageParts.push(encodeUint32(salt));
-  messageParts.push(encodeUint32(ts));
-  messageParts.push(encodeMapUint32(privileges));
-  
-  const messageLength = messageParts.reduce((sum, arr) => sum + arr.length, 0);
-  const message = new Uint8Array(messageLength);
-  let offset = 0;
-  for (const part of messageParts) {
-    message.set(part, offset);
-    offset += part.length;
-  }
-  
+  const message = concatBytes(
+    packUint32(salt),
+    packUint32(ts),
+    packContent(privileges)
+  );
+
   // Generate signature
-  const signContent = new Uint8Array([
-    ...encoder.encode(appId),
-    ...encoder.encode(channelName),
-    ...encoder.encode(uidStr),
-    ...message
-  ]);
+  const toSign = concatBytes(
+    encoder.encode(appId),
+    encoder.encode(channelName),
+    encoder.encode(uidStr),
+    message
+  );
   
-  const signature = await hmacSha256(encoder.encode(appCertificate), signContent);
-  
-  // Pack content
-  const contentParts: Uint8Array[] = [];
-  contentParts.push(encodeString(signature.reduce((str, byte) => str + String.fromCharCode(byte), '')));
-  contentParts.push(encodeUint32(0)); // crc_channel_name placeholder
-  contentParts.push(encodeUint32(0)); // crc_uid placeholder
-  contentParts.push(encodeString(message.reduce((str, byte) => str + String.fromCharCode(byte), '')));
-  
-  const contentLength = contentParts.reduce((sum, arr) => sum + arr.length, 0);
-  const content = new Uint8Array(contentLength);
-  offset = 0;
-  for (const part of contentParts) {
-    content.set(part, offset);
-    offset += part.length;
-  }
-  
-  // Final token
+  const signature = await hmacSha256(encoder.encode(appCertificate), toSign);
+
+  // Calculate CRCs
+  const crcChannelName = crc32(encoder.encode(channelName));
+  const crcUid = crc32(encoder.encode(uidStr));
+
+  // Pack final content
+  const content = concatBytes(
+    packString(Array.from(signature).map(b => String.fromCharCode(b)).join('')),
+    packUint32(crcChannelName),
+    packUint32(crcUid),
+    packString(Array.from(message).map(b => String.fromCharCode(b)).join(''))
+  );
+
+  // Build final token
   const token = VERSION + appId + base64Encode(content);
   
   return token;
-}
-
-// Simplified RTC Token Builder using Agora's algorithm
-async function buildTokenWithUid(
-  appId: string,
-  appCertificate: string,
-  channelName: string,
-  uid: number | string,
-  role: number,
-  tokenExpireSeconds: number
-): Promise<string> {
-  const currentTimestamp = Math.floor(Date.now() / 1000);
-  const privilegeExpiredTs = currentTimestamp + tokenExpireSeconds;
-  
-  const uidStr = typeof uid === 'number' ? uid.toString() : uid;
-  
-  return await generateAccessToken(
-    appId,
-    appCertificate,
-    channelName,
-    uidStr,
-    role,
-    privilegeExpiredTs
-  );
 }
 
 serve(async (req) => {
@@ -196,7 +191,7 @@ serve(async (req) => {
     const AGORA_APP_CERTIFICATE = Deno.env.get('AGORA_APP_CERTIFICATE');
 
     if (!AGORA_APP_ID || !AGORA_APP_CERTIFICATE) {
-      console.error('Missing Agora credentials');
+      console.error('[agora-token] Missing credentials - AGORA_APP_ID or AGORA_APP_CERTIFICATE not set');
       throw new Error('Agora credentials not configured');
     }
 
@@ -206,21 +201,24 @@ serve(async (req) => {
       throw new Error('Channel name is required');
     }
 
-    console.log(`Generating token for channel: ${channelName}, uid: ${uid}, role: ${role}`);
+    console.log(`[agora-token] Generating token for channel: ${channelName}, uid: ${uid}, role: ${role}`);
 
-    // Token expires in 24 hours
+    // Token expires in 24 hours (86400 seconds)
     const tokenExpireSeconds = 86400;
-    
-    const token = await buildTokenWithUid(
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const privilegeExpiredTs = currentTimestamp + tokenExpireSeconds;
+
+    // Generate token
+    const token = await buildAccessToken(
       AGORA_APP_ID,
       AGORA_APP_CERTIFICATE,
       channelName,
       uid || 0,
       role,
-      tokenExpireSeconds
+      privilegeExpiredTs
     );
 
-    console.log('Token generated successfully');
+    console.log('[agora-token] Token generated successfully, length:', token.length);
 
     return new Response(
       JSON.stringify({
@@ -234,7 +232,7 @@ serve(async (req) => {
       }
     );
   } catch (error: unknown) {
-    console.error('Error generating Agora token:', error);
+    console.error('[agora-token] Error generating Agora token:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ error: errorMessage }),

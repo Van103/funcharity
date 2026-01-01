@@ -2,15 +2,15 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import AgoraRTC, {
   IAgoraRTCClient,
   IAgoraRTCRemoteUser,
-  ILocalAudioTrack,
   ILocalVideoTrack,
   ICameraVideoTrack,
   IMicrophoneAudioTrack,
 } from 'agora-rtc-sdk-ng';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 // Set Agora log level to reduce console noise
-AgoraRTC.setLogLevel(3); // 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR, 4: NONE
+AgoraRTC.setLogLevel(2); // 0: DEBUG, 1: INFO, 2: WARNING, 3: ERROR, 4: NONE
 
 export type CallStatus = 'idle' | 'connecting' | 'ringing' | 'active' | 'ended' | 'error';
 
@@ -42,25 +42,51 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
   const initClient = useCallback(() => {
     if (!clientRef.current) {
       clientRef.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
-      console.log('Agora client initialized');
+      console.log('[Agora] Client initialized');
+      
+      // Add connection state listener
+      clientRef.current.on('connection-state-change', (curState, prevState, reason) => {
+        console.log('[Agora] Connection state changed:', prevState, '->', curState, 'reason:', reason);
+        
+        if (curState === 'DISCONNECTED') {
+          if (reason === 'NETWORK_ERROR') {
+            setError('Mất kết nối mạng. Vui lòng kiểm tra internet.');
+            toast.error('Mất kết nối mạng');
+          } else if (reason === 'SERVER_ERROR') {
+            setError('Lỗi server. Vui lòng thử lại.');
+            toast.error('Lỗi server Agora');
+          }
+        }
+      });
+
+      // Add exception listener
+      clientRef.current.on('exception', (event) => {
+        console.error('[Agora] Exception:', event.code, event.msg);
+        toast.error(`Lỗi cuộc gọi: ${event.msg}`);
+      });
     }
     return clientRef.current;
   }, []);
 
   // Get token from edge function
   const getToken = useCallback(async (channelName: string, uid: number) => {
-    console.log('Fetching Agora token for channel:', channelName);
+    console.log('[Agora] Fetching token for channel:', channelName, 'uid:', uid);
     
     const { data, error } = await supabase.functions.invoke('agora-token', {
       body: { channelName, uid, role: 1 }
     });
 
     if (error) {
-      console.error('Error fetching token:', error);
-      throw new Error('Failed to get Agora token');
+      console.error('[Agora] Error fetching token:', error);
+      throw new Error(`Không thể lấy token: ${error.message}`);
     }
 
-    console.log('Token received successfully');
+    if (data.error) {
+      console.error('[Agora] Token API error:', data.error);
+      throw new Error(`Token error: ${data.error}`);
+    }
+
+    console.log('[Agora] Token received successfully, appId:', data.appId?.substring(0, 8) + '...');
     appIdRef.current = data.appId;
     return data.token;
   }, []);
@@ -72,6 +98,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
     isVideoCall: boolean
   ) => {
     try {
+      console.log('[Agora] Joining channel:', channelName, 'uid:', uid, 'isVideoCall:', isVideoCall);
       setCallStatus('connecting');
       setError(null);
 
@@ -80,56 +107,75 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
 
       // Set up event listeners
       client.on('user-published', async (user, mediaType) => {
-        console.log('Remote user published:', user.uid, mediaType);
-        await client.subscribe(user, mediaType);
-        
-        if (mediaType === 'video') {
-          setRemoteUsers(prev => {
-            const exists = prev.find(u => u.uid === user.uid);
-            if (exists) return prev;
-            return [...prev, user];
-          });
+        console.log('[Agora] Remote user published:', user.uid, mediaType);
+        try {
+          await client.subscribe(user, mediaType);
+          console.log('[Agora] Subscribed to:', user.uid, mediaType);
+          
+          if (mediaType === 'video') {
+            setRemoteUsers(prev => {
+              const exists = prev.find(u => u.uid === user.uid);
+              if (exists) return prev;
+              return [...prev, user];
+            });
+          }
+          
+          if (mediaType === 'audio') {
+            user.audioTrack?.play();
+          }
+          
+          onRemoteUserJoined?.(user);
+        } catch (subError) {
+          console.error('[Agora] Failed to subscribe:', subError);
         }
-        
-        if (mediaType === 'audio') {
-          user.audioTrack?.play();
-        }
-        
-        onRemoteUserJoined?.(user);
       });
 
       client.on('user-unpublished', (user, mediaType) => {
-        console.log('Remote user unpublished:', user.uid, mediaType);
+        console.log('[Agora] Remote user unpublished:', user.uid, mediaType);
         if (mediaType === 'video') {
           setRemoteUsers(prev => prev.filter(u => u.uid !== user.uid));
         }
       });
 
       client.on('user-left', (user) => {
-        console.log('Remote user left:', user.uid);
+        console.log('[Agora] Remote user left:', user.uid);
         setRemoteUsers(prev => prev.filter(u => u.uid !== user.uid));
         onRemoteUserLeft?.(user);
       });
 
       // Join the channel
+      console.log('[Agora] Calling client.join with appId:', appIdRef.current?.substring(0, 8) + '...');
       await client.join(appIdRef.current, channelName, token, uid);
-      console.log('Joined channel:', channelName);
+      console.log('[Agora] Successfully joined channel:', channelName);
 
       // Create and publish local tracks
-      if (isVideoCall) {
-        const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
-        localAudioTrackRef.current = audioTrack;
-        localVideoTrackRef.current = videoTrack;
-        await client.publish([audioTrack, videoTrack]);
-        console.log('Published audio and video tracks');
-      } else {
-        const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        localAudioTrackRef.current = audioTrack;
-        await client.publish([audioTrack]);
-        console.log('Published audio track');
+      try {
+        if (isVideoCall) {
+          console.log('[Agora] Creating microphone and camera tracks...');
+          const [audioTrack, videoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks(
+            { encoderConfig: 'music_standard' },
+            { encoderConfig: '720p_2' }
+          );
+          localAudioTrackRef.current = audioTrack;
+          localVideoTrackRef.current = videoTrack;
+          await client.publish([audioTrack, videoTrack]);
+          console.log('[Agora] Published audio and video tracks');
+        } else {
+          console.log('[Agora] Creating microphone track...');
+          const audioTrack = await AgoraRTC.createMicrophoneAudioTrack({ encoderConfig: 'music_standard' });
+          localAudioTrackRef.current = audioTrack;
+          await client.publish([audioTrack]);
+          console.log('[Agora] Published audio track');
+        }
+      } catch (mediaError) {
+        console.error('[Agora] Failed to create/publish tracks:', mediaError);
+        setError('Không thể truy cập camera/micro. Vui lòng kiểm tra quyền truy cập.');
+        toast.error('Không thể truy cập camera hoặc micro');
+        throw mediaError;
       }
 
       setCallStatus('active');
+      toast.success('Đã kết nối cuộc gọi');
       
       // Start call timer
       callTimerRef.current = setInterval(() => {
@@ -137,16 +183,18 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
       }, 1000);
 
     } catch (err) {
-      console.error('Error joining channel:', err);
-      setError(err instanceof Error ? err.message : 'Failed to join call');
+      console.error('[Agora] Error joining channel:', err);
+      const errorMsg = err instanceof Error ? err.message : 'Không thể kết nối cuộc gọi';
+      setError(errorMsg);
       setCallStatus('error');
+      toast.error(errorMsg);
       throw err;
     }
   }, [initClient, getToken, onRemoteUserJoined, onRemoteUserLeft]);
 
   // Leave channel
   const leaveChannel = useCallback(async () => {
-    console.log('Leaving channel...');
+    console.log('[Agora] Leaving channel...');
     
     // Stop call timer
     if (callTimerRef.current) {
@@ -175,8 +223,12 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
 
     // Leave the channel
     if (clientRef.current) {
-      await clientRef.current.leave();
-      console.log('Left channel');
+      try {
+        await clientRef.current.leave();
+        console.log('[Agora] Left channel successfully');
+      } catch (leaveErr) {
+        console.warn('[Agora] Error leaving channel:', leaveErr);
+      }
     }
 
     // Reset state
@@ -186,6 +238,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
     setIsMuted(false);
     setIsVideoOff(false);
     setIsScreenSharing(false);
+    setError(null);
 
     onCallEnded?.();
   }, [onCallEnded]);
@@ -196,7 +249,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
       const newMuteState = !isMuted;
       await localAudioTrackRef.current.setEnabled(!newMuteState);
       setIsMuted(newMuteState);
-      console.log('Mute toggled:', newMuteState);
+      console.log('[Agora] Mute toggled:', newMuteState);
     }
   }, [isMuted]);
 
@@ -206,7 +259,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
       const newVideoOffState = !isVideoOff;
       await localVideoTrackRef.current.setEnabled(!newVideoOffState);
       setIsVideoOff(newVideoOffState);
-      console.log('Video toggled:', newVideoOffState);
+      console.log('[Agora] Video toggled:', newVideoOffState);
     }
   }, [isVideoOff]);
 
@@ -231,7 +284,7 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
         }
         
         setIsScreenSharing(false);
-        console.log('Screen sharing stopped');
+        console.log('[Agora] Screen sharing stopped');
       } else {
         // Start screen sharing
         const screenTrack = await AgoraRTC.createScreenVideoTrack({}, 'disable');
@@ -250,24 +303,32 @@ export const useAgoraCall = (props?: UseAgoraCallProps) => {
         });
         
         setIsScreenSharing(true);
-        console.log('Screen sharing started');
+        console.log('[Agora] Screen sharing started');
       }
     } catch (err) {
-      console.error('Error toggling screen share:', err);
-      setError('Failed to toggle screen share');
+      console.error('[Agora] Error toggling screen share:', err);
+      setError('Không thể chia sẻ màn hình');
+      toast.error('Không thể chia sẻ màn hình');
     }
   }, [isScreenSharing]);
 
   // Switch camera
   const switchCamera = useCallback(async () => {
     if (localVideoTrackRef.current) {
-      const devices = await AgoraRTC.getCameras();
-      if (devices.length > 1) {
-        const currentDeviceId = localVideoTrackRef.current.getTrackLabel();
-        const currentIndex = devices.findIndex(d => d.label === currentDeviceId);
-        const nextIndex = (currentIndex + 1) % devices.length;
-        await localVideoTrackRef.current.setDevice(devices[nextIndex].deviceId);
-        console.log('Switched to camera:', devices[nextIndex].label);
+      try {
+        const devices = await AgoraRTC.getCameras();
+        if (devices.length > 1) {
+          const currentDeviceId = localVideoTrackRef.current.getTrackLabel();
+          const currentIndex = devices.findIndex(d => d.label === currentDeviceId);
+          const nextIndex = (currentIndex + 1) % devices.length;
+          await localVideoTrackRef.current.setDevice(devices[nextIndex].deviceId);
+          console.log('[Agora] Switched to camera:', devices[nextIndex].label);
+        } else {
+          toast.info('Chỉ có một camera');
+        }
+      } catch (err) {
+        console.error('[Agora] Error switching camera:', err);
+        toast.error('Không thể chuyển camera');
       }
     }
   }, []);

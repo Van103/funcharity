@@ -95,10 +95,11 @@ function IncomingCallListener() {
   const { incomingCall, answerCall, declineCall } = useIncomingCallListener({
     userId,
     onAnswerCall: (call) => {
-      // Navigate to messages page with call info
-      if (location.pathname !== "/messages") {
-        navigate(`/messages?answer=${call.id}&conversation=${call.conversationId}&type=${call.callType}`);
-      }
+      // Always navigate to messages page with call info, even if already there
+      // Adding timestamp ensures URL change triggers re-render/effect
+      const callUrl = `/messages?answer=${call.id}&conversation=${call.conversationId}&type=${call.callType}&t=${Date.now()}`;
+      console.log('[IncomingCallListener] Navigating to:', callUrl);
+      navigate(callUrl, { replace: location.pathname === "/messages" });
     },
     onCallEnded: handleCallEnded
   });

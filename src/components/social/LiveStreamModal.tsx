@@ -193,9 +193,12 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
   // Gift tracking - use profile.user_id as streamer ID
   const { totalCoinsReceived } = useLiveGifts(profile?.user_id);
 
-  const attachStreamToVideo = useCallback(async (stream: MediaStream) => {
-    const videoEl = videoRef.current;
-    if (!videoEl) return;
+  const attachStreamToVideo = useCallback(async (videoEl: HTMLVideoElement | null) => {
+    const stream = streamRef.current;
+    if (!videoEl || !stream) {
+      console.log('[LiveStream] attachStreamToVideo: missing element or stream', { hasEl: !!videoEl, hasStream: !!stream });
+      return;
+    }
 
     try {
       // Ensure camera preview can autoplay on mobile browsers
@@ -204,38 +207,67 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
 
       // NOTE: video element is conditionally rendered per phase, so we must re-attach srcObject
       if (videoEl.srcObject !== stream) {
+        console.log('[LiveStream] Attaching stream to video element');
         videoEl.srcObject = stream;
       }
 
       // Give the browser a tick to bind srcObject before playing
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       await videoEl.play();
+      console.log('[LiveStream] Video play() successful');
     } catch (err) {
       // Autoplay can be blocked; recording still works.
-      console.warn("Video preview play blocked:", err);
+      console.warn("[LiveStream] Video preview play blocked:", err);
     }
   }, []);
+
+  // Callback ref to attach stream whenever video element mounts
+  const setVideoRef = useCallback((el: HTMLVideoElement | null) => {
+    videoRef.current = el;
+    if (el && streamRef.current) {
+      console.log('[LiveStream] Callback ref: video element mounted, attaching stream');
+      attachStreamToVideo(el);
+    }
+  }, [attachStreamToVideo]);
 
   const startCameraPreview = useCallback(async () => {
     try {
       setIsCameraReady(false);
+      console.log('[LiveStream] Starting camera preview with facingMode:', facingMode);
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode, width: 1280, height: 720 },
+        video: { 
+          facingMode: { ideal: facingMode }, 
+          width: { ideal: 1280 }, 
+          height: { ideal: 720 } 
+        },
         audio: true,
       });
 
+      console.log('[LiveStream] Got MediaStream, tracks:', stream.getTracks().map(t => ({ kind: t.kind, label: t.label, readyState: t.readyState })));
       streamRef.current = stream;
-      await attachStreamToVideo(stream);
+      
+      // Try to attach immediately if video element exists
+      if (videoRef.current) {
+        await attachStreamToVideo(videoRef.current);
+      }
 
       // Mark ready once we have a valid stream (so the user can go live without extra clicks)
       setIsCameraReady(true);
     } catch (error) {
-      console.error("Camera access error:", error);
+      console.error("[LiveStream] Camera access error:", error);
       toast.error("Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.");
       setIsCameraReady(false);
     }
   }, [facingMode, attachStreamToVideo]);
+
+  // Re-attach stream when phase changes (video element may be remounted)
+  useEffect(() => {
+    if (open && streamRef.current && videoRef.current) {
+      console.log('[LiveStream] Phase/state changed, re-attaching stream. Phase:', phase, 'showCountdown:', showCountdown);
+      attachStreamToVideo(videoRef.current);
+    }
+  }, [open, phase, showCountdown, attachStreamToVideo]);
 
   const stopStream = useCallback(() => {
     if (streamRef.current) {
@@ -726,7 +758,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
               {/* Video Preview */}
               <div className="flex-1 relative bg-black overflow-hidden">
                 <video
-                  ref={videoRef}
+                  ref={setVideoRef}
                   autoPlay
                   playsInline
                   muted
@@ -1118,7 +1150,7 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
               {/* Video Preview with Filter */}
               <div className="flex-1 relative bg-black overflow-hidden">
                 <video
-                  ref={videoRef}
+                  ref={setVideoRef}
                   autoPlay
                   playsInline
                   muted
