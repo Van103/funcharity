@@ -138,6 +138,9 @@ const FlyingAngel = () => {
   }, [fairyColor]);
 
   const [processedFairySrc, setProcessedFairySrc] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [displayedFairy, setDisplayedFairy] = useState(selectedFairy);
+  const prevFairyRef = useRef(selectedFairy);
 
   const [position, setPosition] = useState<Position>({ x: -100, y: -100 });
   const [targetPos, setTargetPos] = useState<Position>({ x: -100, y: -100 });
@@ -203,6 +206,26 @@ const FlyingAngel = () => {
     }, 400);
   }, []);
 
+  // Handle fairy color transition
+  useEffect(() => {
+    if (prevFairyRef.current !== selectedFairy) {
+      setIsTransitioning(true);
+      
+      // After fade out, change the fairy
+      const timer = setTimeout(() => {
+        setDisplayedFairy(selectedFairy);
+        prevFairyRef.current = selectedFairy;
+        
+        // Then fade back in
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 50);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [selectedFairy]);
+
   // Make sure we always display a transparent sprite even if the source image has a baked checkerboard.
   useEffect(() => {
     let cancelled = false;
@@ -210,7 +233,7 @@ const FlyingAngel = () => {
 
     (async () => {
       try {
-        const blob = await removeBackgroundByEdgeFloodFill(selectedFairy);
+        const blob = await removeBackgroundByEdgeFloodFill(displayedFairy);
         if (cancelled) return;
         objectUrl = URL.createObjectURL(blob);
         setProcessedFairySrc(objectUrl);
@@ -224,7 +247,7 @@ const FlyingAngel = () => {
       cancelled = true;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [selectedFairy]);
+  }, [displayedFairy]);
 
   const getRandomHidePosition = useCallback((): { pos: 'left' | 'right' | 'top' | 'bottom'; target: Position } => {
     const positions: Array<{ pos: 'left' | 'right' | 'top' | 'bottom'; target: Position }> = [
@@ -570,12 +593,33 @@ const FlyingAngel = () => {
         style={{ left: position.x - 40 + peekOffset.x, top: position.y - 25 + peekOffset.y }}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ 
-          opacity: isHiding && peekPhase % 2 === 0 ? 0.3 : 1, 
-          scale: isHiding ? 0.8 : 1,
-          rotate: isHiding ? (hidePosition === 'left' ? -20 : hidePosition === 'right' ? 20 : 0) : 0
+          opacity: isTransitioning ? 0 : (isHiding && peekPhase % 2 === 0 ? 0.3 : 1), 
+          scale: isTransitioning ? 0.5 : (isHiding ? 0.8 : 1),
+          rotate: isTransitioning ? 360 : (isHiding ? (hidePosition === 'left' ? -20 : hidePosition === 'right' ? 20 : 0) : 0)
         }}
-        transition={{ duration: 0.3 }}
+        transition={{ 
+          duration: isTransitioning ? 0.3 : 0.3,
+          ease: isTransitioning ? 'easeInOut' : 'easeOut'
+        }}
       >
+        {/* Magic sparkle burst during transition */}
+        {isTransitioning && (
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center"
+            initial={{ scale: 0, opacity: 1 }}
+            animate={{ scale: 3, opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <div 
+              className="w-20 h-20 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(255,215,0,0.8) 0%, rgba(255,105,180,0.6) 30%, rgba(147,112,219,0.4) 60%, transparent 80%)',
+                filter: 'blur(4px)',
+              }}
+            />
+          </motion.div>
+        )}
+        
         <motion.div
           style={{
             width: 70,
@@ -583,11 +627,13 @@ const FlyingAngel = () => {
             transform: `scaleX(${direction === 'left' ? -1 : 1})`,
           }}
           animate={{
-            rotate: isHiding 
-              ? [0, 5, 0, -5, 0] 
-              : isSitting 
-                ? [0, 2, 0, -2, 0] 
-                : [wingFlap * 0.12, -wingFlap * 0.12],
+            rotate: isTransitioning 
+              ? [0, 15, -15, 0]
+              : isHiding 
+                ? [0, 5, 0, -5, 0] 
+                : isSitting 
+                  ? [0, 2, 0, -2, 0] 
+                  : [wingFlap * 0.12, -wingFlap * 0.12],
             y: isHiding
               ? [0, -2, 0, 2, 0]
               : isSitting 
@@ -595,12 +641,12 @@ const FlyingAngel = () => {
                 : [0, -3, 0, 3, 0],
           }}
           transition={{
-            rotate: { duration: isHiding ? 0.5 : isSitting ? 1 : 0.1, repeat: Infinity, ease: 'easeInOut' },
+            rotate: { duration: isTransitioning ? 0.3 : (isHiding ? 0.5 : isSitting ? 1 : 0.1), repeat: isTransitioning ? 0 : Infinity, ease: 'easeInOut' },
             y: { duration: isHiding ? 0.6 : isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
           <motion.img
-            src={processedFairySrc ?? selectedFairy}
+            src={processedFairySrc ?? displayedFairy}
             alt="Fairy cursor"
             className="w-full h-full object-contain"
             animate={{
