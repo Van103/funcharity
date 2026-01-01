@@ -19,6 +19,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAgoraCall, CallStatus } from '@/hooks/useAgoraCall';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 // Messenger-like ringtone generator
 class MessengerRingtone {
@@ -110,6 +111,7 @@ interface AgoraVideoCallModalProps {
   callSessionId?: string;
   currentUserId: string;
   onCallEnded?: () => void;
+  autoAnswer?: boolean; // Auto answer when opening (e.g., from notification click)
 }
 
 export const AgoraVideoCallModal = ({
@@ -124,10 +126,12 @@ export const AgoraVideoCallModal = ({
   callSessionId,
   currentUserId,
   onCallEnded,
+  autoAnswer = false,
 }: AgoraVideoCallModalProps) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [internalCallStatus, setInternalCallStatus] = useState<CallStatus>('idle');
+  const [hasAutoAnswered, setHasAutoAnswered] = useState(false);
   
   const localVideoRef = useRef<HTMLDivElement>(null);
   const remoteVideoRef = useRef<HTMLDivElement>(null);
@@ -263,28 +267,59 @@ export const AgoraVideoCallModal = ({
       setInternalCallStatus('connecting');
       ringtoneRef.current?.stop();
 
+      // Use sessionIdRef.current, but also accept callSessionId prop as fallback
+      const sessionId = sessionIdRef.current || callSessionId;
+      console.log('Answering call with session ID:', sessionId);
+      
+      if (!sessionId) {
+        throw new Error('No session ID available');
+      }
+
       // Get channel name from call session
-      const { data: session } = await supabase
+      const { data: session, error: sessionError } = await supabase
         .from('call_sessions')
-        .select('signaling_data')
-        .eq('id', sessionIdRef.current)
+        .select('signaling_data, status')
+        .eq('id', sessionId)
         .single();
 
+      if (sessionError) {
+        console.error('Error fetching call session:', sessionError);
+        throw new Error('Không tìm thấy dữ liệu cuộc gọi');
+      }
+
+      if (!session) {
+        throw new Error('Không tìm thấy dữ liệu cuộc gọi');
+      }
+
+      // Check if call is still valid
+      if (session.status !== 'pending' && session.status !== 'active') {
+        throw new Error(`Cuộc gọi đã kết thúc (${session.status})`);
+      }
+
       const channelName = (session?.signaling_data as any)?.agora_channel;
-      if (!channelName) throw new Error('No channel name found');
+      console.log('Channel name from session:', channelName);
+      
+      if (!channelName) {
+        throw new Error('Không tìm thấy kênh cuộc gọi');
+      }
 
       // Generate uid
       const uid = Math.abs(currentUserId.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 10000000;
+      console.log('Joining channel with uid:', uid);
+
+      // Update session ref for future use
+      sessionIdRef.current = sessionId;
 
       await updateCallStatus('active');
       await joinChannel(channelName, uid, callType === 'video');
       
       setInternalCallStatus('active');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error answering call:', err);
       setInternalCallStatus('error');
+      toast.error(err.message || 'Không thể tham gia cuộc gọi');
     }
-  }, [joinChannel, callType, currentUserId, updateCallStatus]);
+  }, [joinChannel, callType, currentUserId, updateCallStatus, callSessionId]);
 
   // End call
   const endCall = useCallback(async () => {
@@ -320,10 +355,16 @@ export const AgoraVideoCallModal = ({
     }
   }, [remoteUsers, playRemoteVideo]);
 
-  // Auto-start call for outgoing
+  // Auto-start call for outgoing / Reset state when modal opens
   useEffect(() => {
-    if (open && !isIncoming && internalCallStatus === 'idle') {
-      startCall();
+    if (open) {
+      if (!isIncoming && internalCallStatus === 'idle') {
+        startCall();
+      }
+    } else {
+      // Reset when modal closes
+      setHasAutoAnswered(false);
+      setInternalCallStatus('idle');
     }
   }, [open, isIncoming, internalCallStatus, startCall]);
 
@@ -331,8 +372,21 @@ export const AgoraVideoCallModal = ({
   useEffect(() => {
     if (callSessionId) {
       sessionIdRef.current = callSessionId;
+      console.log('[AgoraVideoCallModal] Set sessionIdRef to:', callSessionId);
     }
   }, [callSessionId]);
+
+  // Auto-answer for incoming calls when autoAnswer is true (e.g., user clicked from notification)
+  useEffect(() => {
+    if (open && isIncoming && autoAnswer && callSessionId && !hasAutoAnswered && internalCallStatus === 'idle') {
+      console.log('[AgoraVideoCallModal] Auto-answering call:', callSessionId);
+      setHasAutoAnswered(true);
+      // Small delay to ensure sessionIdRef is set
+      setTimeout(() => {
+        answerCall();
+      }, 300);
+    }
+  }, [open, isIncoming, autoAnswer, callSessionId, hasAutoAnswered, internalCallStatus, answerCall]);
 
   // Auto-hide controls
   useEffect(() => {

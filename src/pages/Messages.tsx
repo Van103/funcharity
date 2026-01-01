@@ -1651,6 +1651,7 @@ export default function Messages() {
             isIncoming={isIncomingCall}
             callSessionId={incomingCallSessionId || undefined}
             currentUserId={currentUserId}
+            autoAnswer={autoAnswerCall}
             onCallEnded={() => {
               // Refresh conversations and messages after call ends
               if (currentUserId) {
