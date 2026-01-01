@@ -33,25 +33,7 @@ const FlyingAngel = () => {
   // Check if this is an angel cursor type
   const isAngelCursor = cursorType.startsWith('angel');
 
-  // Ẩn con trỏ chuột mặc định khi dùng tiên nữ
-  useEffect(() => {
-    if (isAngelCursor && particlesEnabled) {
-      document.body.style.cursor = 'none';
-      document.documentElement.style.cursor = 'none';
-      
-      const style = document.createElement('style');
-      style.id = 'fairy-cursor-style';
-      style.textContent = '* { cursor: none !important; }';
-      document.head.appendChild(style);
-      
-      return () => {
-        document.body.style.cursor = '';
-        document.documentElement.style.cursor = '';
-        const existingStyle = document.getElementById('fairy-cursor-style');
-        if (existingStyle) existingStyle.remove();
-      };
-    }
-  }, [isAngelCursor, particlesEnabled]);
+  // Cursor hiding is now handled by CursorContext
 
   // Handle mouse movement
   useEffect(() => {
@@ -82,7 +64,7 @@ const FlyingAngel = () => {
         const dy = targetPos.y - prev.y;
         
         // Tốc độ theo sát chuột
-        const speed = 0.2;
+        const speed = 0.6;
         
         const newX = prev.x + dx * speed;
         const newY = prev.y + dy * speed;
@@ -103,7 +85,7 @@ const FlyingAngel = () => {
   }, [targetPos]);
 
   // Only show for angel cursor types and when particles are enabled
-  if (!isAngelCursor || !particlesEnabled) return null;
+  if (!isAngelCursor) return null;
 
   const wingFlap = Math.sin(wingPhase) * 12;
 

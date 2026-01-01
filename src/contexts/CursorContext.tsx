@@ -156,8 +156,17 @@ export const CursorProvider = ({ children }: { children: ReactNode }) => {
       document.head.appendChild(styleEl);
     }
 
+    const isAngelType = cursorType.startsWith('angel');
+
     if (cursorType === 'default') {
       styleEl.textContent = '';
+    } else if (isAngelType) {
+      // Tắt hoàn toàn cursor mặc định khi dùng tiên nữ animated
+      styleEl.textContent = `
+        *, *::before, *::after {
+          cursor: none !important;
+        }
+      `;
     } else {
       const timestamp = Date.now();
       styleEl.textContent = `
