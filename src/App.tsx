@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AnimatedBackground } from "@/components/background/AnimatedBackground";
 import { EnergyBokeh } from "@/components/background/EnergyBokeh";
 import CustomCursor from "@/components/cursor/CustomCursor";
+import FlyingAngel from "@/components/cursor/FlyingAngel";
 import { useIncomingCallListener } from "@/hooks/useIncomingCallListener";
 import { IncomingCallNotification } from "@/components/chat/IncomingCallNotification";
 import { usePushNotification } from "@/hooks/usePushNotification";
@@ -129,6 +130,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <CustomCursor />
+            <FlyingAngel />
             <BrowserRouter>
               <BackgroundWithVariant />
               <EnergyBokeh />
