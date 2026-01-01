@@ -123,12 +123,16 @@ const FlyingAngel = () => {
   const [isIdle, setIsIdle] = useState(false);
   const [idleTarget, setIdleTarget] = useState<Position | null>(null);
   const [isSitting, setIsSitting] = useState(false);
+  const [isHiding, setIsHiding] = useState(false);
+  const [hidePosition, setHidePosition] = useState<'left' | 'right' | 'top' | 'bottom'>('right');
+  const [peekPhase, setPeekPhase] = useState(0);
 
   const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef(0);
   const lastMouseMoveRef = useRef(Date.now());
   const idleCheckRef = useRef<number | null>(null);
   const sittingTimeoutRef = useRef<number | null>(null);
+  const hideTimeoutRef = useRef<number | null>(null);
 
   // Make sure we always display a transparent sprite even if the source image has a baked checkerboard.
   useEffect(() => {
@@ -152,6 +156,16 @@ const FlyingAngel = () => {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [selectedFairy]);
+
+  const getRandomHidePosition = useCallback((): { pos: 'left' | 'right' | 'top' | 'bottom'; target: Position } => {
+    const positions: Array<{ pos: 'left' | 'right' | 'top' | 'bottom'; target: Position }> = [
+      { pos: 'right', target: { x: window.innerWidth + 30, y: window.innerHeight / 2 } },
+      { pos: 'left', target: { x: -30, y: window.innerHeight / 2 } },
+      { pos: 'top', target: { x: window.innerWidth / 2, y: -30 } },
+      { pos: 'bottom', target: { x: window.innerWidth / 2, y: window.innerHeight + 30 } },
+    ];
+    return positions[Math.floor(Math.random() * positions.length)];
+  }, []);
 
   const getRandomIdleTarget = useCallback((): Position => {
     const targets = document.querySelectorAll('button, [role="button"], a, .cursor-pointer');
@@ -188,11 +202,16 @@ const FlyingAngel = () => {
       lastMouseMoveRef.current = Date.now();
       setIsIdle(false);
       setIsSitting(false);
+      setIsHiding(false);
       setIdleTarget(null);
 
       if (sittingTimeoutRef.current) {
         window.clearTimeout(sittingTimeoutRef.current);
         sittingTimeoutRef.current = null;
+      }
+      if (hideTimeoutRef.current) {
+        window.clearTimeout(hideTimeoutRef.current);
+        hideTimeoutRef.current = null;
       }
     };
 
@@ -222,9 +241,9 @@ const FlyingAngel = () => {
     };
   }, [getRandomIdleTarget, isAngelCursor, isIdle, position.x]);
 
-  // When idle: if reached target -> sit then pick another
+  // When idle: if reached target -> sit then maybe hide
   useEffect(() => {
-    if (!isAngelCursor || !isIdle || !idleTarget) return;
+    if (!isAngelCursor || !isIdle || !idleTarget || isHiding) return;
 
     const dist = Math.hypot(idleTarget.x - position.x, idleTarget.y - position.y);
     if (dist > 28) return;
@@ -234,16 +253,51 @@ const FlyingAngel = () => {
 
     sittingTimeoutRef.current = window.setTimeout(() => {
       setIsSitting(false);
-      const t = getRandomIdleTarget();
-      setIdleTarget(t);
-      setDirection(t.x > position.x ? 'right' : 'left');
+      
+      // 30% chance to go hide and peek
+      if (Math.random() < 0.3) {
+        const { pos, target } = getRandomHidePosition();
+        setHidePosition(pos);
+        setIdleTarget(target);
+        
+        hideTimeoutRef.current = window.setTimeout(() => {
+          setIsHiding(true);
+          setPeekPhase(0);
+        }, 1000);
+      } else {
+        const t = getRandomIdleTarget();
+        setIdleTarget(t);
+        setDirection(t.x > position.x ? 'right' : 'left');
+      }
     }, 2000 + Math.random() * 2000);
 
     return () => {
       if (sittingTimeoutRef.current) window.clearTimeout(sittingTimeoutRef.current);
       sittingTimeoutRef.current = null;
     };
-  }, [getRandomIdleTarget, idleTarget, isAngelCursor, isIdle, position.x, position.y]);
+  }, [getRandomHidePosition, getRandomIdleTarget, idleTarget, isAngelCursor, isHiding, isIdle, position.x, position.y]);
+
+  // Peek animation when hiding
+  useEffect(() => {
+    if (!isHiding) return;
+
+    const peekInterval = window.setInterval(() => {
+      setPeekPhase((prev) => {
+        const next = prev + 1;
+        // After 3 peeks, come back out
+        if (next > 6) {
+          setIsHiding(false);
+          const t = getRandomIdleTarget();
+          setIdleTarget(t);
+          setDirection(t.x > position.x ? 'right' : 'left');
+          return 0;
+        }
+        return next;
+      });
+    }, 800);
+
+    return () => window.clearInterval(peekInterval);
+  }, [getRandomIdleTarget, isHiding, position.x]);
 
   // Animation loop
   useEffect(() => {
@@ -278,13 +332,32 @@ const FlyingAngel = () => {
 
   const wingFlap = Math.sin(wingPhase) * (isSitting ? 5 : 12);
 
+  // Calculate peek offset for hiding animation
+  const getPeekOffset = () => {
+    if (!isHiding) return { x: 0, y: 0 };
+    const peekAmount = peekPhase % 2 === 1 ? 25 : 0; // Peek in/out
+    switch (hidePosition) {
+      case 'right': return { x: -peekAmount, y: 0 };
+      case 'left': return { x: peekAmount, y: 0 };
+      case 'top': return { x: 0, y: peekAmount };
+      case 'bottom': return { x: 0, y: -peekAmount };
+      default: return { x: 0, y: 0 };
+    }
+  };
+
+  const peekOffset = getPeekOffset();
+
   return (
     <motion.div
       className="fixed pointer-events-none z-[9999]"
-      style={{ left: position.x - 40, top: position.y - 25 }}
+      style={{ left: position.x - 40 + peekOffset.x, top: position.y - 25 + peekOffset.y }}
       initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.2 }}
+      animate={{ 
+        opacity: isHiding && peekPhase % 2 === 0 ? 0.3 : 1, 
+        scale: isHiding ? 0.8 : 1,
+        rotate: isHiding ? (hidePosition === 'left' ? -20 : hidePosition === 'right' ? 20 : 0) : 0
+      }}
+      transition={{ duration: 0.3 }}
     >
       <motion.div
         style={{
@@ -293,12 +366,20 @@ const FlyingAngel = () => {
           transform: `scaleX(${direction === 'left' ? -1 : 1})`,
         }}
         animate={{
-          rotate: isSitting ? [0, 2, 0, -2, 0] : [wingFlap * 0.12, -wingFlap * 0.12],
-          y: isSitting ? [0, -1, 0] : [0, -3, 0, 3, 0],
+          rotate: isHiding 
+            ? [0, 5, 0, -5, 0] 
+            : isSitting 
+              ? [0, 2, 0, -2, 0] 
+              : [wingFlap * 0.12, -wingFlap * 0.12],
+          y: isHiding
+            ? [0, -2, 0, 2, 0]
+            : isSitting 
+              ? [0, -1, 0] 
+              : [0, -3, 0, 3, 0],
         }}
         transition={{
-          rotate: { duration: isSitting ? 1 : 0.1, repeat: Infinity, ease: 'easeInOut' },
-          y: { duration: isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
+          rotate: { duration: isHiding ? 0.5 : isSitting ? 1 : 0.1, repeat: Infinity, ease: 'easeInOut' },
+          y: { duration: isHiding ? 0.6 : isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
         }}
       >
         <motion.img
