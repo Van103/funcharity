@@ -30,7 +30,7 @@ const CursorSettings = () => {
       <PopoverContent 
         side="bottom" 
         align="end" 
-        className="w-72 p-4 bg-card/95 backdrop-blur-xl border-border/50"
+        className="w-72 max-h-[70vh] overflow-y-auto p-4 bg-card/95 backdrop-blur-xl border-border/50"
       >
         <div className="space-y-4">
           <div className="flex items-center gap-2 pb-2 border-b border-border/50">
