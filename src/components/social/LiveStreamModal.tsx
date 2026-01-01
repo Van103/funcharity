@@ -361,13 +361,25 @@ export function LiveStreamModal({ open, onOpenChange, profile }: LiveStreamModal
     };
   }, [open, startCameraPreview, stopStream, isRecording, stopRecording]);
 
-  // Handle camera switch
+  // Handle camera switch - properly restart stream with new facing mode
   useEffect(() => {
-    if (open && streamRef.current) {
-      stopStream();
-      startCameraPreview();
-    }
-  }, [facingMode]);
+    const switchCameraStream = async () => {
+      if (open && streamRef.current) {
+        console.log('[LiveStream] Switching camera to:', facingMode);
+        // Stop current stream completely
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
+        }
+        // Start new stream with updated facingMode
+        await startCameraPreview();
+      }
+    };
+    switchCameraStream();
+  }, [facingMode, open, startCameraPreview]);
 
   // Simulate viewers and chat when streaming
   useEffect(() => {
