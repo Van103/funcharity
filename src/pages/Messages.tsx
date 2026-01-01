@@ -32,6 +32,7 @@ import { useMessageReactions } from "@/hooks/useMessageReactions";
 import { ChatStickerPicker } from "@/components/chat/ChatStickerPicker";
 import { VideoCallModal } from "@/components/chat/VideoCallModal";
 import { AgoraVideoCallModal } from "@/components/chat/AgoraVideoCallModal";
+import { AgoraGroupCallModal } from "@/components/chat/AgoraGroupCallModal";
 import { CreateGroupModal } from "@/components/chat/CreateGroupModal";
 import { MessageReactionPicker, MessageReactionsDisplay } from "@/components/chat/MessageReactionPicker";
 import { useToast } from "@/hooks/use-toast";
@@ -118,6 +119,7 @@ export default function Messages() {
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [callType, setCallType] = useState<"video" | "audio">("video");
   const [useAgoraCall, setUseAgoraCall] = useState(true); // Use Agora by default
+  const [showGroupCall, setShowGroupCall] = useState(false);
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchUser[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -1112,6 +1114,37 @@ export default function Messages() {
 
               {/* Action buttons */}
               <div className="flex items-center gap-1">
+                {/* Group call buttons */}
+                {activeConversation.is_group && activeConversation.participants && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setCallType("audio");
+                        setShowGroupCall(true);
+                      }}
+                      title="Gọi thoại nhóm"
+                      className="rounded-full hover:bg-muted text-primary h-10 w-10"
+                    >
+                      <Phone className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setCallType("video");
+                        setShowGroupCall(true);
+                      }}
+                      title="Gọi video nhóm"
+                      className="rounded-full hover:bg-muted text-primary h-10 w-10"
+                    >
+                      <Video className="w-5 h-5" />
+                    </Button>
+                  </>
+                )}
+                
+                {/* 1:1 call buttons */}
                 {!activeConversation.is_group && activeConversation.otherUser && (
                   <>
                     <Button
@@ -1657,6 +1690,28 @@ export default function Messages() {
             }}
           />
         )
+      )}
+
+      {/* Group Call Modal */}
+      {showGroupCall && activeConversation?.is_group && currentUserId && (
+        <AgoraGroupCallModal
+          open={showGroupCall}
+          onClose={() => setShowGroupCall(false)}
+          conversationId={activeConversation.id}
+          conversationName={activeConversation.name || "Nhóm chat"}
+          participants={activeConversation.participants || []}
+          callType={callType}
+          currentUserId={currentUserId}
+          onCallEnded={() => {
+            setShowGroupCall(false);
+            if (currentUserId) {
+              loadConversations(currentUserId);
+              if (activeConversation?.id) {
+                loadMessages(activeConversation.id);
+              }
+            }
+          }}
+        />
       )}
 
       {/* Create Group Modal */}
