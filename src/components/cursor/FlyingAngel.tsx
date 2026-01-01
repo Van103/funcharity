@@ -370,6 +370,27 @@ const FlyingAngel = () => {
     };
   }, [isIdle, position.x, startIdleMode, stopIdleMode]);
 
+  // Ẩn con trỏ chuột mặc định khi dùng tiên nữ
+  useEffect(() => {
+    if (isAngelCursor && particlesEnabled) {
+      document.body.style.cursor = 'none';
+      document.documentElement.style.cursor = 'none';
+      
+      // Thêm style cho tất cả elements
+      const style = document.createElement('style');
+      style.id = 'fairy-cursor-style';
+      style.textContent = '* { cursor: none !important; }';
+      document.head.appendChild(style);
+      
+      return () => {
+        document.body.style.cursor = '';
+        document.documentElement.style.cursor = '';
+        const existingStyle = document.getElementById('fairy-cursor-style');
+        if (existingStyle) existingStyle.remove();
+      };
+    }
+  }, [isAngelCursor, particlesEnabled]);
+
   // Smooth animation loop
   useEffect(() => {
     const animate = (time: number) => {
@@ -377,7 +398,7 @@ const FlyingAngel = () => {
       lastTimeRef.current = time;
       
       // Wing flapping - slower when resting
-      const wingSpeed = isResting ? 0.003 : 0.012;
+      const wingSpeed = isResting ? 0.003 : 0.015;
       setWingPhase(prev => (prev + delta * wingSpeed) % (Math.PI * 2));
       
       // Wave animation
@@ -385,18 +406,18 @@ const FlyingAngel = () => {
         setWavePhase(prev => (prev + delta * 0.015) % (Math.PI * 2));
       }
       
-      // Smooth follow with easing
+      // Smooth follow with easing - NHANH HƠN để theo sát chuột
       setPosition(prev => {
         const dx = targetPos.x - prev.x;
         const dy = targetPos.y - prev.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        // Very slow when resting, slower when idle
-        const speed = isResting ? 0.005 : isIdle ? 0.025 : 0.08;
+        // Tốc độ cao hơn để tiên nữ đi sát theo chuột
+        const speed = isResting ? 0.01 : isIdle ? 0.04 : 0.25;
         
-        // Bobbing effect - gentler when resting
-        const bobAmount = isResting ? 1 : isIdle ? 2.5 : 1;
-        const bobSpeed = isResting ? 0.001 : 0.003;
+        // Bobbing effect - nhẹ nhàng hơn
+        const bobAmount = isResting ? 1 : isIdle ? 1.5 : 0.5;
+        const bobSpeed = isResting ? 0.001 : 0.002;
         
         const newX = prev.x + dx * speed;
         const newY = prev.y + dy * speed + Math.sin(time * bobSpeed) * bobAmount;
@@ -590,24 +611,22 @@ const FlyingAngel = () => {
         />
       ))}
       
-      {/* Main angel */}
+      {/* Main fairy - positioned so the fairy's hand/wand is at cursor point */}
       <motion.div
         className="fixed pointer-events-none z-[9998]"
         style={{
-          left: position.x - 32,
-          top: position.y - 32,
+          left: position.x - 50, // Đưa tiên nữ sang trái để tay/đũa ở vị trí chuột
+          top: position.y - 30,  // Đưa lên trên để đầu/tay ở vị trí chuột
         }}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ 
           opacity: 1, 
           scale: 1,
-          rotate: isResting ? 0 : isIdle ? [0, -3, 3, 0] : 0,
-          y: isResting ? [0, -2, 0] : 0
+          rotate: isResting ? 0 : isIdle ? [0, -2, 2, 0] : 0,
         }}
         transition={{ 
           duration: 0.3,
           rotate: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-          y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
         }}
       >
         {/* Large glow effect */}
