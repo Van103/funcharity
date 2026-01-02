@@ -25,6 +25,7 @@ import { SharePopover } from "./SharePopover";
 import { GiftDonateModal } from "./GiftDonateModal";
 import { ImageLightbox } from "./ImageLightbox";
 import { EditFeedPostModal } from "./EditFeedPostModal";
+import { ReactionUsersTooltip } from "./ReactionUsersTooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -426,31 +427,33 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
 
       {/* Stats - Mobile optimized */}
       <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between text-xs sm:text-sm text-muted-foreground border-b border-border">
-        <div className="flex items-center gap-1.5">
-          {topReactions.length > 0 ? (
-            <div className="flex -space-x-1">
-              {topReactions.map((reaction) => (
-                <motion.span
-                  key={reaction?.type}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="text-sm sm:text-base"
-                >
-                  {reaction?.emoji}
-                </motion.span>
-              ))}
-            </div>
-          ) : (
-            <div className="flex -space-x-1">
-              <span className="text-sm sm:text-base">👍</span>
-              <span className="text-sm sm:text-base">❤️</span>
-              <span className="text-sm sm:text-base">😆</span>
-            </div>
-          )}
-          <span className="text-xs hover:underline cursor-pointer no-tap-highlight">
-            {(totalReactions || post.reactions_count || 0).toLocaleString()} người
-          </span>
-        </div>
+        <ReactionUsersTooltip postId={post.id}>
+          <div className="flex items-center gap-1.5 cursor-pointer">
+            {topReactions.length > 0 ? (
+              <div className="flex -space-x-1">
+                {topReactions.map((reaction) => (
+                  <motion.span
+                    key={reaction?.type}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="text-sm sm:text-base"
+                  >
+                    {reaction?.emoji}
+                  </motion.span>
+                ))}
+              </div>
+            ) : (
+              <div className="flex -space-x-1">
+                <span className="text-sm sm:text-base">👍</span>
+                <span className="text-sm sm:text-base">❤️</span>
+                <span className="text-sm sm:text-base">😆</span>
+              </div>
+            )}
+            <span className="text-xs hover:underline no-tap-highlight">
+              {(totalReactions || post.reactions_count || 0).toLocaleString()} người
+            </span>
+          </div>
+        </ReactionUsersTooltip>
         <div className="flex items-center gap-3 sm:gap-4 text-xs">
           <span className="hover:underline cursor-pointer no-tap-highlight">{(post.comments_count || 0).toLocaleString()} bình luận</span>
           <span className="hover:underline cursor-pointer no-tap-highlight">{((post as any).shares_count || 0).toLocaleString()} chia sẻ</span>
