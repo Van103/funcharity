@@ -12,7 +12,35 @@ const FAIRY_IMAGES: Record<Exclude<AngelStyle, 'random'>, string> = {
 
 const ALL_FAIRY_IMAGES = Object.values(FAIRY_IMAGES);
 
-const SPARKLE_COLORS = ['#FFD700', '#FF69B4', '#87CEEB', '#DDA0DD', '#FFFACD', '#E6E6FA'];
+// Sparkle colors for each fairy color - unique magical effects
+const SPARKLE_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, string[]> = {
+  pink: ['#FF69B4', '#FFB6C1', '#FF1493', '#FFC0CB', '#FF85A2', '#FFFACD'], // Pink fairy - romantic hearts
+  purple: ['#9333EA', '#A855F7', '#C084FC', '#E879F9', '#DDA0DD', '#E6E6FA'], // Purple fairy - mystical magic
+  yellow: ['#FFD700', '#FFA500', '#FFEC8B', '#F0E68C', '#FFE4B5', '#FFFACD'], // Yellow fairy - golden sunshine
+  blue: ['#3B82F6', '#60A5FA', '#87CEEB', '#00BFFF', '#ADD8E6', '#E0FFFF'], // Blue fairy - ocean dreams
+  green: ['#22C55E', '#4ADE80', '#86EFAC', '#10B981', '#A7F3D0', '#D1FAE5'], // Green fairy - nature magic
+};
+
+// Trail glow colors for each fairy
+const TRAIL_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, { primary: string; secondary: string; tertiary: string }> = {
+  pink: { primary: 'rgba(255,182,193,0.8)', secondary: 'rgba(255,105,180,0.4)', tertiary: 'rgba(255,20,147,0.2)' },
+  purple: { primary: 'rgba(168,85,247,0.8)', secondary: 'rgba(147,51,234,0.4)', tertiary: 'rgba(139,92,246,0.2)' },
+  yellow: { primary: 'rgba(255,215,0,0.8)', secondary: 'rgba(255,165,0,0.4)', tertiary: 'rgba(255,193,7,0.2)' },
+  blue: { primary: 'rgba(96,165,250,0.8)', secondary: 'rgba(59,130,246,0.4)', tertiary: 'rgba(37,99,235,0.2)' },
+  green: { primary: 'rgba(74,222,128,0.8)', secondary: 'rgba(34,197,94,0.4)', tertiary: 'rgba(22,163,74,0.2)' },
+};
+
+// Glow colors when moving fast
+const GLOW_COLORS_BY_FAIRY: Record<Exclude<AngelStyle, 'random'>, { inner: string; outer: string }> = {
+  pink: { inner: 'rgba(255,105,180,0.5)', outer: 'rgba(255,182,193,0.3)' },
+  purple: { inner: 'rgba(147,51,234,0.5)', outer: 'rgba(168,85,247,0.3)' },
+  yellow: { inner: 'rgba(255,215,0,0.5)', outer: 'rgba(255,193,7,0.3)' },
+  blue: { inner: 'rgba(59,130,246,0.5)', outer: 'rgba(96,165,250,0.3)' },
+  green: { inner: 'rgba(34,197,94,0.5)', outer: 'rgba(74,222,128,0.3)' },
+};
+
+// Default sparkle colors for random mode
+const DEFAULT_SPARKLE_COLORS = ['#FFD700', '#FF69B4', '#87CEEB', '#DDA0DD', '#22C55E', '#E6E6FA'];
 
 interface Position {
   x: number;
@@ -138,6 +166,30 @@ const FlyingAngel = () => {
     return FAIRY_IMAGES[fairyColor];
   }, [fairyColor]);
 
+  // Get current fairy color for effects (use pink as fallback for random)
+  const currentFairyColorKey = useMemo((): Exclude<AngelStyle, 'random'> => {
+    if (fairyColor === 'random') {
+      const keys = Object.keys(FAIRY_IMAGES) as Exclude<AngelStyle, 'random'>[];
+      return keys[Math.floor(Math.random() * keys.length)];
+    }
+    return fairyColor;
+  }, [fairyColor]);
+
+  // Get sparkle colors based on current fairy
+  const currentSparkleColors = useMemo(() => {
+    return SPARKLE_COLORS_BY_FAIRY[currentFairyColorKey] || DEFAULT_SPARKLE_COLORS;
+  }, [currentFairyColorKey]);
+
+  // Get trail colors based on current fairy
+  const currentTrailColors = useMemo(() => {
+    return TRAIL_COLORS_BY_FAIRY[currentFairyColorKey] || TRAIL_COLORS_BY_FAIRY.pink;
+  }, [currentFairyColorKey]);
+
+  // Get glow colors based on current fairy
+  const currentGlowColors = useMemo(() => {
+    return GLOW_COLORS_BY_FAIRY[currentFairyColorKey] || GLOW_COLORS_BY_FAIRY.pink;
+  }, [currentFairyColorKey]);
+
   const [processedFairySrc, setProcessedFairySrc] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [displayedFairy, setDisplayedFairy] = useState(selectedFairy);
@@ -171,16 +223,17 @@ const FlyingAngel = () => {
   const sparkleIntervalRef = useRef<number | null>(null);
   const trailIntervalRef = useRef<number | null>(null);
 
-  // Create sparkle
+  // Create sparkle with fairy-specific colors
   const createSparkle = useCallback((centerX: number, centerY: number) => {
     const angle = Math.random() * Math.PI * 2;
     const distance = 20 + Math.random() * 30;
+    const colors = currentSparkleColors;
     const sparkle: Sparkle = {
       id: sparkleIdRef.current++,
       x: centerX + Math.cos(angle) * distance,
       y: centerY + Math.sin(angle) * distance,
       size: 6 + Math.random() * 10,
-      color: SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)],
+      color: colors[Math.floor(Math.random() * colors.length)],
       rotation: Math.random() * 360,
     };
     setSparkles((prev) => [...prev.slice(-15), sparkle]);
@@ -189,7 +242,7 @@ const FlyingAngel = () => {
     setTimeout(() => {
       setSparkles((prev) => prev.filter((s) => s.id !== sparkle.id));
     }, 1000);
-  }, []);
+  }, [currentSparkleColors]);
 
   // Create trail point
   const createTrailPoint = useCallback((x: number, y: number) => {
@@ -552,7 +605,7 @@ const FlyingAngel = () => {
             <div 
               className="w-full h-full rounded-full"
               style={{
-                background: `radial-gradient(circle, rgba(255,182,193,0.8) 0%, rgba(255,105,180,0.4) 40%, rgba(147,112,219,0.2) 70%, transparent 100%)`,
+                background: `radial-gradient(circle, ${currentTrailColors.primary} 0%, ${currentTrailColors.secondary} 40%, ${currentTrailColors.tertiary} 70%, transparent 100%)`,
                 filter: 'blur(3px)',
               }}
             />
@@ -579,7 +632,7 @@ const FlyingAngel = () => {
           <div 
             className="w-full h-full rounded-full"
             style={{
-              background: `radial-gradient(ellipse, rgba(255,215,0,0.4) 0%, rgba(255,182,193,0.3) 30%, transparent 70%)`,
+              background: `radial-gradient(ellipse, ${currentGlowColors.inner} 0%, ${currentGlowColors.outer} 30%, transparent 70%)`,
               filter: 'blur(8px)',
             }}
           />
