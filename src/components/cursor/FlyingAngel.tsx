@@ -7,6 +7,7 @@ const FAIRY_IMAGES: Record<Exclude<AngelStyle, 'random'>, string> = {
   purple: '/cursors/fairy-angel-purple.png',
   yellow: '/cursors/fairy-angel-yellow.png',
   blue: '/cursors/fairy-angel-blue.png',
+  green: '/cursors/fairy-angel-green.png',
 };
 
 const ALL_FAIRY_IMAGES = Object.values(FAIRY_IMAGES);
