@@ -13,7 +13,6 @@ import { StoriesSection } from "@/components/social/StoriesSection";
 import { SocialPostCard } from "@/components/social/SocialPostCard";
 import { PostCardSkeletonList, PostCardSkeleton } from "@/components/social/PostCardSkeleton";
 import { PullToRefresh } from "@/components/social/PullToRefresh";
-import { EcosystemFriendsSection } from "@/components/social/EcosystemFriendsSection";
 import { supabase } from "@/integrations/supabase/client";
 import { Helmet } from "react-helmet-async";
 import { 
@@ -144,9 +143,6 @@ export default function SocialFeed() {
                     <StoriesSection />
                     
                     <FriendRequestsSection />
-                    
-                    {/* FUN Ecosystem Friends */}
-                    <EcosystemFriendsSection showCompact />
                     
                     {/* Posts Feed */}
                     <div className="space-y-2 sm:space-y-4">

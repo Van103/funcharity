@@ -37,7 +37,6 @@ import Play from "./pages/Play";
 import Legal from "./pages/Legal";
 import Planet from "./pages/Planet";
 import Friends from "./pages/Friends";
-import EcosystemFriends from "./pages/EcosystemFriends";
 import MyCampaigns from "./pages/MyCampaigns";
 import AdminVerify from "./pages/AdminVerify";
 import Volunteer from "./pages/Volunteer";
@@ -161,7 +160,6 @@ const App = () => (
                 <Route path="/legal" element={<Legal />} />
                 <Route path="/planet" element={<Planet />} />
                 <Route path="/friends" element={<Friends />} />
-                <Route path="/ecosystem-friends" element={<EcosystemFriends />} />
                 <Route path="/my-campaigns" element={<MyCampaigns />} />
                 <Route path="/admin/verify" element={<AdminVerify />} />
                 <Route path="/volunteer" element={<Volunteer />} />
