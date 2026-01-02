@@ -62,6 +62,8 @@ export function DonationModal({
     paymentUrl?: string;
   } | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [userEmail, setUserEmail] = useState('');
 
   const {
     loading,
@@ -83,6 +85,8 @@ export function DonationModal({
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     setIsAuthenticated(!!session);
+    setIsEmailVerified(!!session?.user?.email_confirmed_at);
+    setUserEmail(session?.user?.email || '');
   };
 
   const loadPaymentMethods = async () => {
@@ -205,6 +209,35 @@ export function DonationModal({
           </DialogDescription>
         </DialogHeader>
 
+        {/* Email Verification Warning */}
+        {isAuthenticated && !isEmailVerified && (
+          <div className="bg-amber-500/20 border border-amber-500/50 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-amber-200">
+                  Email chưa được xác thực
+                </p>
+                <p className="text-xs text-amber-200/70 mt-1">
+                  Bạn cần xác thực email trước khi có thể quyên góp. 
+                  Kiểm tra hộp thư <span className="font-medium">{userEmail}</span>.
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-2 h-7 text-amber-200 hover:text-amber-100 hover:bg-amber-500/20 p-0"
+                  onClick={() => {
+                    onOpenChange(false);
+                    window.location.href = `/verify-email?email=${encodeURIComponent(userEmail)}`;
+                  }}
+                >
+                  Xác thực email ngay
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
           {step === 'select' && (
             <motion.div
@@ -279,9 +312,9 @@ export function DonationModal({
               <Button
                 className="w-full"
                 onClick={() => setStep(paymentType === 'fiat' ? 'fiat-details' : 'crypto-details')}
-                disabled={paymentType === 'crypto' && !campaignWalletAddress}
+                disabled={(paymentType === 'crypto' && !campaignWalletAddress) || (isAuthenticated && !isEmailVerified)}
               >
-                Tiếp tục
+                {isAuthenticated && !isEmailVerified ? 'Xác thực email để tiếp tục' : 'Tiếp tục'}
               </Button>
             </motion.div>
           )}

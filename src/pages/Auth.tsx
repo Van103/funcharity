@@ -157,9 +157,9 @@ const Auth = () => {
 
     setLoading(true);
     
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}/auth/callback`;
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: result.data.email.trim(),
       password: result.data.password,
       options: {
@@ -188,11 +188,20 @@ const Auth = () => {
       return;
     }
 
-    toast({
-      title: "Đăng ký thành công!",
-      description: "Tài khoản của bạn đã được tạo. Chào mừng đến với FUN Charity!",
-    });
-    navigate("/social");
+    // Check if email confirmation is required
+    if (data?.user && !data.user.email_confirmed_at) {
+      toast({
+        title: "Kiểm tra email của bạn!",
+        description: "Chúng tôi đã gửi email xác thực đến địa chỉ của bạn.",
+      });
+      navigate(`/verify-email?email=${encodeURIComponent(result.data.email.trim())}`);
+    } else {
+      toast({
+        title: "Đăng ký thành công!",
+        description: "Chào mừng đến với FUN Charity!",
+      });
+      navigate("/social");
+    }
   };
 
   return (

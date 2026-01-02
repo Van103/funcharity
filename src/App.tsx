@@ -42,6 +42,8 @@ import AdminVerify from "./pages/AdminVerify";
 import Volunteer from "./pages/Volunteer";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
+import VerifyEmail from "./pages/VerifyEmail";
+import AuthCallback from "./pages/AuthCallback";
 import LiveStream from "./pages/LiveStream";
 
 const queryClient = new QueryClient();
@@ -146,6 +148,8 @@ const App = () => (
                 <Route path="/profiles" element={<Profiles />} />
                 <Route path="/reviews" element={<Reviews />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/profile" element={<UserProfile />} />
                 <Route path="/user/:userId" element={<PublicProfile />} />
                 <Route path="/messages" element={<Messages />} />
