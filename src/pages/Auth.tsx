@@ -257,10 +257,12 @@ const Auth = () => {
                       <Input
                         id="email"
                         type="email"
+                        name="email"
+                        autoComplete="email"
                         placeholder="email@example.com"
                         className="pl-10"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value.trim())}
                         disabled={loading}
                       />
                     </div>
@@ -273,6 +275,8 @@ const Auth = () => {
                       <Input
                         id="password"
                         type="password"
+                        name="password"
+                        autoComplete="current-password"
                         placeholder="••••••••"
                         className="pl-10"
                         value={password}
@@ -313,6 +317,8 @@ const Auth = () => {
                       )}
                       <Input
                         id="name"
+                        name="name"
+                        autoComplete="name"
                         placeholder={userType === "ngo" ? "Tên tổ chức" : "Họ và tên của bạn"}
                         className="pl-10"
                         value={fullName}
@@ -329,10 +335,12 @@ const Auth = () => {
                       <Input
                         id="signup-email"
                         type="email"
+                        name="signup-email"
+                        autoComplete="email"
                         placeholder="email@example.com"
                         className="pl-10"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value.trim())}
                         disabled={loading}
                       />
                     </div>
@@ -345,6 +353,8 @@ const Auth = () => {
                       <Input
                         id="signup-password"
                         type="password"
+                        name="signup-password"
+                        autoComplete="new-password"
                         placeholder="••••••••"
                         className="pl-10"
                         value={password}
