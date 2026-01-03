@@ -1724,6 +1724,297 @@ export const translations: Translations = {
     th: "รูปลักษณ์", fr: "Apparence", de: "Erscheinungsbild", es: "Apariencia",
     pt: "Aparência", ru: "Внешний вид", ar: "المظهر", hi: "दिखावट"
   },
+
+  // ============ ADDITIONAL MESSAGES KEYS ============
+  "messages.chats": {
+    en: "Chats", vi: "Đoạn chat", zh: "聊天", ja: "チャット", ko: "채팅",
+    th: "แชท", fr: "Discussions", de: "Chats", es: "Chats",
+    pt: "Conversas", ru: "Чаты", ar: "المحادثات", hi: "चैट"
+  },
+  "messages.searchMessenger": {
+    en: "Search on Messenger", vi: "Tìm kiếm trên Messenger", zh: "在Messenger上搜索", ja: "Messengerで検索", ko: "메신저에서 검색",
+    th: "ค้นหาใน Messenger", fr: "Rechercher sur Messenger", de: "Auf Messenger suchen", es: "Buscar en Messenger",
+    pt: "Pesquisar no Messenger", ru: "Поиск в Messenger", ar: "البحث في Messenger", hi: "Messenger पर खोजें"
+  },
+  "messages.newConversation": {
+    en: "New conversation", vi: "Tạo cuộc trò chuyện mới", zh: "新对话", ja: "新しい会話", ko: "새 대화",
+    th: "การสนทนาใหม่", fr: "Nouvelle conversation", de: "Neue Unterhaltung", es: "Nueva conversación",
+    pt: "Nova conversa", ru: "Новый разговор", ar: "محادثة جديدة", hi: "नई बातचीत"
+  },
+  "messages.startConvo": {
+    en: "Start a conversation", vi: "Bắt đầu trò chuyện", zh: "开始对话", ja: "会話を始める", ko: "대화 시작",
+    th: "เริ่มการสนทนา", fr: "Démarrer une conversation", de: "Unterhaltung starten", es: "Iniciar conversación",
+    pt: "Iniciar conversa", ru: "Начать разговор", ar: "بدء محادثة", hi: "बातचीत शुरू करें"
+  },
+  "messages.groupChatLabel": {
+    en: "Group chat", vi: "Nhóm chat", zh: "群聊", ja: "グループチャット", ko: "그룹 채팅",
+    th: "แชทกลุ่ม", fr: "Discussion de groupe", de: "Gruppenchat", es: "Chat grupal",
+    pt: "Chat em grupo", ru: "Групповой чат", ar: "دردشة جماعية", hi: "समूह चैट"
+  },
+  "messages.members": {
+    en: "members", vi: "thành viên", zh: "成员", ja: "メンバー", ko: "멤버",
+    th: "สมาชิก", fr: "membres", de: "Mitglieder", es: "miembros",
+    pt: "membros", ru: "участников", ar: "أعضاء", hi: "सदस्य"
+  },
+  "messages.activeNow": {
+    en: "Active now", vi: "Đang hoạt động", zh: "在线", ja: "オンライン", ko: "활동 중",
+    th: "ใช้งานอยู่", fr: "Actif maintenant", de: "Jetzt aktiv", es: "Activo ahora",
+    pt: "Ativo agora", ru: "Онлайн", ar: "نشط الآن", hi: "अभी सक्रिय"
+  },
+  "messages.recentActivity": {
+    en: "Recently active", vi: "Hoạt động gần đây", zh: "最近活跃", ja: "最近アクティブ", ko: "최근 활동",
+    th: "เพิ่งใช้งาน", fr: "Récemment actif", de: "Kürzlich aktiv", es: "Activo recientemente",
+    pt: "Ativo recentemente", ru: "Недавно активен", ar: "نشط مؤخراً", hi: "हाल ही में सक्रिय"
+  },
+  "messages.groupVoiceCall": {
+    en: "Group voice call", vi: "Gọi thoại nhóm", zh: "群语音通话", ja: "グループ音声通話", ko: "그룹 음성 통화",
+    th: "โทรเสียงกลุ่ม", fr: "Appel vocal de groupe", de: "Gruppen-Sprachanruf", es: "Llamada de voz grupal",
+    pt: "Chamada de voz em grupo", ru: "Групповой голосовой звонок", ar: "مكالمة صوتية جماعية", hi: "समूह वॉयस कॉल"
+  },
+  "messages.groupVideoCall": {
+    en: "Group video call", vi: "Gọi video nhóm", zh: "群视频通话", ja: "グループビデオ通話", ko: "그룹 영상 통화",
+    th: "วิดีโอคอลกลุ่ม", fr: "Appel vidéo de groupe", de: "Gruppen-Videoanruf", es: "Videollamada grupal",
+    pt: "Chamada de vídeo em grupo", ru: "Групповой видеозвонок", ar: "مكالمة فيديو جماعية", hi: "समूह वीडियो कॉल"
+  },
+  "messages.conversationInfo": {
+    en: "Conversation info", vi: "Thông tin cuộc trò chuyện", zh: "对话信息", ja: "会話情報", ko: "대화 정보",
+    th: "ข้อมูลการสนทนา", fr: "Info conversation", de: "Unterhaltungsinfo", es: "Info de conversación",
+    pt: "Info da conversa", ru: "Информация о разговоре", ar: "معلومات المحادثة", hi: "बातचीत की जानकारी"
+  },
+  "messages.encryptedNotice": {
+    en: "Messages and calls are secured with end-to-end encryption", vi: "Tin nhắn và cuộc gọi được bảo mật bằng mã hóa đầu cuối", zh: "消息和通话采用端对端加密保护", ja: "メッセージと通話はエンドツーエンドの暗号化で保護されています", ko: "메시지와 통화는 종단 간 암호화로 보호됩니다",
+    th: "ข้อความและการโทรถูกเข้ารหัสแบบ end-to-end", fr: "Les messages et appels sont sécurisés par chiffrement de bout en bout", de: "Nachrichten und Anrufe sind mit End-to-End-Verschlüsselung gesichert", es: "Los mensajes y llamadas están protegidos con cifrado de extremo a extremo",
+    pt: "Mensagens e chamadas são protegidas com criptografia de ponta a ponta", ru: "Сообщения и звонки защищены сквозным шифрованием", ar: "الرسائل والمكالمات مؤمنة بالتشفير من طرف إلى طرف", hi: "संदेश और कॉल एंड-टू-एंड एन्क्रिप्शन से सुरक्षित हैं"
+  },
+  "messages.recallMessage": {
+    en: "Recall message", vi: "Thu hồi tin nhắn", zh: "撤回消息", ja: "メッセージを取り消す", ko: "메시지 회수",
+    th: "เรียกคืนข้อความ", fr: "Annuler le message", de: "Nachricht zurückrufen", es: "Retirar mensaje",
+    pt: "Revogar mensagem", ru: "Отозвать сообщение", ar: "استرجاع الرسالة", hi: "संदेश वापस लें"
+  },
+  "messages.recalled": {
+    en: "Recalled", vi: "Đã thu hồi", zh: "已撤回", ja: "取り消しました", ko: "회수됨",
+    th: "เรียกคืนแล้ว", fr: "Annulé", de: "Zurückgerufen", es: "Retirado",
+    pt: "Revogado", ru: "Отозвано", ar: "تم الاسترجاع", hi: "वापस लिया गया"
+  },
+  "messages.messageRecalled": {
+    en: "Message recalled successfully", vi: "Tin nhắn đã được thu hồi thành công", zh: "消息已成功撤回", ja: "メッセージが取り消されました", ko: "메시지가 회수되었습니다",
+    th: "เรียกคืนข้อความสำเร็จ", fr: "Message annulé avec succès", de: "Nachricht erfolgreich zurückgerufen", es: "Mensaje retirado exitosamente",
+    pt: "Mensagem revogada com sucesso", ru: "Сообщение успешно отозвано", ar: "تم استرجاع الرسالة بنجاح", hi: "संदेश सफलतापूर्वक वापस लिया गया"
+  },
+  "messages.fileTooLarge": {
+    en: "File too large", vi: "File quá lớn", zh: "文件太大", ja: "ファイルが大きすぎます", ko: "파일이 너무 큼",
+    th: "ไฟล์ใหญ่เกินไป", fr: "Fichier trop volumineux", de: "Datei zu groß", es: "Archivo demasiado grande",
+    pt: "Arquivo muito grande", ru: "Файл слишком большой", ar: "الملف كبير جداً", hi: "फ़ाइल बहुत बड़ी है"
+  },
+  "messages.selectImageUnder10MB": {
+    en: "Please select an image under 10MB", vi: "Vui lòng chọn ảnh dưới 10MB", zh: "请选择10MB以下的图片", ja: "10MB以下の画像を選択してください", ko: "10MB 미만의 이미지를 선택하세요",
+    th: "กรุณาเลือกภาพขนาดไม่เกิน 10MB", fr: "Veuillez sélectionner une image de moins de 10 Mo", de: "Bitte wählen Sie ein Bild unter 10 MB", es: "Por favor seleccione una imagen menor a 10MB",
+    pt: "Por favor selecione uma imagem menor que 10MB", ru: "Пожалуйста, выберите изображение менее 10 МБ", ar: "يرجى اختيار صورة أقل من 10 ميجابايت", hi: "कृपया 10MB से कम की छवि चुनें"
+  },
+  "messages.sharedMedia": {
+    en: "Shared media", vi: "File phương tiện", zh: "共享媒体", ja: "共有メディア", ko: "공유 미디어",
+    th: "สื่อที่แชร์", fr: "Médias partagés", de: "Geteilte Medien", es: "Medios compartidos",
+    pt: "Mídia compartilhada", ru: "Общие медиа", ar: "الوسائط المشتركة", hi: "साझा मीडिया"
+  },
+
+  // ============ DASHBOARD PAGE ============
+  "dashboard.title": {
+    en: "Impact Dashboard", vi: "Bảng Điều Khiển Tác Động", zh: "影响力仪表板", ja: "インパクトダッシュボード", ko: "영향력 대시보드",
+    th: "แดชบอร์ดผลกระทบ", fr: "Tableau de bord d'impact", de: "Wirkungsdashboard", es: "Panel de impacto",
+    pt: "Painel de impacto", ru: "Панель воздействия", ar: "لوحة التأثير", hi: "प्रभाव डैशबोर्ड"
+  },
+  "dashboard.liveOverview": {
+    en: "Live Overview", vi: "Tổng Quan Trực Tiếp", zh: "实时概览", ja: "ライブ概要", ko: "실시간 개요",
+    th: "ภาพรวมแบบเรียลไทม์", fr: "Aperçu en direct", de: "Live-Übersicht", es: "Vista en vivo",
+    pt: "Visão ao vivo", ru: "Обзор в реальном времени", ar: "نظرة عامة مباشرة", hi: "लाइव अवलोकन"
+  },
+  "dashboard.description": {
+    en: "Real-time transparency of global charitable impact", vi: "Minh bạch real-time về tác động từ thiện toàn cầu", zh: "全球慈善影响的实时透明度", ja: "世界的な慈善活動の影響をリアルタイムで透明化", ko: "글로벌 자선 영향력의 실시간 투명성",
+    th: "ความโปร่งใสแบบเรียลไทม์ของผลกระทบการกุศลทั่วโลก", fr: "Transparence en temps réel de l'impact caritatif mondial", de: "Echtzeit-Transparenz globaler wohltätiger Wirkung", es: "Transparencia en tiempo real del impacto benéfico global",
+    pt: "Transparência em tempo real do impacto beneficente global", ru: "Прозрачность глобального благотворительного воздействия в реальном времени", ar: "الشفافية الفورية للتأثير الخيري العالمي", hi: "वैश्विक धर्मार्थ प्रभाव की वास्तविक समय पारदर्शिता"
+  },
+  "dashboard.totalDonations": {
+    en: "Total Donations", vi: "Tổng Quyên Góp", zh: "捐款总额", ja: "寄付総額", ko: "총 기부금",
+    th: "ยอดบริจาคทั้งหมด", fr: "Dons totaux", de: "Gesamtspenden", es: "Donaciones totales",
+    pt: "Doações totais", ru: "Общие пожертвования", ar: "إجمالي التبرعات", hi: "कुल दान"
+  },
+  "dashboard.activeCampaigns": {
+    en: "Active Campaigns", vi: "Chiến Dịch Hoạt Động", zh: "活跃活动", ja: "アクティブなキャンペーン", ko: "활성 캠페인",
+    th: "แคมเปญที่ใช้งานอยู่", fr: "Campagnes actives", de: "Aktive Kampagnen", es: "Campañas activas",
+    pt: "Campanhas ativas", ru: "Активные кампании", ar: "الحملات النشطة", hi: "सक्रिय अभियान"
+  },
+  "dashboard.totalDonors": {
+    en: "Total Donors", vi: "Tổng Nhà Hảo Tâm", zh: "捐赠者总数", ja: "寄付者総数", ko: "총 기부자",
+    th: "ผู้บริจาคทั้งหมด", fr: "Donateurs totaux", de: "Gesamtzahl Spender", es: "Donantes totales",
+    pt: "Doadores totais", ru: "Всего доноров", ar: "إجمالي المتبرعين", hi: "कुल दानकर्ता"
+  },
+  "dashboard.countriesReached": {
+    en: "Countries Reached", vi: "Quốc Gia Tiếp Cận", zh: "覆盖国家", ja: "到達国", ko: "도달 국가",
+    th: "ประเทศที่เข้าถึง", fr: "Pays atteints", de: "Erreichte Länder", es: "Países alcanzados",
+    pt: "Países alcançados", ru: "Охваченные страны", ar: "الدول التي تم الوصول إليها", hi: "पहुंचे देश"
+  },
+  "dashboard.donationTrend": {
+    en: "Donation Trend", vi: "Xu Hướng Quyên Góp", zh: "捐款趋势", ja: "寄付傾向", ko: "기부 추세",
+    th: "แนวโน้มการบริจาค", fr: "Tendance des dons", de: "Spendentrend", es: "Tendencia de donaciones",
+    pt: "Tendência de doações", ru: "Тенденция пожертвований", ar: "اتجاه التبرعات", hi: "दान की प्रवृत्ति"
+  },
+  "dashboard.monthlyDonationsOverTime": {
+    en: "Monthly donations over time", vi: "Quyên góp hàng tháng theo thời gian", zh: "月度捐款趋势", ja: "月別寄付の推移", ko: "월별 기부금 추이",
+    th: "การบริจาครายเดือนตามเวลา", fr: "Dons mensuels au fil du temps", de: "Monatliche Spenden im Zeitverlauf", es: "Donaciones mensuales a lo largo del tiempo",
+    pt: "Doações mensais ao longo do tempo", ru: "Ежемесячные пожертвования за время", ar: "التبرعات الشهرية عبر الوقت", hi: "समय के साथ मासिक दान"
+  },
+  "dashboard.thisMonth": {
+    en: "this month", vi: "tháng này", zh: "本月", ja: "今月", ko: "이번 달",
+    th: "เดือนนี้", fr: "ce mois-ci", de: "diesen Monat", es: "este mes",
+    pt: "este mês", ru: "в этом месяце", ar: "هذا الشهر", hi: "इस महीने"
+  },
+  "dashboard.impactByCategory": {
+    en: "Impact by Category", vi: "Tác Động Theo Danh Mục", zh: "按类别划分的影响", ja: "カテゴリー別インパクト", ko: "카테고리별 영향력",
+    th: "ผลกระทบตามหมวดหมู่", fr: "Impact par catégorie", de: "Wirkung nach Kategorie", es: "Impacto por categoría",
+    pt: "Impacto por categoria", ru: "Воздействие по категориям", ar: "التأثير حسب الفئة", hi: "श्रेणी के अनुसार प्रभाव"
+  },
+  "dashboard.cleanWater": {
+    en: "Clean Water", vi: "Nước Sạch", zh: "清洁水源", ja: "清潔な水", ko: "깨끗한 물",
+    th: "น้ำสะอาด", fr: "Eau propre", de: "Sauberes Wasser", es: "Agua limpia",
+    pt: "Água limpa", ru: "Чистая вода", ar: "المياه النظيفة", hi: "स्वच्छ पानी"
+  },
+  "dashboard.education": {
+    en: "Education", vi: "Giáo Dục", zh: "教育", ja: "教育", ko: "교육",
+    th: "การศึกษา", fr: "Éducation", de: "Bildung", es: "Educación",
+    pt: "Educação", ru: "Образование", ar: "التعليم", hi: "शिक्षा"
+  },
+  "dashboard.food": {
+    en: "Food", vi: "Lương Thực", zh: "食物", ja: "食料", ko: "식량",
+    th: "อาหาร", fr: "Nourriture", de: "Nahrung", es: "Alimentos",
+    pt: "Comida", ru: "Еда", ar: "الطعام", hi: "भोजन"
+  },
+  "dashboard.healthcare": {
+    en: "Healthcare", vi: "Y Tế", zh: "医疗保健", ja: "医療", ko: "의료",
+    th: "การดูแลสุขภาพ", fr: "Santé", de: "Gesundheit", es: "Salud",
+    pt: "Saúde", ru: "Здравоохранение", ar: "الرعاية الصحية", hi: "स्वास्थ्य सेवा"
+  },
+  "dashboard.other": {
+    en: "Other", vi: "Khác", zh: "其他", ja: "その他", ko: "기타",
+    th: "อื่นๆ", fr: "Autre", de: "Andere", es: "Otro",
+    pt: "Outro", ru: "Другое", ar: "أخرى", hi: "अन्य"
+  },
+  "dashboard.liveActivity": {
+    en: "Live Activity", vi: "Hoạt Động Trực Tiếp", zh: "实时活动", ja: "ライブアクティビティ", ko: "실시간 활동",
+    th: "กิจกรรมแบบเรียลไทม์", fr: "Activité en direct", de: "Live-Aktivität", es: "Actividad en vivo",
+    pt: "Atividade ao vivo", ru: "Активность в реальном времени", ar: "النشاط المباشر", hi: "लाइव गतिविधि"
+  },
+  "dashboard.donatedTo": {
+    en: "donated to", vi: "đã quyên góp cho", zh: "捐赠给", ja: "に寄付しました", ko: "에 기부했습니다",
+    th: "บริจาคให้", fr: "a fait un don à", de: "hat gespendet für", es: "donó a",
+    pt: "doou para", ru: "пожертвовал на", ar: "تبرع لـ", hi: "को दान दिया"
+  },
+  "dashboard.reached": {
+    en: "reached", vi: "đạt", zh: "达到", ja: "達成", ko: "달성",
+    th: "ถึง", fr: "atteint", de: "erreicht", es: "alcanzó",
+    pt: "atingiu", ru: "достигнуто", ar: "وصلت", hi: "पहुंचा"
+  },
+  "dashboard.newCampaign": {
+    en: "New campaign", vi: "Chiến dịch mới", zh: "新活动", ja: "新しいキャンペーン", ko: "새 캠페인",
+    th: "แคมเปญใหม่", fr: "Nouvelle campagne", de: "Neue Kampagne", es: "Nueva campaña",
+    pt: "Nova campanha", ru: "Новая кампания", ar: "حملة جديدة", hi: "नया अभियान"
+  },
+  "dashboard.justLaunched": {
+    en: "just launched", vi: "vừa ra mắt", zh: "刚刚启动", ja: "開始しました", ko: "방금 시작",
+    th: "เพิ่งเปิดตัว", fr: "vient d'être lancée", de: "gerade gestartet", es: "recién lanzada",
+    pt: "acabou de lançar", ru: "только что запущена", ar: "تم إطلاقها للتو", hi: "अभी लॉन्च हुआ"
+  },
+  "dashboard.topDonors": {
+    en: "Top Donors", vi: "Top Nhà Hảo Tâm", zh: "顶级捐赠者", ja: "トップドナー", ko: "최고 기부자",
+    th: "ผู้บริจาคยอดเยี่ยม", fr: "Meilleurs donateurs", de: "Top-Spender", es: "Principales donantes",
+    pt: "Principais doadores", ru: "Лучшие доноры", ar: "أفضل المتبرعين", hi: "शीर्ष दानकर्ता"
+  },
+  "dashboard.leaderboard": {
+    en: "Leaderboard", vi: "Bảng Xếp Hạng", zh: "排行榜", ja: "リーダーボード", ko: "리더보드",
+    th: "กระดานผู้นำ", fr: "Classement", de: "Rangliste", es: "Tabla de clasificación",
+    pt: "Classificação", ru: "Таблица лидеров", ar: "لوحة المتصدرين", hi: "लीडरबोर्ड"
+  },
+  "dashboard.campaignsCount": {
+    en: "campaigns", vi: "chiến dịch", zh: "活动", ja: "キャンペーン", ko: "캠페인",
+    th: "แคมเปญ", fr: "campagnes", de: "Kampagnen", es: "campañas",
+    pt: "campanhas", ru: "кампаний", ar: "حملات", hi: "अभियान"
+  },
+  "dashboard.diamond": {
+    en: "Diamond", vi: "Kim Cương", zh: "钻石", ja: "ダイヤモンド", ko: "다이아몬드",
+    th: "เพชร", fr: "Diamant", de: "Diamant", es: "Diamante",
+    pt: "Diamante", ru: "Бриллиант", ar: "ماسي", hi: "हीरा"
+  },
+  "dashboard.corporateHero": {
+    en: "Corporate Hero", vi: "Anh Hùng DN", zh: "企业英雄", ja: "企業ヒーロー", ko: "기업 영웅",
+    th: "ฮีโร่องค์กร", fr: "Héros d'entreprise", de: "Unternehmensheld", es: "Héroe corporativo",
+    pt: "Herói corporativo", ru: "Корпоративный герой", ar: "بطل الشركة", hi: "कॉर्पोरेट हीरो"
+  },
+  "dashboard.platinum": {
+    en: "Platinum", vi: "Bạch Kim", zh: "铂金", ja: "プラチナ", ko: "플래티넘",
+    th: "แพลทินัม", fr: "Platine", de: "Platin", es: "Platino",
+    pt: "Platina", ru: "Платина", ar: "بلاتيني", hi: "प्लैटिनम"
+  },
+  "dashboard.gold": {
+    en: "Gold", vi: "Vàng", zh: "金", ja: "ゴールド", ko: "골드",
+    th: "ทอง", fr: "Or", de: "Gold", es: "Oro",
+    pt: "Ouro", ru: "Золото", ar: "ذهبي", hi: "गोल्ड"
+  },
+  "dashboard.anonymous": {
+    en: "Anonymous", vi: "Ẩn Danh", zh: "匿名", ja: "匿名", ko: "익명",
+    th: "ไม่ระบุชื่อ", fr: "Anonyme", de: "Anonym", es: "Anónimo",
+    pt: "Anônimo", ru: "Анонимный", ar: "مجهول", hi: "गुमनाम"
+  },
+
+  // ============ ADDITIONAL CAMPAIGNS KEYS ============
+  "campaigns.makeAnImpact": {
+    en: "Make an Impact", vi: "Tạo Tác Động", zh: "创造影响", ja: "インパクトを与える", ko: "영향력 만들기",
+    th: "สร้างผลกระทบ", fr: "Faire un impact", de: "Etwas bewirken", es: "Crear impacto",
+    pt: "Causar impacto", ru: "Оказать влияние", ar: "أحدث تأثيراً", hi: "प्रभाव डालें"
+  },
+  "campaigns.discover": {
+    en: "Discover Campaigns", vi: "Khám Phá Chiến Dịch", zh: "发现活动", ja: "キャンペーンを発見", ko: "캠페인 발견",
+    th: "ค้นพบแคมเปญ", fr: "Découvrir les campagnes", de: "Kampagnen entdecken", es: "Descubrir campañas",
+    pt: "Descobrir campanhas", ru: "Откройте кампании", ar: "اكتشف الحملات", hi: "अभियान खोजें"
+  },
+  "campaigns.verified": {
+    en: "Verified", vi: "Đã xác minh", zh: "已验证", ja: "確認済み", ko: "인증됨",
+    th: "ตรวจสอบแล้ว", fr: "Vérifié", de: "Verifiziert", es: "Verificado",
+    pt: "Verificado", ru: "Проверено", ar: "موثق", hi: "सत्यापित"
+  },
+  "campaigns.featured": {
+    en: "Featured", vi: "Nổi bật", zh: "精选", ja: "注目", ko: "추천",
+    th: "แนะนำ", fr: "En vedette", de: "Empfohlen", es: "Destacado",
+    pt: "Destaque", ru: "Рекомендуемый", ar: "مميز", hi: "विशेष"
+  },
+  "campaigns.urgent": {
+    en: "Urgent", vi: "Khẩn cấp", zh: "紧急", ja: "緊急", ko: "긴급",
+    th: "เร่งด่วน", fr: "Urgent", de: "Dringend", es: "Urgente",
+    pt: "Urgente", ru: "Срочно", ar: "عاجل", hi: "तत्काल"
+  },
+  "campaigns.donateNow": {
+    en: "Donate Now", vi: "Quyên Góp Ngay", zh: "立即捐赠", ja: "今すぐ寄付", ko: "지금 기부",
+    th: "บริจาคเลย", fr: "Faire un don", de: "Jetzt spenden", es: "Donar ahora",
+    pt: "Doar agora", ru: "Пожертвовать сейчас", ar: "تبرع الآن", hi: "अभी दान करें"
+  },
+  "campaigns.viewDetails": {
+    en: "View Details", vi: "Xem Chi Tiết", zh: "查看详情", ja: "詳細を見る", ko: "상세 보기",
+    th: "ดูรายละเอียด", fr: "Voir les détails", de: "Details anzeigen", es: "Ver detalles",
+    pt: "Ver detalhes", ru: "Подробнее", ar: "عرض التفاصيل", hi: "विवरण देखें"
+  },
+  "campaigns.filterAll": {
+    en: "All Categories", vi: "Tất cả danh mục", zh: "所有类别", ja: "すべてのカテゴリー", ko: "모든 카테고리",
+    th: "ทุกหมวดหมู่", fr: "Toutes les catégories", de: "Alle Kategorien", es: "Todas las categorías",
+    pt: "Todas as categorias", ru: "Все категории", ar: "جميع الفئات", hi: "सभी श्रेणियां"
+  },
+  "campaigns.noCampaigns": {
+    en: "No campaigns found", vi: "Không tìm thấy chiến dịch", zh: "未找到活动", ja: "キャンペーンが見つかりません", ko: "캠페인을 찾을 수 없음",
+    th: "ไม่พบแคมเปญ", fr: "Aucune campagne trouvée", de: "Keine Kampagnen gefunden", es: "No se encontraron campañas",
+    pt: "Nenhuma campanha encontrada", ru: "Кампании не найдены", ar: "لم يتم العثور على حملات", hi: "कोई अभियान नहीं मिला"
+  },
+  "campaigns.loadMore": {
+    en: "Load More", vi: "Tải thêm", zh: "加载更多", ja: "もっと読み込む", ko: "더 보기",
+    th: "โหลดเพิ่มเติม", fr: "Charger plus", de: "Mehr laden", es: "Cargar más",
+    pt: "Carregar mais", ru: "Загрузить еще", ar: "تحميل المزيد", hi: "और लोड करें"
+  },
 };
 
 interface LanguageContextType {
