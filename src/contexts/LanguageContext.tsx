@@ -2085,6 +2085,233 @@ export const translations: Translations = {
     th: "โหลดเพิ่มเติม", fr: "Charger plus", de: "Mehr laden", es: "Cargar más",
     pt: "Carregar mais", ru: "Загрузить еще", ar: "تحميل المزيد", hi: "और लोड करें"
   },
+
+  // Auth Page
+  "auth.joinFunCharity": {
+    en: "Join FUN Charity", vi: "Tham Gia FUN Charity", zh: "加入FUN慈善", ja: "FUN Charityに参加", ko: "FUN Charity 가입",
+    th: "เข้าร่วม FUN Charity", fr: "Rejoindre FUN Charity", de: "FUN Charity beitreten", es: "Únete a FUN Charity",
+    pt: "Junte-se ao FUN Charity", ru: "Присоединиться к FUN Charity", ar: "انضم إلى FUN Charity", hi: "FUN Charity से जुड़ें"
+  },
+  "auth.welcomeBack": {
+    en: "Welcome Back", vi: "Chào Mừng Trở Lại", zh: "欢迎回来", ja: "おかえりなさい", ko: "다시 오신 것을 환영합니다",
+    th: "ยินดีต้อนรับกลับ", fr: "Bienvenue", de: "Willkommen zurück", es: "Bienvenido de vuelta",
+    pt: "Bem-vindo de volta", ru: "С возвращением", ar: "مرحبًا بعودتك", hi: "वापसी पर स्वागत है"
+  },
+  "auth.createAccount": {
+    en: "Create Account", vi: "Tạo Tài Khoản", zh: "创建账户", ja: "アカウント作成", ko: "계정 만들기",
+    th: "สร้างบัญชี", fr: "Créer un compte", de: "Konto erstellen", es: "Crear cuenta",
+    pt: "Criar conta", ru: "Создать аккаунт", ar: "إنشاء حساب", hi: "खाता बनाएं"
+  },
+  "auth.loginSubtitle": {
+    en: "Sign in to continue your impact journey", vi: "Đăng nhập để tiếp tục hành trình tạo tác động", zh: "登录以继续您的影响之旅", ja: "インパクトの旅を続けるためにログイン", ko: "영향력 여정을 계속하려면 로그인하세요",
+    th: "เข้าสู่ระบบเพื่อเดินทางสร้างผลกระทบ", fr: "Connectez-vous pour continuer votre parcours d'impact", de: "Melden Sie sich an, um Ihre Wirkungsreise fortzusetzen", es: "Inicia sesión para continuar tu viaje de impacto",
+    pt: "Entre para continuar sua jornada de impacto", ru: "Войдите, чтобы продолжить свой путь влияния", ar: "سجل الدخول لمتابعة رحلة التأثير", hi: "अपनी प्रभाव यात्रा जारी रखने के लिए साइन इन करें"
+  },
+  "auth.signupSubtitle": {
+    en: "Start making a transparent difference today", vi: "Bắt đầu tạo sự khác biệt minh bạch ngay hôm nay", zh: "今天开始创造透明的改变", ja: "今日から透明な変化を始めましょう", ko: "오늘부터 투명한 변화를 만들어보세요",
+    th: "เริ่มสร้างความแตกต่างอย่างโปร่งใสวันนี้", fr: "Commencez à faire une différence transparente aujourd'hui", de: "Beginnen Sie heute, einen transparenten Unterschied zu machen", es: "Comienza a marcar una diferencia transparente hoy",
+    pt: "Comece a fazer uma diferença transparente hoje", ru: "Начните создавать прозрачные изменения сегодня", ar: "ابدأ في إحداث فرق شفاف اليوم", hi: "आज ही पारदर्शी बदलाव लाना शुरू करें"
+  },
+  "auth.joinAsRole": {
+    en: "I want to join as", vi: "Tôi muốn tham gia với vai trò", zh: "我想以...身份加入", ja: "私は...として参加したい", ko: "나는...로 참여하고 싶습니다",
+    th: "ฉันต้องการเข้าร่วมในฐานะ", fr: "Je veux rejoindre en tant que", de: "Ich möchte beitreten als", es: "Quiero unirme como",
+    pt: "Eu quero participar como", ru: "Я хочу присоединиться как", ar: "أريد الانضمام كـ", hi: "मैं इस रूप में शामिल होना चाहता हूं"
+  },
+  "auth.donor": {
+    en: "Donor", vi: "Nhà Hảo Tâm", zh: "捐赠者", ja: "寄付者", ko: "기부자",
+    th: "ผู้บริจาค", fr: "Donateur", de: "Spender", es: "Donante",
+    pt: "Doador", ru: "Донор", ar: "متبرع", hi: "दाता"
+  },
+  "auth.volunteer": {
+    en: "Volunteer", vi: "Tình Nguyện", zh: "志愿者", ja: "ボランティア", ko: "자원봉사자",
+    th: "อาสาสมัคร", fr: "Bénévole", de: "Freiwilliger", es: "Voluntario",
+    pt: "Voluntário", ru: "Волонтер", ar: "متطوع", hi: "स्वयंसेवक"
+  },
+  "auth.organization": {
+    en: "Organization", vi: "Tổ Chức", zh: "组织", ja: "組織", ko: "조직",
+    th: "องค์กร", fr: "Organisation", de: "Organisation", es: "Organización",
+    pt: "Organização", ru: "Организация", ar: "منظمة", hi: "संगठन"
+  },
+  "auth.forgotPasswordTitle": {
+    en: "Forgot Password", vi: "Quên Mật Khẩu", zh: "忘记密码", ja: "パスワードを忘れた", ko: "비밀번호 찾기",
+    th: "ลืมรหัสผ่าน", fr: "Mot de passe oublié", de: "Passwort vergessen", es: "Olvidé mi contraseña",
+    pt: "Esqueci a senha", ru: "Забыл пароль", ar: "نسيت كلمة المرور", hi: "पासवर्ड भूल गए"
+  },
+  "auth.resetEmailSent": {
+    en: "Check your inbox to reset your password", vi: "Kiểm tra hộp thư của bạn để đặt lại mật khẩu", zh: "请检查您的收件箱以重置密码", ja: "パスワードリセットのためにメールを確認してください", ko: "비밀번호 재설정을 위해 이메일을 확인하세요",
+    th: "ตรวจสอบกล่องจดหมายเพื่อรีเซ็ตรหัสผ่าน", fr: "Vérifiez votre boîte de réception pour réinitialiser votre mot de passe", de: "Überprüfen Sie Ihren Posteingang, um Ihr Passwort zurückzusetzen", es: "Revisa tu bandeja de entrada para restablecer tu contraseña",
+    pt: "Verifique sua caixa de entrada para redefinir sua senha", ru: "Проверьте почту для сброса пароля", ar: "تحقق من بريدك الوارد لإعادة تعيين كلمة المرور", hi: "अपना पासवर्ड रीसेट करने के लिए अपना इनबॉक्स जांचें"
+  },
+  "auth.enterEmailForReset": {
+    en: "Enter your email to receive a password reset link", vi: "Nhập email để nhận link đặt lại mật khẩu", zh: "输入邮箱以接收密码重置链接", ja: "パスワードリセットリンクを受け取るためにメールを入力", ko: "비밀번호 재설정 링크를 받을 이메일을 입력하세요",
+    th: "ป้อนอีเมลเพื่อรับลิงก์รีเซ็ตรหัสผ่าน", fr: "Entrez votre e-mail pour recevoir un lien de réinitialisation", de: "Geben Sie Ihre E-Mail ein, um einen Link zum Zurücksetzen zu erhalten", es: "Ingresa tu correo para recibir un enlace de restablecimiento",
+    pt: "Digite seu e-mail para receber um link de redefinição", ru: "Введите email для получения ссылки сброса", ar: "أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين", hi: "पासवर्ड रीसेट लिंक प्राप्त करने के लिए ईमेल दर्ज करें"
+  },
+  "auth.sendResetLink": {
+    en: "Send Reset Link", vi: "Gửi Link Đặt Lại", zh: "发送重置链接", ja: "リセットリンクを送信", ko: "재설정 링크 보내기",
+    th: "ส่งลิงก์รีเซ็ต", fr: "Envoyer le lien de réinitialisation", de: "Link zum Zurücksetzen senden", es: "Enviar enlace de restablecimiento",
+    pt: "Enviar link de redefinição", ru: "Отправить ссылку сброса", ar: "إرسال رابط إعادة التعيين", hi: "रीसेट लिंक भेजें"
+  },
+  "auth.backToLogin": {
+    en: "Back to Login", vi: "Quay lại Đăng Nhập", zh: "返回登录", ja: "ログインに戻る", ko: "로그인으로 돌아가기",
+    th: "กลับไปเข้าสู่ระบบ", fr: "Retour à la connexion", de: "Zurück zur Anmeldung", es: "Volver al inicio de sesión",
+    pt: "Voltar ao login", ru: "Вернуться к входу", ar: "العودة إلى تسجيل الدخول", hi: "लॉगिन पर वापस जाएं"
+  },
+  "auth.backToHome": {
+    en: "Back to Home", vi: "Về Trang Chủ", zh: "返回首页", ja: "ホームに戻る", ko: "홈으로 돌아가기",
+    th: "กลับหน้าแรก", fr: "Retour à l'accueil", de: "Zurück zur Startseite", es: "Volver al inicio",
+    pt: "Voltar ao início", ru: "На главную", ar: "العودة للرئيسية", hi: "होम पर वापस जाएं"
+  },
+  "auth.organizationName": {
+    en: "Organization Name", vi: "Tên Tổ Chức", zh: "组织名称", ja: "組織名", ko: "조직명",
+    th: "ชื่อองค์กร", fr: "Nom de l'organisation", de: "Organisationsname", es: "Nombre de la organización",
+    pt: "Nome da organização", ru: "Название организации", ar: "اسم المنظمة", hi: "संगठन का नाम"
+  },
+  "auth.namePlaceholder": {
+    en: "Your full name", vi: "Họ và tên của bạn", zh: "您的全名", ja: "あなたのフルネーム", ko: "귀하의 성명",
+    th: "ชื่อ-นามสกุลของคุณ", fr: "Votre nom complet", de: "Ihr vollständiger Name", es: "Tu nombre completo",
+    pt: "Seu nome completo", ru: "Ваше полное имя", ar: "اسمك الكامل", hi: "आपका पूरा नाम"
+  },
+  "auth.orgPlaceholder": {
+    en: "Organization name", vi: "Tên tổ chức", zh: "组织名称", ja: "組織名", ko: "조직명",
+    th: "ชื่อองค์กร", fr: "Nom de l'organisation", de: "Organisationsname", es: "Nombre de la organización",
+    pt: "Nome da organização", ru: "Название организации", ar: "اسم المنظمة", hi: "संगठन का नाम"
+  },
+  "auth.kycRequirement": {
+    en: "KYC Requirement", vi: "Yêu Cầu KYC", zh: "KYC要求", ja: "KYC要件", ko: "KYC 요구사항",
+    th: "ข้อกำหนด KYC", fr: "Exigence KYC", de: "KYC-Anforderung", es: "Requisito KYC",
+    pt: "Requisito KYC", ru: "Требование KYC", ar: "متطلبات KYC", hi: "KYC आवश्यकता"
+  },
+  "auth.kycDescription": {
+    en: "NGOs need to complete KYC verification to launch campaigns. You will be guided after registration.", vi: "Các tổ chức NGO cần hoàn thành xác minh KYC để khởi chạy chiến dịch. Bạn sẽ được hướng dẫn sau khi đăng ký.", zh: "NGO需要完成KYC验证才能发起活动。注册后将为您提供指导。", ja: "NGOはキャンペーンを開始するためにKYC認証を完了する必要があります。登録後にガイドされます。", ko: "NGO는 캠페인을 시작하려면 KYC 인증을 완료해야 합니다. 등록 후 안내됩니다.",
+    th: "องค์กร NGO ต้องดำเนินการยืนยัน KYC เพื่อเริ่มแคมเปญ คุณจะได้รับคำแนะนำหลังจากลงทะเบียน", fr: "Les ONG doivent compléter la vérification KYC pour lancer des campagnes. Vous serez guidé après l'inscription.", de: "NGOs müssen die KYC-Verifizierung abschließen, um Kampagnen zu starten. Sie werden nach der Registrierung angeleitet.", es: "Las ONG deben completar la verificación KYC para lanzar campañas. Será guiado después del registro.",
+    pt: "ONGs precisam completar a verificação KYC para lançar campanhas. Você será orientado após o registro.", ru: "НКО должны пройти KYC-верификацию для запуска кампаний. Вас направят после регистрации.", ar: "تحتاج المنظمات غير الحكومية إلى إكمال التحقق KYC لإطلاق الحملات. سيتم توجيهك بعد التسجيل.", hi: "NGO को अभियान शुरू करने के लिए KYC सत्यापन पूरा करना होगा। पंजीकरण के बाद आपका मार्गदर्शन किया जाएगा।"
+  },
+  "auth.loginWithGoogle": {
+    en: "Sign in with Google", vi: "Đăng nhập với Google", zh: "使用Google登录", ja: "Googleでサインイン", ko: "Google로 로그인",
+    th: "เข้าสู่ระบบด้วย Google", fr: "Se connecter avec Google", de: "Mit Google anmelden", es: "Iniciar sesión con Google",
+    pt: "Entrar com Google", ru: "Войти через Google", ar: "تسجيل الدخول باستخدام Google", hi: "Google से साइन इन करें"
+  },
+  "auth.connectWallet": {
+    en: "Connect Wallet", vi: "Kết Nối Ví", zh: "连接钱包", ja: "ウォレットを接続", ko: "지갑 연결",
+    th: "เชื่อมต่อวอลเล็ต", fr: "Connecter le portefeuille", de: "Wallet verbinden", es: "Conectar billetera",
+    pt: "Conectar carteira", ru: "Подключить кошелек", ar: "ربط المحفظة", hi: "वॉलेट कनेक्ट करें"
+  },
+  "auth.walletSupport": {
+    en: "Supports MetaMask, WalletConnect and many other wallets", vi: "Hỗ trợ MetaMask, WalletConnect và nhiều ví khác", zh: "支持MetaMask、WalletConnect和许多其他钱包", ja: "MetaMask、WalletConnectおよび他の多くのウォレットをサポート", ko: "MetaMask, WalletConnect 및 기타 많은 지갑 지원",
+    th: "รองรับ MetaMask, WalletConnect และวอลเล็ตอื่นๆ", fr: "Prend en charge MetaMask, WalletConnect et de nombreux autres portefeuilles", de: "Unterstützt MetaMask, WalletConnect und viele andere Wallets", es: "Compatible con MetaMask, WalletConnect y muchas otras billeteras",
+    pt: "Suporta MetaMask, WalletConnect e muitas outras carteiras", ru: "Поддерживает MetaMask, WalletConnect и многие другие кошельки", ar: "يدعم MetaMask و WalletConnect والعديد من المحافظ الأخرى", hi: "MetaMask, WalletConnect और कई अन्य वॉलेट का समर्थन करता है"
+  },
+  "auth.tagline": {
+    en: "Charity is light. Transparency is gold.", vi: "Từ thiện là ánh sáng. Minh bạch là vàng.", zh: "慈善是光明。透明是金。", ja: "慈善は光。透明性は金。", ko: "자선은 빛입니다. 투명성은 금입니다.",
+    th: "การกุศลคือแสงสว่าง ความโปร่งใสคือทอง", fr: "La charité est lumière. La transparence est d'or.", de: "Wohltätigkeit ist Licht. Transparenz ist Gold.", es: "La caridad es luz. La transparencia es oro.",
+    pt: "Caridade é luz. Transparência é ouro.", ru: "Благотворительность - это свет. Прозрачность - это золото.", ar: "الخير نور. الشفافية ذهب.", hi: "दान प्रकाश है। पारदर्शिता सोना है।"
+  },
+  "auth.processing": {
+    en: "Processing...", vi: "Đang xử lý...", zh: "处理中...", ja: "処理中...", ko: "처리 중...",
+    th: "กำลังดำเนินการ...", fr: "Traitement...", de: "Verarbeitung...", es: "Procesando...",
+    pt: "Processando...", ru: "Обработка...", ar: "جاري المعالجة...", hi: "प्रोसेसिंग..."
+  },
+  "auth.sending": {
+    en: "Sending...", vi: "Đang gửi...", zh: "发送中...", ja: "送信中...", ko: "전송 중...",
+    th: "กำลังส่ง...", fr: "Envoi...", de: "Senden...", es: "Enviando...",
+    pt: "Enviando...", ru: "Отправка...", ar: "جاري الإرسال...", hi: "भेज रहा है..."
+  },
+  "auth.error": {
+    en: "Error", vi: "Lỗi", zh: "错误", ja: "エラー", ko: "오류",
+    th: "ข้อผิดพลาด", fr: "Erreur", de: "Fehler", es: "Error",
+    pt: "Erro", ru: "Ошибка", ar: "خطأ", hi: "त्रुटि"
+  },
+  "auth.enterEmail": {
+    en: "Please enter your email", vi: "Vui lòng nhập email của bạn", zh: "请输入您的邮箱", ja: "メールアドレスを入力してください", ko: "이메일을 입력하세요",
+    th: "กรุณากรอกอีเมลของคุณ", fr: "Veuillez entrer votre e-mail", de: "Bitte geben Sie Ihre E-Mail ein", es: "Por favor ingresa tu correo",
+    pt: "Por favor, insira seu e-mail", ru: "Пожалуйста, введите email", ar: "يرجى إدخال بريدك الإلكتروني", hi: "कृपया अपना ईमेल दर्ज करें"
+  },
+  "auth.sendEmailError": {
+    en: "An error occurred while sending the email. Please try again.", vi: "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại.", zh: "发送邮件时出错。请重试。", ja: "メール送信中にエラーが発生しました。もう一度お試しください。", ko: "이메일을 보내는 중 오류가 발생했습니다. 다시 시도해 주세요.",
+    th: "เกิดข้อผิดพลาดขณะส่งอีเมล กรุณาลองใหม่", fr: "Une erreur s'est produite lors de l'envoi de l'e-mail. Veuillez réessayer.", de: "Beim Senden der E-Mail ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.", es: "Ocurrió un error al enviar el correo. Por favor, inténtalo de nuevo.",
+    pt: "Ocorreu um erro ao enviar o e-mail. Por favor, tente novamente.", ru: "Произошла ошибка при отправке письма. Попробуйте снова.", ar: "حدث خطأ أثناء إرسال البريد الإلكتروني. يرجى المحاولة مرة أخرى.", hi: "ईमेल भेजते समय त्रुटि हुई। कृपया पुनः प्रयास करें।"
+  },
+  "auth.emailSent": {
+    en: "Email sent!", vi: "Email đã được gửi!", zh: "邮件已发送！", ja: "メールが送信されました！", ko: "이메일이 전송되었습니다!",
+    th: "ส่งอีเมลแล้ว!", fr: "E-mail envoyé !", de: "E-Mail gesendet!", es: "¡Correo enviado!",
+    pt: "E-mail enviado!", ru: "Письмо отправлено!", ar: "تم إرسال البريد الإلكتروني!", hi: "ईमेल भेजा गया!"
+  },
+  "auth.checkInbox": {
+    en: "Please check your inbox to reset your password.", vi: "Vui lòng kiểm tra hộp thư của bạn để đặt lại mật khẩu.", zh: "请检查您的收件箱以重置密码。", ja: "パスワードをリセットするためにメールを確認してください。", ko: "비밀번호를 재설정하려면 이메일을 확인하세요.",
+    th: "กรุณาตรวจสอบกล่องจดหมายเพื่อรีเซ็ตรหัสผ่าน", fr: "Veuillez vérifier votre boîte de réception pour réinitialiser votre mot de passe.", de: "Bitte überprüfen Sie Ihren Posteingang, um Ihr Passwort zurückzusetzen.", es: "Por favor revisa tu bandeja de entrada para restablecer tu contraseña.",
+    pt: "Por favor, verifique sua caixa de entrada para redefinir sua senha.", ru: "Проверьте почту для сброса пароля.", ar: "يرجى التحقق من بريدك الوارد لإعادة تعيين كلمة المرور.", hi: "कृपया अपना पासवर्ड रीसेट करने के लिए अपना इनबॉक्स जांचें।"
+  },
+  "auth.googleLoginFailed": {
+    en: "Unable to sign in with Google. Please try again.", vi: "Không thể đăng nhập bằng Google. Vui lòng thử lại.", zh: "无法使用Google登录。请重试。", ja: "Googleでログインできません。もう一度お試しください。", ko: "Google로 로그인할 수 없습니다. 다시 시도해 주세요.",
+    th: "ไม่สามารถเข้าสู่ระบบด้วย Google กรุณาลองใหม่", fr: "Impossible de se connecter avec Google. Veuillez réessayer.", de: "Anmeldung mit Google nicht möglich. Bitte versuchen Sie es erneut.", es: "No se puede iniciar sesión con Google. Por favor, inténtalo de nuevo.",
+    pt: "Não foi possível entrar com o Google. Por favor, tente novamente.", ru: "Не удалось войти через Google. Попробуйте снова.", ar: "تعذر تسجيل الدخول باستخدام Google. يرجى المحاولة مرة أخرى.", hi: "Google से साइन इन नहीं हो सका। कृपया पुनः प्रयास करें।"
+  },
+  "auth.validationError": {
+    en: "Validation Error", vi: "Lỗi xác thực", zh: "验证错误", ja: "検証エラー", ko: "유효성 검사 오류",
+    th: "ข้อผิดพลาดในการตรวจสอบ", fr: "Erreur de validation", de: "Validierungsfehler", es: "Error de validación",
+    pt: "Erro de validação", ru: "Ошибка проверки", ar: "خطأ في التحقق", hi: "सत्यापन त्रुटि"
+  },
+  "auth.invalidData": {
+    en: "Invalid data", vi: "Dữ liệu không hợp lệ", zh: "无效数据", ja: "無効なデータ", ko: "잘못된 데이터",
+    th: "ข้อมูลไม่ถูกต้อง", fr: "Données invalides", de: "Ungültige Daten", es: "Datos inválidos",
+    pt: "Dados inválidos", ru: "Недопустимые данные", ar: "بيانات غير صالحة", hi: "अमान्य डेटा"
+  },
+  "auth.invalidCredentials": {
+    en: "Incorrect email or password", vi: "Email hoặc mật khẩu không chính xác", zh: "邮箱或密码不正确", ja: "メールまたはパスワードが正しくありません", ko: "이메일 또는 비밀번호가 올바르지 않습니다",
+    th: "อีเมลหรือรหัสผ่านไม่ถูกต้อง", fr: "E-mail ou mot de passe incorrect", de: "Falsche E-Mail oder falsches Passwort", es: "Correo electrónico o contraseña incorrectos",
+    pt: "E-mail ou senha incorretos", ru: "Неверный email или пароль", ar: "البريد الإلكتروني أو كلمة المرور غير صحيحة", hi: "गलत ईमेल या पासवर्ड"
+  },
+  "auth.confirmEmail": {
+    en: "Please confirm your email before logging in", vi: "Vui lòng xác nhận email của bạn trước khi đăng nhập", zh: "请在登录前确认您的邮箱", ja: "ログインする前にメールを確認してください", ko: "로그인하기 전에 이메일을 확인하세요",
+    th: "กรุณายืนยันอีเมลก่อนเข้าสู่ระบบ", fr: "Veuillez confirmer votre e-mail avant de vous connecter", de: "Bitte bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden", es: "Por favor confirma tu correo antes de iniciar sesión",
+    pt: "Por favor, confirme seu e-mail antes de fazer login", ru: "Подтвердите email перед входом", ar: "يرجى تأكيد بريدك الإلكتروني قبل تسجيل الدخول", hi: "लॉगिन करने से पहले कृपया अपना ईमेल कन्फर्म करें"
+  },
+  "auth.loginFailed": {
+    en: "Login Failed", vi: "Đăng nhập thất bại", zh: "登录失败", ja: "ログイン失敗", ko: "로그인 실패",
+    th: "เข้าสู่ระบบล้มเหลว", fr: "Échec de la connexion", de: "Anmeldung fehlgeschlagen", es: "Inicio de sesión fallido",
+    pt: "Falha no login", ru: "Ошибка входа", ar: "فشل تسجيل الدخول", hi: "लॉगिन विफल"
+  },
+  "auth.welcomeBackMessage": {
+    en: "Welcome back to FUN Charity!", vi: "Chào mừng bạn trở lại FUN Charity!", zh: "欢迎回到FUN慈善！", ja: "FUN Charityへおかえりなさい！", ko: "FUN Charity에 다시 오신 것을 환영합니다!",
+    th: "ยินดีต้อนรับกลับสู่ FUN Charity!", fr: "Bienvenue à nouveau sur FUN Charity !", de: "Willkommen zurück bei FUN Charity!", es: "¡Bienvenido de vuelta a FUN Charity!",
+    pt: "Bem-vindo de volta ao FUN Charity!", ru: "Добро пожаловать обратно в FUN Charity!", ar: "مرحبًا بعودتك إلى FUN Charity!", hi: "FUN Charity में आपका फिर से स्वागत है!"
+  },
+  "auth.signupError": {
+    en: "An error occurred while signing up", vi: "Đã xảy ra lỗi khi đăng ký", zh: "注册时出错", ja: "サインアップ中にエラーが発生しました", ko: "가입 중 오류가 발생했습니다",
+    th: "เกิดข้อผิดพลาดขณะลงทะเบียน", fr: "Une erreur s'est produite lors de l'inscription", de: "Bei der Registrierung ist ein Fehler aufgetreten", es: "Ocurrió un error al registrarse",
+    pt: "Ocorreu um erro ao se cadastrar", ru: "Произошла ошибка при регистрации", ar: "حدث خطأ أثناء التسجيل", hi: "साइन अप करते समय त्रुटि हुई"
+  },
+  "auth.emailInUse": {
+    en: "This email is already in use. Please log in or use a different email.", vi: "Email này đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác.", zh: "此邮箱已被使用。请登录或使用其他邮箱。", ja: "このメールは既に使用されています。ログインするか、別のメールを使用してください。", ko: "이 이메일은 이미 사용 중입니다. 로그인하거나 다른 이메일을 사용하세요.",
+    th: "อีเมลนี้ถูกใช้แล้ว กรุณาเข้าสู่ระบบหรือใช้อีเมลอื่น", fr: "Cet e-mail est déjà utilisé. Veuillez vous connecter ou utiliser un autre e-mail.", de: "Diese E-Mail wird bereits verwendet. Bitte melden Sie sich an oder verwenden Sie eine andere E-Mail.", es: "Este correo ya está en uso. Por favor inicia sesión o usa otro correo.",
+    pt: "Este e-mail já está em uso. Por favor, faça login ou use outro e-mail.", ru: "Этот email уже используется. Войдите или используйте другой email.", ar: "هذا البريد الإلكتروني مستخدم بالفعل. يرجى تسجيل الدخول أو استخدام بريد آخر.", hi: "यह ईमेल पहले से उपयोग में है। कृपया लॉगिन करें या दूसरा ईमेल उपयोग करें।"
+  },
+  "auth.weakPassword": {
+    en: "Invalid password. Please use a stronger password.", vi: "Mật khẩu không hợp lệ. Vui lòng sử dụng mật khẩu mạnh hơn.", zh: "密码无效。请使用更强的密码。", ja: "パスワードが無効です。より強力なパスワードを使用してください。", ko: "비밀번호가 유효하지 않습니다. 더 강력한 비밀번호를 사용하세요.",
+    th: "รหัสผ่านไม่ถูกต้อง กรุณาใช้รหัสผ่านที่แข็งแกร่งกว่า", fr: "Mot de passe invalide. Veuillez utiliser un mot de passe plus fort.", de: "Ungültiges Passwort. Bitte verwenden Sie ein stärkeres Passwort.", es: "Contraseña inválida. Por favor usa una contraseña más fuerte.",
+    pt: "Senha inválida. Por favor, use uma senha mais forte.", ru: "Недопустимый пароль. Используйте более надежный пароль.", ar: "كلمة المرور غير صالحة. يرجى استخدام كلمة مرور أقوى.", hi: "अमान्य पासवर्ड। कृपया एक मजबूत पासवर्ड का उपयोग करें।"
+  },
+  "auth.signupFailed": {
+    en: "Registration Failed", vi: "Đăng ký thất bại", zh: "注册失败", ja: "登録失敗", ko: "가입 실패",
+    th: "การลงทะเบียนล้มเหลว", fr: "Échec de l'inscription", de: "Registrierung fehlgeschlagen", es: "Registro fallido",
+    pt: "Falha no cadastro", ru: "Ошибка регистрации", ar: "فشل التسجيل", hi: "पंजीकरण विफल"
+  },
+  "auth.verificationSent": {
+    en: "We have sent a verification email to your address.", vi: "Chúng tôi đã gửi email xác thực đến địa chỉ của bạn.", zh: "我们已向您的地址发送了验证邮件。", ja: "確認メールをお送りしました。", ko: "인증 이메일을 보냈습니다.",
+    th: "เราได้ส่งอีเมลยืนยันไปยังที่อยู่ของคุณแล้ว", fr: "Nous avons envoyé un e-mail de vérification à votre adresse.", de: "Wir haben eine Bestätigungs-E-Mail an Ihre Adresse gesendet.", es: "Hemos enviado un correo de verificación a tu dirección.",
+    pt: "Enviamos um e-mail de verificação para seu endereço.", ru: "Мы отправили письмо для подтверждения.", ar: "لقد أرسلنا بريد تحقق إلى عنوانك.", hi: "हमने आपके पते पर एक सत्यापन ईमेल भेजा है।"
+  },
+  "auth.signupSuccess": {
+    en: "Registration Successful!", vi: "Đăng ký thành công!", zh: "注册成功！", ja: "登録成功！", ko: "가입 성공!",
+    th: "ลงทะเบียนสำเร็จ!", fr: "Inscription réussie !", de: "Registrierung erfolgreich!", es: "¡Registro exitoso!",
+    pt: "Cadastro bem-sucedido!", ru: "Регистрация успешна!", ar: "تم التسجيل بنجاح!", hi: "पंजीकरण सफल!"
+  },
+  "auth.welcomeToFUN": {
+    en: "Welcome to FUN Charity!", vi: "Chào mừng đến với FUN Charity!", zh: "欢迎来到FUN慈善！", ja: "FUN Charityへようこそ！", ko: "FUN Charity에 오신 것을 환영합니다!",
+    th: "ยินดีต้อนรับสู่ FUN Charity!", fr: "Bienvenue sur FUN Charity !", de: "Willkommen bei FUN Charity!", es: "¡Bienvenido a FUN Charity!",
+    pt: "Bem-vindo ao FUN Charity!", ru: "Добро пожаловать в FUN Charity!", ar: "مرحبًا بك في FUN Charity!", hi: "FUN Charity में आपका स्वागत है!"
+  },
 };
 
 interface LanguageContextType {

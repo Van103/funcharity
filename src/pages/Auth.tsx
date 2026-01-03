@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { signupSchema, loginSchema } from "@/lib/validation";
 import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Heart,
   Users,
@@ -40,6 +41,7 @@ const Auth = () => {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // Check if user is already logged in
   useEffect(() => {
@@ -63,8 +65,8 @@ const Auth = () => {
     
     if (!email.trim()) {
       toast({
-        title: "Lỗi",
-        description: "Vui lòng nhập email của bạn",
+        title: t("auth.error"),
+        description: t("auth.enterEmail"),
         variant: "destructive",
       });
       return;
@@ -82,8 +84,8 @@ const Auth = () => {
 
     if (error) {
       toast({
-        title: "Lỗi",
-        description: "Đã xảy ra lỗi khi gửi email. Vui lòng thử lại.",
+        title: t("auth.error"),
+        description: t("auth.sendEmailError"),
         variant: "destructive",
       });
       return;
@@ -91,8 +93,8 @@ const Auth = () => {
 
     setResetEmailSent(true);
     toast({
-      title: "Email đã được gửi!",
-      description: "Vui lòng kiểm tra hộp thư của bạn để đặt lại mật khẩu.",
+      title: t("auth.emailSent"),
+      description: t("auth.checkInbox"),
     });
   };
 
@@ -109,8 +111,8 @@ const Auth = () => {
     if (error) {
       setLoading(false);
       toast({
-        title: "Đăng nhập thất bại",
-        description: "Không thể đăng nhập bằng Google. Vui lòng thử lại.",
+        title: t("auth.loginFailed"),
+        description: t("auth.googleLoginFailed"),
         variant: "destructive",
       });
     }
@@ -123,8 +125,8 @@ const Auth = () => {
     const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
       toast({
-        title: "Lỗi xác thực",
-        description: result.error.errors[0]?.message || 'Dữ liệu không hợp lệ',
+        title: t("auth.validationError"),
+        description: result.error.errors[0]?.message || t("auth.invalidData"),
         variant: "destructive",
       });
       return;
@@ -140,14 +142,14 @@ const Auth = () => {
     setLoading(false);
 
     if (error) {
-      let errorMessage = "Đã xảy ra lỗi khi đăng nhập";
+      let errorMessage = t("auth.loginError");
       if (error.message.includes("Invalid login credentials")) {
-        errorMessage = "Email hoặc mật khẩu không chính xác";
+        errorMessage = t("auth.invalidCredentials");
       } else if (error.message.includes("Email not confirmed")) {
-        errorMessage = "Vui lòng xác nhận email của bạn trước khi đăng nhập";
+        errorMessage = t("auth.confirmEmail");
       }
       toast({
-        title: "Đăng nhập thất bại",
+        title: t("auth.loginFailed"),
         description: errorMessage,
         variant: "destructive",
       });
@@ -155,8 +157,8 @@ const Auth = () => {
     }
 
     toast({
-      title: "Đăng nhập thành công",
-      description: "Chào mừng bạn trở lại FUN Charity!",
+      title: t("auth.loginSuccess"),
+      description: t("auth.welcomeBackMessage"),
     });
     navigate("/social");
   };
@@ -168,8 +170,8 @@ const Auth = () => {
     const result = signupSchema.safeParse({ email, password, fullName });
     if (!result.success) {
       toast({
-        title: "Lỗi xác thực",
-        description: result.error.errors[0]?.message || 'Dữ liệu không hợp lệ',
+        title: t("auth.validationError"),
+        description: result.error.errors[0]?.message || t("auth.invalidData"),
         variant: "destructive",
       });
       return;
@@ -194,14 +196,14 @@ const Auth = () => {
     setLoading(false);
 
     if (error) {
-      let errorMessage = "Đã xảy ra lỗi khi đăng ký";
+      let errorMessage = t("auth.signupError");
       if (error.message.includes("User already registered")) {
-        errorMessage = "Email này đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác.";
+        errorMessage = t("auth.emailInUse");
       } else if (error.message.includes("Password")) {
-        errorMessage = "Mật khẩu không hợp lệ. Vui lòng sử dụng mật khẩu mạnh hơn.";
+        errorMessage = t("auth.weakPassword");
       }
       toast({
-        title: "Đăng ký thất bại",
+        title: t("auth.signupFailed"),
         description: errorMessage,
         variant: "destructive",
       });
@@ -211,14 +213,14 @@ const Auth = () => {
     // Check if email confirmation is required
     if (data?.user && !data.user.email_confirmed_at) {
       toast({
-        title: "Kiểm tra email của bạn!",
-        description: "Chúng tôi đã gửi email xác thực đến địa chỉ của bạn.",
+        title: t("auth.checkEmail"),
+        description: t("auth.verificationSent"),
       });
       navigate(`/verify-email?email=${encodeURIComponent(result.data.email.trim())}`);
     } else {
       toast({
-        title: "Đăng ký thành công!",
-        description: "Chào mừng đến với FUN Charity!",
+        title: t("auth.signupSuccess"),
+        description: t("auth.welcomeToFUN"),
       });
       navigate("/social");
     }
@@ -239,7 +241,7 @@ const Auth = () => {
           <Link to="/">
             <Button variant="ghost" className="text-primary-foreground hover:bg-primary-light">
               <ArrowRight className="w-4 h-4 rotate-180 mr-2" />
-              Về Trang Chủ
+              {t("auth.backToHome")}
             </Button>
           </Link>
         </div>
@@ -254,15 +256,15 @@ const Auth = () => {
             <div className="text-center mb-6">
               <Badge variant="gold" className="mb-4">
                 <Sparkles className="w-3.5 h-3.5 mr-1" />
-                Tham Gia FUN Charity
+                {t("auth.joinFunCharity")}
               </Badge>
               <h1 className="font-display text-2xl font-bold mb-2">
-                {activeTab === "login" ? "Chào Mừng Trở Lại" : "Tạo Tài Khoản"}
+                {activeTab === "login" ? t("auth.welcomeBack") : t("auth.createAccount")}
               </h1>
               <p className="text-sm text-muted-foreground">
                 {activeTab === "login"
-                  ? "Đăng nhập để tiếp tục hành trình tạo tác động"
-                  : "Bắt đầu tạo sự khác biệt minh bạch ngay hôm nay"}
+                  ? t("auth.loginSubtitle")
+                  : t("auth.signupSubtitle")}
               </p>
             </div>
 
@@ -270,13 +272,13 @@ const Auth = () => {
             {activeTab === "signup" && (
               <div className="mb-6">
                 <Label className="text-sm text-muted-foreground mb-3 block">
-                  Tôi muốn tham gia với vai trò
+                  {t("auth.joinAsRole")}
                 </Label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { type: "donor", icon: Heart, label: "Nhà Hảo Tâm" },
-                    { type: "volunteer", icon: Users, label: "Tình Nguyện" },
-                    { type: "ngo", icon: Building2, label: "Tổ Chức" },
+                    { type: "donor", icon: Heart, labelKey: "auth.donor" },
+                    { type: "volunteer", icon: Users, labelKey: "auth.volunteer" },
+                    { type: "ngo", icon: Building2, labelKey: "auth.organization" },
                   ].map((option) => {
                     const Icon = option.icon;
                     return (
@@ -300,7 +302,7 @@ const Auth = () => {
                             userType === option.type ? "text-secondary font-medium" : "text-muted-foreground"
                           }`}
                         >
-                          {option.label}
+                          {t(option.labelKey)}
                         </span>
                       </button>
                     );
@@ -313,10 +315,10 @@ const Auth = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="w-full mb-6 bg-muted/50">
                 <TabsTrigger value="login" className="flex-1">
-                  Đăng Nhập
+                  {t("auth.login")}
                 </TabsTrigger>
                 <TabsTrigger value="signup" className="flex-1">
-                  Đăng Ký
+                  {t("auth.signup")}
                 </TabsTrigger>
               </TabsList>
 
@@ -325,18 +327,18 @@ const Auth = () => {
                 {forgotPasswordMode ? (
                   <form onSubmit={handleForgotPassword} className="space-y-4">
                     <div className="text-center mb-4">
-                      <h3 className="text-lg font-semibold">Quên Mật Khẩu</h3>
+                      <h3 className="text-lg font-semibold">{t("auth.forgotPasswordTitle")}</h3>
                       <p className="text-sm text-muted-foreground">
                         {resetEmailSent 
-                          ? "Kiểm tra hộp thư của bạn để đặt lại mật khẩu"
-                          : "Nhập email để nhận link đặt lại mật khẩu"}
+                          ? t("auth.resetEmailSent")
+                          : t("auth.enterEmailForReset")}
                       </p>
                     </div>
                     
                     {!resetEmailSent && (
                       <>
                         <div>
-                          <Label htmlFor="reset-email">Email</Label>
+                          <Label htmlFor="reset-email">{t("auth.email")}</Label>
                           <div className="relative mt-1">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
@@ -357,11 +359,11 @@ const Auth = () => {
                           {loading ? (
                             <>
                               <Loader2 className="w-4 h-4 animate-spin" />
-                              Đang gửi...
+                              {t("auth.sending")}
                             </>
                           ) : (
                             <>
-                              Gửi Link Đặt Lại
+                              {t("auth.sendResetLink")}
                               <Mail className="w-4 h-4" />
                             </>
                           )}
@@ -379,13 +381,13 @@ const Auth = () => {
                       }}
                     >
                       <ArrowRight className="w-4 h-4 rotate-180 mr-2" />
-                      Quay lại Đăng Nhập
+                      {t("auth.backToLogin")}
                     </Button>
                   </form>
                 ) : (
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div>
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="email">{t("auth.email")}</Label>
                       <div className="relative mt-1">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
@@ -403,7 +405,7 @@ const Auth = () => {
                     </div>
 
                     <div>
-                      <Label htmlFor="password">Mật Khẩu</Label>
+                      <Label htmlFor="password">{t("auth.password")}</Label>
                       <div className="relative mt-1">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input
@@ -433,7 +435,7 @@ const Auth = () => {
                         onClick={() => setForgotPasswordMode(true)}
                         className="text-sm text-secondary hover:text-secondary/80 transition-colors"
                       >
-                        Quên mật khẩu?
+                        {t("auth.forgotPassword")}
                       </button>
                     </div>
 
@@ -441,11 +443,11 @@ const Auth = () => {
                       {loading ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          Đang xử lý...
+                          {t("auth.processing")}
                         </>
                       ) : (
                         <>
-                          Đăng Nhập
+                          {t("auth.login")}
                           <ArrowRight className="w-4 h-4" />
                         </>
                       )}
@@ -459,7 +461,7 @@ const Auth = () => {
                 <form onSubmit={handleSignup} className="space-y-4">
                   <div>
                     <Label htmlFor="name">
-                      {userType === "ngo" ? "Tên Tổ Chức" : "Họ và Tên"}
+                      {userType === "ngo" ? t("auth.organizationName") : t("auth.fullName")}
                     </Label>
                     <div className="relative mt-1">
                       {userType === "ngo" ? (
@@ -471,7 +473,7 @@ const Auth = () => {
                         id="name"
                         name="name"
                         autoComplete="name"
-                        placeholder={userType === "ngo" ? "Tên tổ chức" : "Họ và tên của bạn"}
+                        placeholder={userType === "ngo" ? t("auth.orgPlaceholder") : t("auth.namePlaceholder")}
                         className="pl-10"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
@@ -481,7 +483,7 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email">{t("auth.email")}</Label>
                     <div className="relative mt-1">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -499,7 +501,7 @@ const Auth = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="signup-password">Mật Khẩu</Label>
+                    <Label htmlFor="signup-password">{t("auth.password")}</Label>
                     <div className="relative mt-1">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -528,10 +530,10 @@ const Auth = () => {
                     <div className="bg-muted/50 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-4 h-4 text-secondary" />
-                        <span className="text-sm font-medium">Yêu Cầu KYC</span>
+                        <span className="text-sm font-medium">{t("auth.kycRequirement")}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Các tổ chức NGO cần hoàn thành xác minh KYC để khởi chạy chiến dịch. Bạn sẽ được hướng dẫn sau khi đăng ký.
+                        {t("auth.kycDescription")}
                       </p>
                     </div>
                   )}
@@ -540,11 +542,11 @@ const Auth = () => {
                     {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Đang xử lý...
+                        {t("auth.processing")}
                       </>
                     ) : (
                       <>
-                        Tạo Tài Khoản
+                        {t("auth.createAccount")}
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -559,7 +561,7 @@ const Auth = () => {
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Hoặc tiếp tục với</span>
+                <span className="bg-card px-2 text-muted-foreground">{t("auth.orContinueWith")}</span>
               </div>
             </div>
 
@@ -588,17 +590,17 @@ const Auth = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Đăng nhập với Google
+              {t("auth.loginWithGoogle")}
             </Button>
 
             {/* Wallet Connect */}
             <Button variant="wallet" className="w-full mt-3">
               <Wallet className="w-4 h-4" />
-              Kết Nối Ví
+              {t("auth.connectWallet")}
             </Button>
 
             <p className="text-xs text-center text-muted-foreground mt-4">
-              Hỗ trợ MetaMask, WalletConnect và nhiều ví khác
+              {t("auth.walletSupport")}
             </p>
           </motion.div>
 
@@ -609,7 +611,7 @@ const Auth = () => {
             transition={{ delay: 0.3 }}
             className="text-center mt-6 text-primary-foreground/60 text-sm"
           >
-            <p>Từ thiện là ánh sáng. Minh bạch là vàng.</p>
+            <p>{t("auth.tagline")}</p>
           </motion.div>
         </div>
       </div>
