@@ -900,9 +900,216 @@ export const translations: Translations = {
     pt: "Compartilhar", ru: "Поделиться", ar: "مشاركة", hi: "शेयर करें"
   },
   "social.gift": {
-    en: "Gift", vi: "Tặng quà", zh: "送礼", ja: "ギフト", ko: "선물",
+    en: "Gift", vi: "Tặng", zh: "送礼", ja: "ギフト", ko: "선물",
     th: "ของขวัญ", fr: "Cadeau", de: "Geschenk", es: "Regalo",
     pt: "Presente", ru: "Подарок", ar: "هدية", hi: "उपहार"
+  },
+  // Reactions
+  "reaction.like": {
+    en: "Like", vi: "Thích", zh: "赞", ja: "いいね", ko: "좋아요",
+    th: "ถูกใจ", fr: "J'aime", de: "Gefällt mir", es: "Me gusta",
+    pt: "Curtir", ru: "Нравится", ar: "أعجبني", hi: "पसंद"
+  },
+  "reaction.love": {
+    en: "Love", vi: "Yêu thích", zh: "喜欢", ja: "大好き", ko: "사랑해요",
+    th: "รัก", fr: "J'adore", de: "Liebe", es: "Me encanta",
+    pt: "Amei", ru: "Люблю", ar: "أحب", hi: "प्यार"
+  },
+  "reaction.haha": {
+    en: "Haha", vi: "Haha", zh: "哈哈", ja: "ウケる", ko: "ㅋㅋ",
+    th: "ฮ่าฮ่า", fr: "Haha", de: "Haha", es: "Jaja",
+    pt: "Haha", ru: "Ха-ха", ar: "هاها", hi: "हाहा"
+  },
+  "reaction.wow": {
+    en: "Wow", vi: "Wow", zh: "哇", ja: "すごい", ko: "와우",
+    th: "ว้าว", fr: "Waouh", de: "Wow", es: "Wow",
+    pt: "Uau", ru: "Ого", ar: "واو", hi: "वाह"
+  },
+  "reaction.sad": {
+    en: "Sad", vi: "Buồn", zh: "难过", ja: "悲しい", ko: "슬퍼요",
+    th: "เศร้า", fr: "Triste", de: "Traurig", es: "Triste",
+    pt: "Triste", ru: "Грустно", ar: "حزين", hi: "दुखी"
+  },
+  "reaction.angry": {
+    en: "Angry", vi: "Phẫn nộ", zh: "愤怒", ja: "怒り", ko: "화나요",
+    th: "โกรธ", fr: "En colère", de: "Wütend", es: "Enfadado",
+    pt: "Irritado", ru: "Злость", ar: "غاضب", hi: "गुस्सा"
+  },
+  // Gift Modal
+  "gift.title": {
+    en: "Send Gift", vi: "Gửi quà tặng", zh: "发送礼物", ja: "ギフトを送る", ko: "선물 보내기",
+    th: "ส่งของขวัญ", fr: "Envoyer un cadeau", de: "Geschenk senden", es: "Enviar regalo",
+    pt: "Enviar presente", ru: "Отправить подарок", ar: "إرسال هدية", hi: "उपहार भेजें"
+  },
+  "gift.cryptoWallet": {
+    en: "Crypto Wallet", vi: "Ví Crypto", zh: "加密钱包", ja: "暗号資産ウォレット", ko: "암호화폐 지갑",
+    th: "กระเป๋าคริปโต", fr: "Portefeuille crypto", de: "Krypto-Wallet", es: "Billetera cripto",
+    pt: "Carteira crypto", ru: "Крипто-кошелек", ar: "محفظة العملات المشفرة", hi: "क्रिप्टो वॉलेट"
+  },
+  "gift.creditCard": {
+    en: "Credit Card", vi: "Thẻ tín dụng", zh: "信用卡", ja: "クレジットカード", ko: "신용카드",
+    th: "บัตรเครดิต", fr: "Carte de crédit", de: "Kreditkarte", es: "Tarjeta de crédito",
+    pt: "Cartão de crédito", ru: "Кредитная карта", ar: "بطاقة ائتمان", hi: "क्रेडिट कार्ड"
+  },
+  "gift.multiChain": {
+    en: "Multi-chain", vi: "Đa chuỗi", zh: "多链", ja: "マルチチェーン", ko: "멀티체인",
+    th: "หลายเครือข่าย", fr: "Multi-chaîne", de: "Multi-Chain", es: "Multi-cadena",
+    pt: "Multi-cadeia", ru: "Мульти-чейн", ar: "متعدد السلاسل", hi: "मल्टी-चेन"
+  },
+  "gift.meal1": {
+    en: "1 meal", vi: "1 bữa ăn", zh: "1顿饭", ja: "1食", ko: "1끼 식사",
+    th: "1 มื้ออาหาร", fr: "1 repas", de: "1 Mahlzeit", es: "1 comida",
+    pt: "1 refeição", ru: "1 прием пищи", ar: "وجبة واحدة", hi: "1 भोजन"
+  },
+  "gift.meal2": {
+    en: "2 meals", vi: "2 bữa ăn", zh: "2顿饭", ja: "2食", ko: "2끼 식사",
+    th: "2 มื้ออาหาร", fr: "2 repas", de: "2 Mahlzeiten", es: "2 comidas",
+    pt: "2 refeições", ru: "2 приема пищи", ar: "وجبتان", hi: "2 भोजन"
+  },
+  "gift.schoolDay": {
+    en: "1 school day", vi: "1 ngày học", zh: "1天学习", ja: "1日の学習", ko: "1일 학습",
+    th: "1 วันเรียน", fr: "1 jour d'école", de: "1 Schultag", es: "1 día de escuela",
+    pt: "1 dia de escola", ru: "1 учебный день", ar: "يوم دراسي واحد", hi: "1 स्कूल दिन"
+  },
+  "gift.weekBooks": {
+    en: "1 week of books", vi: "1 tuần sách", zh: "1周的书籍", ja: "1週間の本", ko: "1주일 책",
+    th: "หนังสือ 1 สัปดาห์", fr: "1 semaine de livres", de: "1 Woche Bücher", es: "1 semana de libros",
+    pt: "1 semana de livros", ru: "1 неделя книг", ar: "أسبوع من الكتب", hi: "1 सप्ताह की किताबें"
+  },
+  "gift.monthStudy": {
+    en: "1 month of study", vi: "1 tháng học", zh: "1个月学习", ja: "1ヶ月の学習", ko: "1개월 학습",
+    th: "การเรียน 1 เดือน", fr: "1 mois d'études", de: "1 Monat Studium", es: "1 mes de estudio",
+    pt: "1 mês de estudo", ru: "1 месяц обучения", ar: "شهر من الدراسة", hi: "1 महीने की पढ़ाई"
+  },
+  "gift.helpFamily": {
+    en: "Help 1 family", vi: "Giúp 1 gia đình", zh: "帮助1个家庭", ja: "1家族を支援", ko: "1가정 지원",
+    th: "ช่วย 1 ครอบครัว", fr: "Aider 1 famille", de: "1 Familie helfen", es: "Ayudar a 1 familia",
+    pt: "Ajudar 1 família", ru: "Помочь 1 семье", ar: "مساعدة عائلة واحدة", hi: "1 परिवार की मदद"
+  },
+  "gift.canSupport": {
+    en: "Can support", vi: "Có thể hỗ trợ", zh: "可以支持", ja: "サポート可能", ko: "지원 가능",
+    th: "สามารถสนับสนุน", fr: "Peut soutenir", de: "Kann unterstützen", es: "Puede apoyar",
+    pt: "Pode apoiar", ru: "Может поддержать", ar: "يمكن دعم", hi: "सहायता कर सकते हैं"
+  },
+  "gift.everyContribution": {
+    en: "Every contribution matters", vi: "Mỗi đóng góp đều có ý nghĩa", zh: "每一份贡献都很重要", ja: "すべての貢献が重要です", ko: "모든 기여가 중요합니다",
+    th: "ทุกการสนับสนุนมีความหมาย", fr: "Chaque contribution compte", de: "Jeder Beitrag zählt", es: "Cada contribución importa",
+    pt: "Cada contribuição importa", ru: "Каждый вклад важен", ar: "كل مساهمة مهمة", hi: "हर योगदान मायने रखता है"
+  },
+  "gift.thankYou": {
+    en: "Thank you!", vi: "Cảm ơn bạn!", zh: "谢谢你！", ja: "ありがとう！", ko: "감사합니다!",
+    th: "ขอบคุณ!", fr: "Merci !", de: "Danke!", es: "¡Gracias!",
+    pt: "Obrigado!", ru: "Спасибо!", ar: "شكراً!", hi: "धन्यवाद!"
+  },
+  "gift.positiveChange": {
+    en: "Your contribution will bring positive change 💖", vi: "Đóng góp của bạn sẽ mang đến sự thay đổi tích cực 💖", zh: "您的贡献将带来积极的变化 💖", ja: "あなたの貢献はポジティブな変化をもたらします 💖", ko: "당신의 기여가 긍정적인 변화를 가져올 것입니다 💖",
+    th: "การสนับสนุนของคุณจะนำมาซึ่งการเปลี่ยนแปลงที่ดี 💖", fr: "Votre contribution apportera un changement positif 💖", de: "Ihr Beitrag wird positive Veränderungen bewirken 💖", es: "Tu contribución traerá cambios positivos 💖",
+    pt: "Sua contribuição trará mudanças positivas 💖", ru: "Ваш вклад принесет позитивные изменения 💖", ar: "مساهمتك ستجلب تغييراً إيجابياً 💖", hi: "आपका योगदान सकारात्मक बदलाव लाएगा 💖"
+  },
+  "gift.viewTransaction": {
+    en: "View transaction", vi: "Xem giao dịch", zh: "查看交易", ja: "取引を見る", ko: "거래 보기",
+    th: "ดูธุรกรรม", fr: "Voir la transaction", de: "Transaktion anzeigen", es: "Ver transacción",
+    pt: "Ver transação", ru: "Посмотреть транзакцию", ar: "عرض المعاملة", hi: "लेनदेन देखें"
+  },
+  "gift.oneTime": {
+    en: "One time", vi: "Một lần", zh: "一次性", ja: "1回", ko: "일회성",
+    th: "ครั้งเดียว", fr: "Une fois", de: "Einmalig", es: "Una vez",
+    pt: "Uma vez", ru: "Один раз", ar: "مرة واحدة", hi: "एक बार"
+  },
+  "gift.monthly": {
+    en: "Monthly", vi: "Hàng tháng", zh: "每月", ja: "毎月", ko: "매월",
+    th: "รายเดือน", fr: "Mensuel", de: "Monatlich", es: "Mensual",
+    pt: "Mensal", ru: "Ежемесячно", ar: "شهرياً", hi: "मासिक"
+  },
+  "gift.selectAmount": {
+    en: "Select amount", vi: "Chọn số tiền", zh: "选择金额", ja: "金額を選択", ko: "금액 선택",
+    th: "เลือกจำนวนเงิน", fr: "Sélectionner le montant", de: "Betrag auswählen", es: "Seleccionar monto",
+    pt: "Selecionar valor", ru: "Выберите сумму", ar: "اختر المبلغ", hi: "राशि चुनें"
+  },
+  "gift.enterOther": {
+    en: "Enter other amount", vi: "Nhập số tiền khác", zh: "输入其他金额", ja: "他の金額を入力", ko: "다른 금액 입력",
+    th: "ป้อนจำนวนอื่น", fr: "Entrer un autre montant", de: "Anderen Betrag eingeben", es: "Ingresar otro monto",
+    pt: "Inserir outro valor", ru: "Введите другую сумму", ar: "أدخل مبلغاً آخر", hi: "अन्य राशि दर्ज करें"
+  },
+  "gift.paymentMethod": {
+    en: "Payment method", vi: "Phương thức thanh toán", zh: "支付方式", ja: "支払い方法", ko: "결제 방법",
+    th: "วิธีการชำระเงิน", fr: "Mode de paiement", de: "Zahlungsmethode", es: "Método de pago",
+    pt: "Método de pagamento", ru: "Способ оплаты", ar: "طريقة الدفع", hi: "भुगतान विधि"
+  },
+  "gift.connectMetamask": {
+    en: "Connect MetaMask", vi: "Kết nối MetaMask", zh: "连接 MetaMask", ja: "MetaMask を接続", ko: "MetaMask 연결",
+    th: "เชื่อมต่อ MetaMask", fr: "Connecter MetaMask", de: "MetaMask verbinden", es: "Conectar MetaMask",
+    pt: "Conectar MetaMask", ru: "Подключить MetaMask", ar: "ربط MetaMask", hi: "MetaMask कनेक्ट करें"
+  },
+  "gift.connected": {
+    en: "Connected:", vi: "Đã kết nối:", zh: "已连接：", ja: "接続済み：", ko: "연결됨:",
+    th: "เชื่อมต่อแล้ว:", fr: "Connecté :", de: "Verbunden:", es: "Conectado:",
+    pt: "Conectado:", ru: "Подключено:", ar: "متصل:", hi: "जुड़ा हुआ:"
+  },
+  "gift.balance": {
+    en: "Balance:", vi: "Số dư:", zh: "余额：", ja: "残高：", ko: "잔액:",
+    th: "ยอดคงเหลือ:", fr: "Solde :", de: "Guthaben:", es: "Saldo:",
+    pt: "Saldo:", ru: "Баланс:", ar: "الرصيد:", hi: "शेष:"
+  },
+  "gift.selectNetwork": {
+    en: "Select blockchain network:", vi: "Chọn mạng blockchain:", zh: "选择区块链网络：", ja: "ブロックチェーンネットワークを選択：", ko: "블록체인 네트워크 선택:",
+    th: "เลือกเครือข่ายบล็อกเชน:", fr: "Sélectionner le réseau blockchain :", de: "Blockchain-Netzwerk auswählen:", es: "Seleccionar red blockchain:",
+    pt: "Selecionar rede blockchain:", ru: "Выберите сеть блокчейн:", ar: "اختر شبكة البلوكتشين:", hi: "ब्लॉकचेन नेटवर्क चुनें:"
+  },
+  "gift.donationAmount": {
+    en: "Donation amount:", vi: "Số tiền đóng góp:", zh: "捐款金额：", ja: "寄付金額：", ko: "기부 금액:",
+    th: "จำนวนเงินบริจาค:", fr: "Montant du don :", de: "Spendenbetrag:", es: "Monto de la donación:",
+    pt: "Valor da doação:", ru: "Сумма пожертвования:", ar: "مبلغ التبرع:", hi: "दान राशि:"
+  },
+  "gift.recipientNoWallet": {
+    en: "Recipient has not set up a crypto wallet", vi: "Người nhận chưa thiết lập ví crypto", zh: "收款人尚未设置加密钱包", ja: "受取人は暗号資産ウォレットを設定していません", ko: "수신자가 암호화폐 지갑을 설정하지 않았습니다",
+    th: "ผู้รับยังไม่ได้ตั้งค่ากระเป๋าคริปโต", fr: "Le destinataire n'a pas configuré de portefeuille crypto", de: "Der Empfänger hat keine Krypto-Wallet eingerichtet", es: "El destinatario no ha configurado una billetera cripto",
+    pt: "O destinatário não configurou uma carteira crypto", ru: "Получатель не настроил крипто-кошелек", ar: "لم يقم المستلم بإعداد محفظة العملات المشفرة", hi: "प्राप्तकर्ता ने क्रिप्टो वॉलेट सेटअप नहीं किया है"
+  },
+  "gift.messageOptional": {
+    en: "Message (optional)", vi: "Lời nhắn (tùy chọn)", zh: "留言（可选）", ja: "メッセージ（任意）", ko: "메시지 (선택사항)",
+    th: "ข้อความ (ไม่บังคับ)", fr: "Message (optionnel)", de: "Nachricht (optional)", es: "Mensaje (opcional)",
+    pt: "Mensagem (opcional)", ru: "Сообщение (необязательно)", ar: "رسالة (اختياري)", hi: "संदेश (वैकल्पिक)"
+  },
+  "gift.writeBlessings": {
+    en: "Write your blessings...", vi: "Viết lời chúc của bạn...", zh: "写下你的祝福...", ja: "祝福のメッセージを書く...", ko: "축하 메시지를 작성하세요...",
+    th: "เขียนคำอวยพรของคุณ...", fr: "Écrivez vos vœux...", de: "Schreiben Sie Ihre Wünsche...", es: "Escribe tus bendiciones...",
+    pt: "Escreva suas bênçãos...", ru: "Напишите ваши пожелания...", ar: "اكتب تمنياتك...", hi: "अपनी शुभकामनाएं लिखें..."
+  },
+  "gift.anonymous": {
+    en: "Anonymous contribution", vi: "Đóng góp ẩn danh", zh: "匿名捐款", ja: "匿名での寄付", ko: "익명 기부",
+    th: "การสนับสนุนแบบไม่ระบุตัวตน", fr: "Contribution anonyme", de: "Anonymer Beitrag", es: "Contribución anónima",
+    pt: "Contribuição anônima", ru: "Анонимный вклад", ar: "مساهمة مجهولة", hi: "गुमनाम योगदान"
+  },
+  "gift.nameHidden": {
+    en: "Your name will not be displayed", vi: "Tên của bạn sẽ không được hiển thị", zh: "您的姓名将不会显示", ja: "あなたの名前は表示されません", ko: "이름이 표시되지 않습니다",
+    th: "ชื่อของคุณจะไม่แสดง", fr: "Votre nom ne sera pas affiché", de: "Ihr Name wird nicht angezeigt", es: "Tu nombre no se mostrará",
+    pt: "Seu nome não será exibido", ru: "Ваше имя не будет отображаться", ar: "لن يتم عرض اسمك", hi: "आपका नाम प्रदर्शित नहीं होगा"
+  },
+  "gift.processing": {
+    en: "Processing...", vi: "Đang xử lý...", zh: "处理中...", ja: "処理中...", ko: "처리 중...",
+    th: "กำลังดำเนินการ...", fr: "Traitement...", de: "Verarbeitung...", es: "Procesando...",
+    pt: "Processando...", ru: "Обработка...", ar: "جارٍ المعالجة...", hi: "प्रोसेसिंग..."
+  },
+  "gift.contribute": {
+    en: "Contribute", vi: "Đóng góp", zh: "贡献", ja: "寄付する", ko: "기부하기",
+    th: "สนับสนุน", fr: "Contribuer", de: "Beitragen", es: "Contribuir",
+    pt: "Contribuir", ru: "Внести вклад", ar: "ساهم", hi: "योगदान करें"
+  },
+  "gift.perMonth": {
+    en: "/month", vi: "/tháng", zh: "/月", ja: "/月", ko: "/월",
+    th: "/เดือน", fr: "/mois", de: "/Monat", es: "/mes",
+    pt: "/mês", ru: "/месяц", ar: "/شهر", hi: "/माह"
+  },
+  "gift.securedStripe": {
+    en: "Payment secured by Stripe 🔒", vi: "Thanh toán được bảo mật qua Stripe 🔒", zh: "通过 Stripe 安全支付 🔒", ja: "Stripe による安全な支払い 🔒", ko: "Stripe로 안전하게 결제 🔒",
+    th: "การชำระเงินปลอดภัยผ่าน Stripe 🔒", fr: "Paiement sécurisé par Stripe 🔒", de: "Zahlung gesichert durch Stripe 🔒", es: "Pago asegurado por Stripe 🔒",
+    pt: "Pagamento seguro pelo Stripe 🔒", ru: "Платеж защищен Stripe 🔒", ar: "الدفع مؤمن عبر Stripe 🔒", hi: "Stripe द्वारा सुरक्षित भुगतान 🔒"
+  },
+  "gift.gasFees": {
+    en: "Gas fees apply 🔒", vi: "Phí gas áp dụng 🔒", zh: "适用 Gas 费用 🔒", ja: "ガス料金が適用されます 🔒", ko: "가스 요금 적용 🔒",
+    th: "มีค่าธรรมเนียม Gas 🔒", fr: "Frais de gas applicables 🔒", de: "Gas-Gebühren gelten 🔒", es: "Se aplican tarifas de gas 🔒",
+    pt: "Taxas de gas aplicáveis 🔒", ru: "Применяются комиссии за газ 🔒", ar: "تطبق رسوم الغاز 🔒", hi: "गैस शुल्क लागू 🔒"
   },
 };
 

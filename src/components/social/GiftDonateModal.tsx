@@ -33,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { FeedPost } from "@/hooks/useFeedPosts";
 import { ethers } from "ethers";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface GiftDonateModalProps {
   post: FeedPost;
@@ -81,24 +82,24 @@ const SUPPORTED_NETWORKS = [
 ];
 
 const PRESET_AMOUNTS = [
-  { value: 50000, label: "50K", impact: "1 bữa ăn" },
-  { value: 100000, label: "100K", impact: "2 bữa ăn" },
-  { value: 200000, label: "200K", impact: "1 ngày học" },
-  { value: 500000, label: "500K", impact: "1 tuần sách" },
-  { value: 1000000, label: "1M", impact: "1 tháng học" },
-  { value: 2000000, label: "2M", impact: "Giúp 1 gia đình" },
+  { value: 50000, label: "50K", impactKey: "gift.meal1" },
+  { value: 100000, label: "100K", impactKey: "gift.meal2" },
+  { value: 200000, label: "200K", impactKey: "gift.schoolDay" },
+  { value: 500000, label: "500K", impactKey: "gift.weekBooks" },
+  { value: 1000000, label: "1M", impactKey: "gift.monthStudy" },
+  { value: 2000000, label: "2M", impactKey: "gift.helpFamily" },
 ];
 
 const PAYMENT_METHODS = [
   {
     id: "crypto_eth",
-    label: "Ví Crypto",
-    sublabel: "Multi-chain",
+    labelKey: "gift.cryptoWallet",
+    sublabelKey: "gift.multiChain",
     icon: Wallet,
   },
   {
     id: "fiat_card",
-    label: "Thẻ tín dụng",
+    labelKey: "gift.creditCard",
     sublabel: "Visa, Mastercard",
     icon: CreditCard,
   },
@@ -122,6 +123,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
   const [txHash, setTxHash] = useState<string | null>(null);
   const [recipientWallet, setRecipientWallet] = useState<string | null>(null);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const amount = customAmount ? parseInt(customAmount) : selectedAmount || 0;
   const cryptoRate = CRYPTO_RATES[selectedNetwork.symbol] || CRYPTO_RATES.ETH;
@@ -511,7 +513,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
             className="flex-1 gap-2 text-muted-foreground hover:text-secondary"
           >
             <Gift className="w-5 h-5" />
-            Tặng
+            {t("social.gift")}
           </Button>
         )}
       </DialogTrigger>
@@ -538,9 +540,9 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <h3 className="text-2xl font-bold mb-3">Cảm ơn bạn!</h3>
+                <h3 className="text-2xl font-bold mb-3">{t("gift.thankYou")}</h3>
                 <p className="text-muted-foreground mb-4">
-                  Đóng góp của bạn sẽ mang đến sự thay đổi tích cực 💖
+                  {t("gift.positiveChange")}
                 </p>
                 {txHash && (
                   <a
@@ -549,7 +551,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-sm text-[#84D9BA] hover:underline"
                   >
-                    Xem giao dịch <ExternalLink className="w-3 h-3" />
+                    {t("gift.viewTransaction")} <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
               </motion.div>
@@ -590,7 +592,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                     <div className="w-10 h-10 rounded-full bg-[#84D9BA]/20 flex items-center justify-center">
                       <HeartHandshake className="w-5 h-5 text-[#84D9BA]" />
                     </div>
-                    Tặng quà
+                    {t("gift.title")}
                   </DialogTitle>
                 </DialogHeader>
               </div>
@@ -625,7 +627,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                         : 'bg-transparent text-muted-foreground hover:bg-muted/50'
                     }`}
                   >
-                    Một lần
+                    {t("gift.oneTime")}
                   </button>
                   <button
                     onClick={() => setIsRecurring(true)}
@@ -635,14 +637,14 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                         : 'bg-transparent text-muted-foreground hover:bg-muted/50'
                     }`}
                   >
-                    Hàng tháng
+                    {t("gift.monthly")}
                   </button>
                 </div>
 
                 {/* Amount Selection - Responsive grid */}
                 <div className="space-y-3">
                   <Label className="text-sm font-medium text-muted-foreground">
-                    Chọn số tiền {isRecurring ? 'hàng tháng' : ''}
+                    {t("gift.selectAmount")} {isRecurring ? t("gift.monthly").toLowerCase() : ''}
                   </Label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {PRESET_AMOUNTS.map((preset) => (
@@ -682,7 +684,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                     </span>
                     <Input
                       type="text"
-                      placeholder="Nhập số tiền khác"
+                      placeholder={t("gift.enterOther")}
                       value={customAmount ? parseInt(customAmount).toLocaleString() : ""}
                       onChange={handleCustomAmountChange}
                       className={`pl-8 pr-4 h-14 text-lg font-medium rounded-xl border-2 transition-all ${
@@ -708,16 +710,15 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                       {selectedPreset?.value === 2000000 && <Users className="w-4 h-4 text-[#84D9BA]" />}
                       {!selectedPreset && <Heart className="w-4 h-4 text-[#84D9BA]" />}
                       <span className="text-sm text-[#84D9BA] font-medium">
-                        {selectedPreset ? `Có thể hỗ trợ: ${selectedPreset.impact}` : 'Mỗi đóng góp đều có ý nghĩa'}
+                        {selectedPreset ? `${t("gift.canSupport")}: ${t(selectedPreset.impactKey)}` : t("gift.everyContribution")}
                       </span>
                     </motion.div>
                   )}
                 </div>
 
-                {/* Payment Method - Tab design */}
                 <div className="space-y-3">
                   <Label className="text-sm font-medium text-muted-foreground">
-                    Phương thức thanh toán
+                    {t("gift.paymentMethod")}
                   </Label>
                   <Tabs value={paymentMethod} onValueChange={setPaymentMethod} className="w-full">
                     <TabsList className="w-full h-auto p-1 bg-muted/50 rounded-xl grid grid-cols-2 gap-1">
@@ -730,8 +731,8 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                           <method.icon className={`w-5 h-5 ${
                             paymentMethod === method.id ? 'text-[#84D9BA]' : 'text-muted-foreground'
                           }`} />
-                          <span className="text-xs font-medium">{method.label}</span>
-                          <span className="text-[10px] text-muted-foreground">{method.sublabel}</span>
+                          <span className="text-xs font-medium">{t(method.labelKey)}</span>
+                          <span className="text-[10px] text-muted-foreground">{method.sublabelKey ? t(method.sublabelKey) : method.sublabel}</span>
                         </TabsTrigger>
                       ))}
                     </TabsList>
@@ -757,7 +758,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                           className="w-full gap-2 h-12 rounded-xl border-dashed border-2 hover:border-[#84D9BA] hover:bg-[#84D9BA]/10 transition-all cursor-pointer"
                         >
                           <Wallet className="w-5 h-5 text-orange-500" />
-                          <span className="font-medium">Kết nối MetaMask</span>
+                          <span className="font-medium">{t("gift.connectMetamask")}</span>
                           <img 
                             src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" 
                             alt="MetaMask" 
@@ -770,7 +771,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-sm">
                               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                              <span className="text-muted-foreground">Đã kết nối:</span>
+                              <span className="text-muted-foreground">{t("gift.connected")}</span>
                               <span className="font-mono text-xs bg-muted px-2 py-1 rounded">
                                 {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
                               </span>
@@ -781,7 +782,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                           <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-[#84D9BA]/10 to-primary/10 border border-[#84D9BA]/20">
                             <div className="flex items-center gap-2">
                               <span className="text-lg">{selectedNetwork.icon}</span>
-                              <span className="text-sm text-muted-foreground">Số dư:</span>
+                              <span className="text-sm text-muted-foreground">{t("gift.balance")}</span>
                             </div>
                             <div className="text-right">
                               <span className="font-bold text-[#84D9BA] text-lg">{walletBalance || '0.0000'}</span>
@@ -789,9 +790,8 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                             </div>
                           </div>
 
-                          {/* Network selector */}
                           <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">Chọn mạng blockchain:</Label>
+                            <Label className="text-xs text-muted-foreground">{t("gift.selectNetwork")}</Label>
                             <div className="grid grid-cols-3 gap-2">
                               {SUPPORTED_NETWORKS.map((network) => (
                                 <motion.button
@@ -813,9 +813,8 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                             </div>
                           </div>
 
-                          {/* Donation amount preview */}
                           <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                            <span className="text-sm text-muted-foreground">Số tiền đóng góp:</span>
+                            <span className="text-sm text-muted-foreground">{t("gift.donationAmount")}</span>
                             <span className="font-bold" style={{ color: selectedNetwork.color }}>
                               {cryptoAmount} {selectedNetwork.symbol}
                             </span>
@@ -824,7 +823,7 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                           {!recipientWallet && (
                             <div className="flex items-center gap-2 text-amber-500 text-xs p-2 bg-amber-500/10 rounded-lg">
                               <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                              <span>Người nhận chưa thiết lập ví crypto</span>
+                              <span>{t("gift.recipientNoWallet")}</span>
                             </div>
                           )}
                         </div>
@@ -833,13 +832,12 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                   )}
                 </div>
 
-                {/* Message */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-muted-foreground">
-                    Lời nhắn (tùy chọn)
+                    {t("gift.messageOptional")}
                   </Label>
                   <Textarea
-                    placeholder="Viết lời chúc của bạn..."
+                    placeholder={t("gift.writeBlessings")}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     className="resize-none h-20 rounded-xl border-border focus:border-[#84D9BA]"
@@ -850,12 +848,11 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                   </p>
                 </div>
 
-                {/* Anonymous Toggle */}
                 <div className="flex items-center justify-between py-3 px-4 rounded-xl bg-muted/30">
                   <div className="space-y-0.5">
-                    <Label className="text-sm font-medium">Đóng góp ẩn danh</Label>
+                    <Label className="text-sm font-medium">{t("gift.anonymous")}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Tên của bạn sẽ không được hiển thị
+                      {t("gift.nameHidden")}
                     </p>
                   </div>
                   <Switch
@@ -877,21 +874,21 @@ export function GiftDonateModal({ post, trigger }: GiftDonateModalProps) {
                   {isLoading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Đang xử lý...
+                      {t("gift.processing")}
                     </>
                   ) : (
                     <>
                       <Sparkles className="w-5 h-5" />
-                      Đóng góp {amount > 0 ? amount.toLocaleString() + "₫" : ""}
-                      {isRecurring && amount > 0 ? "/tháng" : ""}
+                      {t("gift.contribute")} {amount > 0 ? amount.toLocaleString() + "₫" : ""}
+                      {isRecurring && amount > 0 ? t("gift.perMonth") : ""}
                     </>
                   )}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground mt-3">
                   {paymentMethod === "crypto_eth" 
-                    ? `Giao dịch ${selectedNetwork.symbol} qua mạng ${selectedNetwork.name} • Phí gas áp dụng 🔒`
-                    : "Thanh toán được bảo mật qua Stripe 🔒"
+                    ? `${selectedNetwork.symbol} ${selectedNetwork.name} • ${t("gift.gasFees")}`
+                    : t("gift.securedStripe")
                   }
                 </p>
               </div>

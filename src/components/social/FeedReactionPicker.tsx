@@ -2,21 +2,22 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export interface Reaction {
   type: string;
   emoji: string;
-  label: string;
+  labelKey: string;
   color: string;
 }
 
 export const REACTIONS: Reaction[] = [
-  { type: "like", emoji: "👍", label: "Thích", color: "text-blue-500" },
-  { type: "love", emoji: "❤️", label: "Yêu thích", color: "text-red-500" },
-  { type: "haha", emoji: "😆", label: "Haha", color: "text-yellow-500" },
-  { type: "wow", emoji: "😮", label: "Wow", color: "text-yellow-500" },
-  { type: "sad", emoji: "😢", label: "Buồn", color: "text-yellow-500" },
-  { type: "angry", emoji: "😠", label: "Phẫn nộ", color: "text-orange-500" },
+  { type: "like", emoji: "👍", labelKey: "reaction.like", color: "text-blue-500" },
+  { type: "love", emoji: "❤️", labelKey: "reaction.love", color: "text-red-500" },
+  { type: "haha", emoji: "😆", labelKey: "reaction.haha", color: "text-yellow-500" },
+  { type: "wow", emoji: "😮", labelKey: "reaction.wow", color: "text-yellow-500" },
+  { type: "sad", emoji: "😢", labelKey: "reaction.sad", color: "text-yellow-500" },
+  { type: "angry", emoji: "😠", labelKey: "reaction.angry", color: "text-orange-500" },
 ];
 
 interface FeedReactionPickerProps {
@@ -35,6 +36,7 @@ export function FeedReactionPicker({
   const [showPicker, setShowPicker] = useState(false);
   const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { t } = useLanguage();
 
   const activeReaction = REACTIONS.find((r) => r.type === currentReaction);
 
@@ -136,7 +138,7 @@ export function FeedReactionPicker({
                       exit={{ opacity: 0, y: 8, scale: 0.8 }}
                       className="absolute -top-9 left-1/2 -translate-x-1/2 bg-foreground text-background text-[11px] font-medium px-2.5 py-1 rounded-full whitespace-nowrap shadow-lg"
                     >
-                      {reaction.label}
+                      {t(reaction.labelKey)}
                     </motion.span>
                   )}
                 </AnimatePresence>
@@ -171,7 +173,7 @@ export function FeedReactionPicker({
           <Heart className="w-5 h-5" />
         )}
         <span className={activeReaction ? activeReaction.color : ""}>
-          {activeReaction ? activeReaction.label : "Thích"}
+          {activeReaction ? t(activeReaction.labelKey) : t("reaction.like")}
         </span>
       </Button>
     </div>
