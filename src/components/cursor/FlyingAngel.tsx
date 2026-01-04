@@ -922,15 +922,15 @@ const FlyingAngel = () => {
             y: { duration: isHiding ? 0.6 : isSitting ? 1.5 : 0.2, repeat: Infinity, ease: 'easeInOut' },
           }}
         >
-          {/* Crown on top of fairy head */}
-          <svg 
-            viewBox="0 0 24 12" 
-            className="absolute w-7 h-4 z-10"
+          {/* Crown on top of fairy head with sparkle effects */}
+          <motion.svg 
+            viewBox="0 0 32 20" 
+            className="absolute w-10 h-6 z-10"
             style={{
               left: '50%',
-              top: '-2px',
+              top: '-6px',
               transform: 'translateX(-50%)',
-              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+              filter: 'drop-shadow(0 2px 4px rgba(255,215,0,0.5))',
             }}
           >
             <defs>
@@ -939,24 +939,154 @@ const FlyingAngel = () => {
                 <stop offset="50%" style={{ stopColor: '#FFA500' }} />
                 <stop offset="100%" style={{ stopColor: '#FFD700' }} />
               </linearGradient>
+              <linearGradient id="crownShine" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style={{ stopColor: '#FFFACD' }} />
+                <stop offset="50%" style={{ stopColor: '#FFD700' }} />
+                <stop offset="100%" style={{ stopColor: '#B8860B' }} />
+              </linearGradient>
+              {/* Sparkle gradient for jewels */}
+              <radialGradient id="jewelSparkle" cx="30%" cy="30%">
+                <stop offset="0%" style={{ stopColor: '#FFFFFF' }} />
+                <stop offset="50%" style={{ stopColor: '#FF69B4' }} />
+                <stop offset="100%" style={{ stopColor: '#EC4899' }} />
+              </radialGradient>
+              <radialGradient id="purpleJewelSparkle" cx="30%" cy="30%">
+                <stop offset="0%" style={{ stopColor: '#FFFFFF' }} />
+                <stop offset="50%" style={{ stopColor: '#C084FC' }} />
+                <stop offset="100%" style={{ stopColor: '#9333EA' }} />
+              </radialGradient>
             </defs>
+            
             {/* Crown base shape - centered */}
-            <path 
-              d="M4 10 L5 4 L7.5 7 L12 2 L16.5 7 L19 4 L20 10 L19 11 L5 11 Z" 
-              fill="url(#crownGradFairy)"
+            <motion.path 
+              d="M6 16 L7 8 L10 12 L16 4 L22 12 L25 8 L26 16 L25 17 L7 17 Z" 
+              fill="url(#crownShine)"
               stroke="#B8860B"
-              strokeWidth="0.3"
+              strokeWidth="0.5"
+              animate={{
+                filter: [
+                  'drop-shadow(0 0 2px rgba(255,215,0,0.5))',
+                  'drop-shadow(0 0 6px rgba(255,215,0,0.9))',
+                  'drop-shadow(0 0 2px rgba(255,215,0,0.5))',
+                ]
+              }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
             />
-            {/* Center jewel - pink */}
-            <circle cx="12" cy="4.5" r="1.2" fill="#EC4899" />
-            {/* Side jewels - purple */}
-            <circle cx="7" cy="6.5" r="0.8" fill="#9333EA" />
-            <circle cx="17" cy="6.5" r="0.8" fill="#9333EA" />
-            {/* Sparkle dots on crown */}
-            <circle cx="5.5" cy="8" r="0.4" fill="#FFFACD" />
-            <circle cx="18.5" cy="8" r="0.4" fill="#FFFACD" />
-            <circle cx="12" cy="7" r="0.3" fill="#FFFACD" />
-          </svg>
+            
+            {/* Center jewel - pink with sparkle */}
+            <motion.circle 
+              cx="16" cy="7" r="1.8" 
+              fill="url(#jewelSparkle)"
+              animate={{
+                r: [1.8, 2.2, 1.8],
+                opacity: [1, 0.8, 1],
+              }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            
+            {/* Side jewels - purple with sparkle */}
+            <motion.circle 
+              cx="10" cy="10" r="1.2" 
+              fill="url(#purpleJewelSparkle)"
+              animate={{
+                r: [1.2, 1.5, 1.2],
+                opacity: [1, 0.7, 1],
+              }}
+              transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
+            />
+            <motion.circle 
+              cx="22" cy="10" r="1.2" 
+              fill="url(#purpleJewelSparkle)"
+              animate={{
+                r: [1.2, 1.5, 1.2],
+                opacity: [1, 0.7, 1],
+              }}
+              transition={{ duration: 0.6, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+            />
+            
+            {/* Animated sparkle stars around crown */}
+            <motion.g
+              animate={{ opacity: isMovingFast ? 1 : 0.3 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Star 1 - top left */}
+              <motion.path
+                d="M4 4 L4.5 5.5 L6 6 L4.5 6.5 L4 8 L3.5 6.5 L2 6 L3.5 5.5 Z"
+                fill="#FFFACD"
+                animate={{
+                  scale: [0.5, 1.2, 0.5],
+                  opacity: [0.3, 1, 0.3],
+                  rotate: [0, 180, 360],
+                }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                style={{ transformOrigin: '4px 6px' }}
+              />
+              
+              {/* Star 2 - top right */}
+              <motion.path
+                d="M28 4 L28.5 5.5 L30 6 L28.5 6.5 L28 8 L27.5 6.5 L26 6 L27.5 5.5 Z"
+                fill="#FFFACD"
+                animate={{
+                  scale: [0.5, 1.2, 0.5],
+                  opacity: [0.3, 1, 0.3],
+                  rotate: [0, -180, -360],
+                }}
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
+                style={{ transformOrigin: '28px 6px' }}
+              />
+              
+              {/* Star 3 - top center */}
+              <motion.path
+                d="M16 0 L16.5 1.5 L18 2 L16.5 2.5 L16 4 L15.5 2.5 L14 2 L15.5 1.5 Z"
+                fill="#FFD700"
+                animate={{
+                  scale: [0.8, 1.5, 0.8],
+                  opacity: [0.5, 1, 0.5],
+                  rotate: [0, 360, 720],
+                }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
+                style={{ transformOrigin: '16px 2px' }}
+              />
+            </motion.g>
+            
+            {/* Continuous sparkle dots that twinkle */}
+            <motion.circle 
+              cx="8" cy="14" r="0.6" 
+              fill="#FFFACD"
+              animate={{ opacity: [0.2, 1, 0.2], scale: [0.5, 1, 0.5] }}
+              transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.circle 
+              cx="24" cy="14" r="0.6" 
+              fill="#FFFACD"
+              animate={{ opacity: [0.2, 1, 0.2], scale: [0.5, 1, 0.5] }}
+              transition={{ duration: 0.5, repeat: Infinity, ease: 'easeInOut', delay: 0.25 }}
+            />
+            <motion.circle 
+              cx="16" cy="12" r="0.5" 
+              fill="#FFFFFF"
+              animate={{ opacity: [0.3, 1, 0.3], scale: [0.5, 1.2, 0.5] }}
+              transition={{ duration: 0.4, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
+            />
+            
+            {/* Extra sparkles when moving */}
+            {isMovingFast && (
+              <>
+                <motion.circle 
+                  cx="12" cy="5" r="0.4" 
+                  fill="#FF69B4"
+                  animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
+                  transition={{ duration: 0.3, repeat: Infinity }}
+                />
+                <motion.circle 
+                  cx="20" cy="5" r="0.4" 
+                  fill="#9333EA"
+                  animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
+                  transition={{ duration: 0.3, repeat: Infinity, delay: 0.15 }}
+                />
+              </>
+            )}
+          </motion.svg>
           
           <motion.img
             src={processedFairySrc ?? displayedFairy}
