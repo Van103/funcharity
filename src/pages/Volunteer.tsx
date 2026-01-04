@@ -17,8 +17,9 @@ import { CreateHelpRequestModal } from '@/components/volunteer/CreateHelpRequest
 import { HelpRequestCard } from '@/components/volunteer/HelpRequestCard';
 import { MatchDashboard } from '@/components/volunteer/MatchDashboard';
 import { useVolunteerProfile } from '@/hooks/useVolunteerProfile';
-import { useHelpRequests, CATEGORY_OPTIONS } from '@/hooks/useHelpRequests';
+import { useHelpRequests, CATEGORY_OPTIONS, HelpRequest } from '@/hooks/useHelpRequests';
 import { HelpRequestsMap } from '@/components/volunteer/HelpRequestsMap';
+import { FindVolunteersModal } from '@/components/volunteer/FindVolunteersModal';
 import { 
   Heart, 
   Users, 
@@ -185,6 +186,8 @@ const Volunteer = () => {
   const [userSkills, setUserSkills] = useState<string[]>(['Teaching', 'Communication', 'Leadership']);
   const [logModalOpen, setLogModalOpen] = useState(false);
   const [createRequestModalOpen, setCreateRequestModalOpen] = useState(false);
+  const [findVolunteersModalOpen, setFindVolunteersModalOpen] = useState(false);
+  const [selectedRequestForMatching, setSelectedRequestForMatching] = useState<HelpRequest | null>(null);
   
   // Hooks for new matching system
   const { profile: volunteerProfile, loading: volunteerProfileLoading } = useVolunteerProfile();
@@ -623,6 +626,11 @@ const Volunteer = () => {
                     <HelpRequestCard 
                       key={request.id} 
                       request={request}
+                      showFindVolunteersButton={user?.id === request.requester_id}
+                      onFindVolunteers={() => {
+                        setSelectedRequestForMatching(request);
+                        setFindVolunteersModalOpen(true);
+                      }}
                       onApply={() => {
                         if (!user) {
                           toast({
@@ -1195,6 +1203,14 @@ const Volunteer = () => {
         open={createRequestModalOpen}
         onOpenChange={setCreateRequestModalOpen}
         onSuccess={refetchRequests}
+      />
+
+      {/* Find Volunteers Modal */}
+      <FindVolunteersModal
+        open={findVolunteersModalOpen}
+        onOpenChange={setFindVolunteersModalOpen}
+        request={selectedRequestForMatching}
+        onMatchCreated={refetchRequests}
       />
     </>
   );

@@ -16,6 +16,7 @@ import {
   ChevronRight,
   AlertTriangle,
   CheckCircle,
+  Search,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi, enUS } from 'date-fns/locale';
@@ -24,14 +25,18 @@ interface HelpRequestCardProps {
   request: HelpRequest;
   onApply?: () => void;
   onViewDetails?: () => void;
+  onFindVolunteers?: () => void;
   showApplyButton?: boolean;
+  showFindVolunteersButton?: boolean;
 }
 
 export const HelpRequestCard = ({
   request,
   onApply,
   onViewDetails,
+  onFindVolunteers,
   showApplyButton = true,
+  showFindVolunteersButton = false,
 }: HelpRequestCardProps) => {
   const { language } = useLanguage();
   
@@ -180,9 +185,15 @@ export const HelpRequestCard = ({
           </div>
         </CardContent>
 
-        <CardFooter className="pt-0 gap-2">
+        <CardFooter className="pt-0 gap-2 flex-wrap">
           {getStatusBadge()}
           <div className="flex-1" />
+          {showFindVolunteersButton && request.status === 'open' && onFindVolunteers && (
+            <Button size="sm" variant="secondary" onClick={onFindVolunteers} className="gap-1">
+              <Search className="w-4 h-4" />
+              {language === 'vi' ? 'Tìm TNV' : 'Find Volunteers'}
+            </Button>
+          )}
           {showApplyButton && request.status === 'open' && (
             <Button size="sm" onClick={onApply} className="gap-1">
               {language === 'vi' ? 'Đăng ký' : 'Apply'}

@@ -16,6 +16,7 @@ interface VolunteerProfile {
   experience_level: string;
   rating: number;
   is_available: boolean;
+  completed_tasks: number;
 }
 
 interface HelpRequest {
@@ -38,6 +39,7 @@ interface MatchResult {
   skill_score: number;
   geo_score: number;
   experience_score: number;
+  distance_km?: number;
 }
 
 // Haversine formula to calculate distance between two points
@@ -129,7 +131,7 @@ function calculateExperienceScore(volunteer: VolunteerProfile, request: HelpRequ
   return Math.min(100, Math.round((baseScore + ratingBonus) * multiplier));
 }
 
-// Calculate overall match score
+// Calculate overall match score with distance
 function calculateMatchScore(volunteer: VolunteerProfile, request: HelpRequest): MatchResult {
   const skillScore = calculateSkillScore(volunteer, request);
   const geoScore = calculateGeoScore(volunteer, request);
@@ -138,6 +140,17 @@ function calculateMatchScore(volunteer: VolunteerProfile, request: HelpRequest):
   // Weighted average: Skills 40%, Location 35%, Experience 25%
   const matchScore = Math.round(skillScore * 0.4 + geoScore * 0.35 + experienceScore * 0.25);
 
+  // Calculate distance if both have coordinates
+  let distance_km: number | undefined;
+  if (volunteer.latitude && volunteer.longitude && request.latitude && request.longitude) {
+    distance_km = calculateDistance(
+      volunteer.latitude,
+      volunteer.longitude,
+      request.latitude,
+      request.longitude
+    );
+  }
+
   return {
     volunteer_id: volunteer.user_id,
     request_id: request.id,
@@ -145,6 +158,7 @@ function calculateMatchScore(volunteer: VolunteerProfile, request: HelpRequest):
     skill_score: skillScore,
     geo_score: geoScore,
     experience_score: experienceScore,
+    distance_km,
   };
 }
 
@@ -159,9 +173,151 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { action, request_id, limit = 10 } = await req.json();
+    const { action, request_id, radius_km = 50, limit = 10, volunteer_ids } = await req.json();
 
     console.log(`[volunteer-matching] Action: ${action}, Request ID: ${request_id}`);
+
+    // NEW ACTION: Find nearby volunteers with GPS filtering
+    if (action === 'find_nearby_volunteers') {
+      if (!request_id) {
+        return new Response(
+          JSON.stringify({ error: 'request_id is required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Fetch the help request
+      const { data: request, error: requestError } = await supabase
+        .from('help_requests')
+        .select('*')
+        .eq('id', request_id)
+        .single();
+
+      if (requestError || !request) {
+        console.error('[volunteer-matching] Request not found:', requestError);
+        return new Response(
+          JSON.stringify({ error: 'Help request not found' }),
+          { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Fetch available volunteers (excluding the requester)
+      const { data: volunteers, error: volunteersError } = await supabase
+        .from('volunteer_profiles')
+        .select('*')
+        .eq('is_available', true)
+        .neq('user_id', request.requester_id);
+
+      if (volunteersError) {
+        console.error('[volunteer-matching] Error fetching volunteers:', volunteersError);
+        throw volunteersError;
+      }
+
+      // Get existing matches to exclude already matched volunteers
+      const { data: existingMatches } = await supabase
+        .from('volunteer_matches')
+        .select('volunteer_id')
+        .eq('request_id', request_id)
+        .in('status', ['pending', 'accepted']);
+
+      const matchedVolunteerIds = new Set(existingMatches?.map(m => m.volunteer_id) || []);
+
+      // Calculate match scores and filter by radius
+      const matches: MatchResult[] = [];
+      for (const volunteer of volunteers || []) {
+        if (matchedVolunteerIds.has(volunteer.user_id)) continue;
+
+        const match = calculateMatchScore(volunteer as VolunteerProfile, request as HelpRequest);
+        
+        // Filter by radius if request has coordinates
+        if (request.latitude && request.longitude && volunteer.latitude && volunteer.longitude) {
+          if (match.distance_km && match.distance_km > radius_km) {
+            continue; // Skip volunteers outside radius
+          }
+        }
+
+        if (match.match_score >= 20) { // Lower threshold for nearby search
+          matches.push(match);
+        }
+      }
+
+      // Sort by score and limit
+      matches.sort((a, b) => b.match_score - a.match_score);
+      const topMatches = matches.slice(0, limit);
+
+      // Fetch profiles for matched volunteers
+      const volunteerUserIds = topMatches.map(m => m.volunteer_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, avatar_url')
+        .in('user_id', volunteerUserIds);
+
+      const { data: volunteerProfiles } = await supabase
+        .from('volunteer_profiles')
+        .select('user_id, skills, experience_level, rating, completed_tasks')
+        .in('user_id', volunteerUserIds);
+
+      // Combine data
+      const volunteersWithProfiles = topMatches.map(match => {
+        const profile = profiles?.find(p => p.user_id === match.volunteer_id);
+        const volunteerProfile = volunteerProfiles?.find(v => v.user_id === match.volunteer_id);
+        return {
+          ...match,
+          profile,
+          volunteer_profile: volunteerProfile,
+        };
+      });
+
+      console.log(`[volunteer-matching] Found ${volunteersWithProfiles.length} nearby volunteers within ${radius_km}km`);
+
+      return new Response(
+        JSON.stringify({ volunteers: volunteersWithProfiles }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // NEW ACTION: Create matches for selected volunteers
+    if (action === 'create_selected_matches') {
+      if (!request_id || !volunteer_ids || !Array.isArray(volunteer_ids)) {
+        return new Response(
+          JSON.stringify({ error: 'request_id and volunteer_ids are required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Create match records for selected volunteers
+      const matchRecords = volunteer_ids.map(volunteer_id => ({
+        request_id,
+        volunteer_id,
+        status: 'pending',
+        matched_at: new Date().toISOString(),
+      }));
+
+      const { error: insertError } = await supabase
+        .from('volunteer_matches')
+        .upsert(matchRecords, { onConflict: 'request_id,volunteer_id' });
+
+      if (insertError) {
+        console.error('[volunteer-matching] Error inserting matches:', insertError);
+        throw insertError;
+      }
+
+      // Update request status
+      await supabase
+        .from('help_requests')
+        .update({ status: 'matching' })
+        .eq('id', request_id);
+
+      console.log(`[volunteer-matching] Created ${volunteer_ids.length} match records`);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          matches_created: volunteer_ids.length,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (action === 'find_matches') {
       // Find volunteers for a specific help request
@@ -386,7 +542,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ error: 'Invalid action. Use: find_matches, create_matches, or run_batch_matching' }),
+      JSON.stringify({ error: 'Invalid action. Use: find_matches, find_nearby_volunteers, create_matches, create_selected_matches, or run_batch_matching' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
