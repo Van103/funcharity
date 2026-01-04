@@ -63,9 +63,9 @@ export default function HonorBoard() {
               className="text-center"
             >
               <h1 className="text-3xl md:text-5xl font-extrabold mb-4 text-gold-shimmer">
-                <span className="animate-sparkle inline-block mr-2">✨</span>
+                <span className="animate-sparkle inline-block mr-2">🏆</span>
                 {t("honorBoard.title")}
-                <span className="animate-sparkle-delay inline-block ml-2">✨</span>
+                <span className="animate-sparkle-delay inline-block ml-2">🏆</span>
               </h1>
               <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
                 {t("honorBoard.subtitle")}
