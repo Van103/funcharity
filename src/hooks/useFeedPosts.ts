@@ -124,6 +124,7 @@ export function useInfiniteFeedPosts(filters?: FeedFilters) {
         .from("feed_posts")
         .select("*")
         .eq("is_active", true)
+        .eq("moderation_status", "approved")
         .order("created_at", { ascending: false })
         .range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
 
@@ -226,6 +227,7 @@ export function useFeedPosts(filters?: FeedFilters) {
         .from("feed_posts")
         .select("*")
         .eq("is_active", true)
+        .eq("moderation_status", "approved")
         .order("created_at", { ascending: false })
         .limit(50);
 
