@@ -1503,6 +1503,71 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          total_earned: number
+          updated_at: string | null
+          user_id: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          total_earned?: number
+          updated_at?: string | null
+          user_id: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          total_earned?: number
+          updated_at?: string | null
+          user_id?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      referral_uses: {
+        Row: {
+          created_at: string | null
+          id: string
+          referral_code_id: string
+          referred_user_id: string
+          reward_given: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          referral_code_id: string
+          referred_user_id: string
+          reward_given?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          referral_code_id?: string
+          referred_user_id?: string
+          reward_given?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_uses_referral_code_id_fkey"
+            columns: ["referral_code_id"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reports: {
         Row: {
           admin_notes: string | null
@@ -1574,6 +1639,87 @@ export type Database = {
           points?: number
           reference_id?: string | null
           reference_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reward_config: {
+        Row: {
+          action_type: string
+          bonus_conditions: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          max_per_day: number | null
+          min_threshold: number | null
+          reward_amount: number
+          reward_currency: string
+          reward_percentage: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          action_type: string
+          bonus_conditions?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_per_day?: number | null
+          min_threshold?: number | null
+          reward_amount?: number
+          reward_currency?: string
+          reward_percentage?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          action_type?: string
+          bonus_conditions?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_per_day?: number | null
+          min_threshold?: number | null
+          reward_amount?: number
+          reward_currency?: string
+          reward_percentage?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reward_transactions: {
+        Row: {
+          action_type: string
+          amount: number
+          created_at: string | null
+          currency: string
+          description: string | null
+          id: string
+          reference_id: string | null
+          reference_type: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          amount: number
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          amount?: number
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string
           user_id?: string
         }
         Relationships: []
@@ -1651,6 +1797,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_balances: {
+        Row: {
+          balance: number
+          created_at: string | null
+          currency: string
+          id: string
+          total_earned: number
+          total_withdrawn: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_coins: {
         Row: {
@@ -1967,6 +2146,19 @@ export type Database = {
       }
     }
     Functions: {
+      award_user_reward: {
+        Args: {
+          p_action_type: string
+          p_amount: number
+          p_currency: string
+          p_description?: string
+          p_reference_id?: string
+          p_reference_type?: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      generate_referral_code: { Args: never; Returns: string }
       get_campaign_donations: {
         Args: { _campaign_id: string }
         Returns: {
