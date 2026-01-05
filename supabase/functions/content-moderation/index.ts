@@ -21,6 +21,8 @@ interface ModerationResult {
   safe: boolean;
 }
 
+const AI_MODEL = "google/gemini-2.5-flash";
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -103,7 +105,7 @@ Trả về CHÍNH XÁC theo định dạng JSON:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: AI_MODEL,
         messages: [
           {
             role: "system",
@@ -193,6 +195,7 @@ Trả về CHÍNH XÁC theo định dạng JSON:
           reason: result.reason || `${result.decision}: Vi phạm tiêu chuẩn cộng đồng`,
           categories: result.categories || [],
           ai_score: result.confidence_score || 0,
+          ai_model: AI_MODEL,
         });
       }
     }
