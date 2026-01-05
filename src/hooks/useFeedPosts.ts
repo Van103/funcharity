@@ -279,14 +279,23 @@ export function useFeedPosts(filters?: FeedFilters) {
   return query;
 }
 
-// Cute success messages - FUN Charity Hub style
-const SUCCESS_MESSAGES = [
+// Cute success messages for POSITIVE posts - FUN Charity Hub style
+const POSITIVE_SUCCESS_MESSAGES = [
   { title: "Yayyy! 💖✨", description: "Bài của bạn siêu ấm áp và tràn đầy yêu thương luôn á!" },
   { title: "Ôi dễ thương quá trời! 🌟", description: "Cộng đồng FUN Charity đang chờ bài này lắm nè!" },
   { title: "Hoàn hảo luôn! 😍", description: "Cha vũ trụ cũng mỉm cười với bài đăng này rồi á! Đăng thôi!" },
   { title: "Bài xinh xắn lung linh! 🥰", description: "Cảm ơn bạn đã lan tỏa năng lượng tốt đẹp nhé!" },
   { title: "Tuyệt vời lắm nha! 💕", description: "Năng lượng yêu thương đang lan tỏa khắp cộng đồng rồi!" },
   { title: "Chuẩn luôn bạn ơi! 🌈", description: "Bài viết đẹp lắm, gia đình FUN Charity cảm ơn bạn nha!" },
+];
+
+// Empathetic success messages for SAD/HELP posts
+const EMPATHETIC_SUCCESS_MESSAGES = [
+  { title: "Chúng mình ở đây với bạn 🫂", description: "Bài đã đăng rồi nha! Cộng đồng FUN Charity sẽ cùng nhau hỗ trợ bạn ngay đây 💕" },
+  { title: "Cảm ơn bạn đã chia sẻ ❤️", description: "Bài đăng đã lên để mọi người cùng giúp đỡ nha!" },
+  { title: "Bài của bạn đã được đăng! 🥰", description: "Mọi người trong gia đình lớn sẽ mau chóng hỗ trợ bạn nha!" },
+  { title: "Chúng mình luôn ở đây 🌟", description: "Bài đã đăng để lan tỏa lời kêu gọi rồi ạ. Bạn không đơn độc nhé!" },
+  { title: "FUN Charity luôn bên bạn 💪", description: "Bài đã đăng! Gia đình mình sẽ cùng chung tay hỗ trợ nha!" },
 ];
 
 // Soft warning messages - still warm and loving
@@ -304,8 +313,38 @@ const HARD_REJECTION_MESSAGES = [
   { title: "Hmm... mình cần điều chỉnh chút nha 💕", description: "Để không gian này luôn ấm áp, bạn thử viết theo cách khác nhé!" },
 ];
 
-// Helper to get random message
-const getRandomMessage = (messages: typeof SUCCESS_MESSAGES) => {
+// Keywords to detect sad/help-needed posts
+const HELP_KEYWORDS = [
+  // Natural disasters
+  'lũ lụt', 'lũ', 'bão', 'sạt lở', 'ngập', 'thiên tai', 'động đất', 'sóng thần',
+  // Health issues
+  'bệnh', 'ung thư', 'phẫu thuật', 'chữa trị', 'điều trị', 'viện phí', 'bệnh viện', 'tai nạn', 'thương tích',
+  // Financial hardship
+  'khó khăn', 'thiếu thốn', 'nghèo', 'nợ nần', 'túng quẫn', 'không có tiền',
+  // Calls for help
+  'cầu cứu', 'kêu gọi', 'xin giúp', 'giúp đỡ', 'hỗ trợ', 'cứu giúp', 'cần giúp', 'mong được',
+  // Sad situations
+  'mất', 'qua đời', 'tang', 'đau buồn', 'khổ', 'thương tâm', 'đáng thương',
+  // Need types
+  'cần gấp', 'khẩn cấp', 'urgent', 'SOS', 'emergency',
+];
+
+// Detect if post content is sad/needs help
+const isHelpNeededPost = (content: string): boolean => {
+  if (!content) return false;
+  const lowerContent = content.toLowerCase();
+  return HELP_KEYWORDS.some(keyword => lowerContent.includes(keyword));
+};
+
+// Helper to get random message based on post context
+const getSuccessMessage = (content: string) => {
+  const isHelpPost = isHelpNeededPost(content);
+  const messages = isHelpPost ? EMPATHETIC_SUCCESS_MESSAGES : POSITIVE_SUCCESS_MESSAGES;
+  return messages[Math.floor(Math.random() * messages.length)];
+};
+
+// Helper to get random message from array
+const getRandomMessage = (messages: typeof SOFT_WARNING_MESSAGES) => {
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
@@ -454,12 +493,17 @@ export function useCreateFeedPost() {
         .single();
 
       if (error) throw error;
-      return data;
+      
+      // Return data with original content for context-aware success message
+      return { ...data, _originalContent: contentToCheck.text };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
       queryClient.invalidateQueries({ queryKey: ["feed-posts-infinite"] });
-      const msg = getRandomMessage(SUCCESS_MESSAGES);
+      
+      // Get context-aware message based on post content
+      const originalContent = (data as any)?._originalContent || '';
+      const msg = getSuccessMessage(originalContent);
       toast({
         title: msg.title,
         description: msg.description,
