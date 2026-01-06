@@ -279,7 +279,7 @@ export function useFeedPosts(filters?: FeedFilters) {
   return query;
 }
 
-// Cute success messages for POSITIVE posts - FUN Charity Hub style
+// Cute success messages for POSITIVE posts - FUN Charity style
 const POSITIVE_SUCCESS_MESSAGES = [
   { title: "Yayyy! 💖✨", description: "Bài của bạn siêu ấm áp và tràn đầy yêu thương luôn á!" },
   { title: "Ôi dễ thương quá trời! 🌟", description: "Cộng đồng FUN Charity đang chờ bài này lắm nè!" },

@@ -38,6 +38,7 @@ export function Footer() {
       { name: t("footer.privacyPolicy"), href: "/privacy" },
       { name: t("footer.terms"), href: "/terms" },
       { name: t("footer.kycRegulations"), href: "/kyc" },
+      { name: "Brand Guidelines", href: "/brand" },
     ],
   };
 
