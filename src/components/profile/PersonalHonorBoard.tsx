@@ -1,4 +1,5 @@
 import { usePersonalStats } from "@/hooks/usePersonalStats";
+import { TrendingUp, Trophy, Coins, FileText, Video, Users, Award } from "lucide-react";
 import { useCountAnimation } from "@/hooks/useCountAnimation";
 
 interface PersonalHonorBoardProps {
@@ -10,10 +11,10 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
   
   const formatNumber = (num: number) => {
     if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(".", ",") + "M";
+      return (num / 1000000).toFixed(1) + "M";
     }
     if (num >= 1000) {
-      return num.toLocaleString("vi-VN");
+      return (num / 1000).toFixed(1) + "K";
     }
     return num.toLocaleString("vi-VN");
   };
@@ -25,29 +26,29 @@ function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string
   );
 }
 
-interface StatBoxProps {
+interface StatRowProps {
+  icon: React.ReactNode;
   label: string;
-  value: number | string;
+  value: number;
   suffix?: string;
-  isRank?: boolean;
-  rankTotal?: number;
+  showTrend?: boolean;
 }
 
-function StatBox({ label, value, suffix = "", isRank = false, rankTotal }: StatBoxProps) {
+function StatRow({ icon, label, value, suffix = "", showTrend = true }: StatRowProps) {
   return (
-    <div className="bg-gradient-to-r from-yellow-300/90 via-yellow-200/95 to-yellow-300/90 rounded-lg px-3 py-2 flex items-center justify-between shadow-md border border-yellow-400/50">
-      <span className="text-purple-900 font-bold text-xs uppercase tracking-wide">
-        {label}
-      </span>
-      <span className="text-purple-900 font-bold text-sm">
-        {isRank ? (
-          `${value}/${rankTotal}`
-        ) : typeof value === "number" ? (
-          <AnimatedNumber value={value} suffix={suffix} />
-        ) : (
-          value
+    <div className="flex items-center justify-between py-1.5">
+      <div className="flex items-center gap-2">
+        <span className="text-gold-champagne/80">{icon}</span>
+        <span className="text-white/90 text-sm">{label}</span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        {showTrend && value > 0 && (
+          <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
         )}
-      </span>
+        <span className="text-white font-semibold text-sm">
+          <AnimatedNumber value={value} suffix={suffix} />
+        </span>
+      </div>
     </div>
   );
 }
@@ -58,7 +59,7 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
   if (isLoading) {
     return (
       <div className="absolute top-4 right-4 z-10 hidden md:block">
-        <div className="w-[320px] h-[180px] bg-black/30 backdrop-blur-md rounded-xl animate-pulse" />
+        <div className="w-[200px] h-[200px] bg-black/30 backdrop-blur-md rounded-xl animate-pulse" />
       </div>
     );
   }
@@ -67,41 +68,52 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
 
   return (
     <div className="absolute top-4 right-4 z-10 hidden md:block">
-      <div className="w-[320px] backdrop-blur-sm rounded-xl p-2">
-        <div className="grid grid-cols-2 gap-2">
-          <StatBox
-            label="TOP CHARITY"
-            value={stats.charityRank}
-            isRank={true}
-            rankTotal={stats.totalCharityUsers}
+      <div className="w-[200px] bg-gradient-to-br from-purple-900/80 via-purple-800/70 to-pink-900/80 backdrop-blur-md rounded-xl border border-gold-champagne/30 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-gold-champagne/20 to-transparent px-3 py-2 border-b border-gold-champagne/20">
+          <div className="flex items-center justify-center gap-2">
+            <Trophy className="w-4 h-4 text-gold-champagne" />
+            <span className="text-gold-champagne font-bold text-sm tracking-wide">
+              BẢNG VINH DANH
+            </span>
+            <Trophy className="w-4 h-4 text-gold-champagne" />
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="px-3 py-2 space-y-0.5">
+          <StatRow
+            icon={<Award className="w-4 h-4" />}
+            label="Hồ Sơ Nổi Bật"
+            value={stats.featuredScore}
           />
-          <StatBox
-            label="CHARITY GIVING"
-            value={stats.charityGiving}
+          <StatRow
+            icon={<Coins className="w-4 h-4" />}
+            label="Thu Nhập"
+            value={stats.income}
+            suffix="đ"
+            showTrend={false}
           />
-          <StatBox
-            label="CAMPAIGN"
-            value={stats.campaignCount}
+          <StatRow
+            icon={<FileText className="w-4 h-4" />}
+            label="Bài Viết"
+            value={stats.postsCount}
           />
-          <StatBox
-            label="FRIEND"
-            value={stats.friendsCount}
-          />
-          <StatBox
-            label="VIDEO"
+          <StatRow
+            icon={<Video className="w-4 h-4" />}
+            label="Video"
             value={stats.videosCount}
           />
-          <StatBox
-            label="SỐ NFT"
+          <StatRow
+            icon={<Users className="w-4 h-4" />}
+            label="Bạn Bè"
+            value={stats.friendsCount}
+          />
+          <StatRow
+            icon={<Award className="w-4 h-4" />}
+            label="Số Lượng NFT"
             value={stats.nftCount}
-          />
-          <StatBox
-            label="CLAIMED"
-            value={stats.claimedAmount}
-          />
-          <StatBox
-            label="TOTAL REWARD"
-            value={stats.totalReward}
+            showTrend={false}
           />
         </div>
       </div>
