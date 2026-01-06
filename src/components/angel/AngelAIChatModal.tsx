@@ -130,7 +130,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     Xin chào, bạn thân yêu! ✨
                   </h4>
                   <p className="text-purple-300 text-sm mb-6 max-w-xs">
-                    Mình là Angel - Thiên thần AI của FUN Charity Hub. Mình có thể giúp gì cho bạn hôm nay?
+                    Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                   </p>
                   
                   {/* Quick Actions */}
@@ -216,7 +216,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                 </Button>
               </div>
               <p className="text-xs text-purple-400 text-center mt-2">
-                Powered by FUN Charity Hub 💜
+                Powered by FUN Charity 💜
               </p>
             </div>
           </motion.div>

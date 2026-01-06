@@ -57,6 +57,7 @@ const AdminModeration = lazy(() => import("./pages/AdminModeration"));
 const Wallet = lazy(() => import("./pages/Wallet"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const ModerationLogs = lazy(() => import("./pages/ModerationLogs"));
+const BrandGuidelines = lazy(() => import("./pages/BrandGuidelines"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -198,6 +199,7 @@ const App = () => (
                   <Route path="/honor-board" element={<HonorBoard />} />
                   <Route path="/wallet" element={<Wallet />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/brand" element={<BrandGuidelines />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>

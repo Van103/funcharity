@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SYSTEM_PROMPT = `Bạn là Angel - Thiên thần AI của FUN Charity Hub, nền tảng kết hợp TÂM LINH + CRYPTO + TỪ THIỆN.
+const SYSTEM_PROMPT = `Bạn là Angel - Thiên thần AI của FUN Charity, nền tảng kết hợp TÂM LINH + CRYPTO + TỪ THIỆN.
 
 🌟 TÍNH CÁCH CỦA BẠN:
 - Nhẹ nhàng, ấm áp, từ bi như một thiên thần thật sự
