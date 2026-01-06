@@ -1,122 +1,118 @@
+import { motion } from "framer-motion";
+import { Users, Trophy, Heart, UserPlus, FileText, Video, Award, Coins, Gift } from "lucide-react";
 import { usePersonalStats } from "@/hooks/usePersonalStats";
-import { TrendingUp, Trophy, Coins, FileText, Video, Users, Award } from "lucide-react";
 import { useCountAnimation } from "@/hooks/useCountAnimation";
 
 interface PersonalHonorBoardProps {
   userId: string | null;
 }
 
-function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
-  const animatedValue = useCountAnimation(value, 1500);
-  
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + "M";
-    }
-    if (num >= 1000) {
-      return (num / 1000).toFixed(1) + "K";
-    }
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1).replace(".", ",") + "M";
+  }
+  if (num >= 1000) {
     return num.toLocaleString("vi-VN");
-  };
+  }
+  return num.toString();
+};
 
-  return (
-    <span>
-      {formatNumber(animatedValue)}{suffix}
-    </span>
-  );
-}
-
-interface StatRowProps {
+interface StatCellProps {
   icon: React.ReactNode;
   label: string;
-  value: number;
-  suffix?: string;
-  showTrend?: boolean;
+  value: number | string;
+  delay: number;
 }
 
-function StatRow({ icon, label, value, suffix = "", showTrend = true }: StatRowProps) {
+const StatCell = ({ icon, label, value, delay }: StatCellProps) => {
+  const numericValue = typeof value === "number" ? value : 0;
+  const animatedValue = useCountAnimation(numericValue, 2000);
+  const displayValue = typeof value === "string" ? value : formatNumber(animatedValue);
+
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <div className="flex items-center gap-2">
-        <span className="text-gold-champagne/80">{icon}</span>
-        <span className="text-white/90 text-sm">{label}</span>
-      </div>
-      <div className="flex items-center gap-1.5">
-        {showTrend && value > 0 && (
-          <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-        )}
-        <span className="text-white font-semibold text-sm">
-          <AnimatedNumber value={value} suffix={suffix} />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay }}
+      whileHover={{ scale: 1.02 }}
+      className="metal-gold-border flex items-center gap-2 px-3 py-2 min-w-[120px]"
+    >
+      <div className="text-purple-600 flex-shrink-0">{icon}</div>
+      <div className="flex flex-col">
+        <span className="text-[9px] uppercase tracking-wide text-purple-500 font-medium">
+          {label}
         </span>
+        <span className="text-xs font-bold text-purple-800">{displayValue}</span>
       </div>
-    </div>
+    </motion.div>
   );
-}
+};
 
 export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
   const { data: stats, isLoading } = usePersonalStats(userId);
 
   if (isLoading) {
     return (
-      <div className="absolute top-4 right-4 z-10 hidden md:block">
-        <div className="w-[200px] h-[200px] bg-black/30 backdrop-blur-md rounded-xl animate-pulse" />
+      <div className="absolute bottom-4 left-4 right-4 z-10 hidden md:flex items-center justify-center gap-3">
+        <div className="metal-gold-border-button w-20 h-16 bg-amber-100/50 animate-pulse" />
+        <div className="grid grid-cols-3 gap-2">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="metal-gold-border w-28 h-10 bg-amber-100/50 animate-pulse" />
+          ))}
+        </div>
       </div>
     );
   }
 
   if (!stats) return null;
 
-  return (
-    <div className="absolute top-4 right-4 z-10 hidden md:block">
-      <div className="w-[200px] bg-gradient-to-br from-purple-900/80 via-purple-800/70 to-pink-900/80 backdrop-blur-md rounded-xl border border-gold-champagne/30 shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-gold-champagne/20 to-transparent px-3 py-2 border-b border-gold-champagne/20">
-          <div className="flex items-center justify-center gap-2">
-            <Trophy className="w-4 h-4 text-gold-champagne" />
-            <span className="text-gold-champagne font-bold text-sm tracking-wide">
-              BẢNG VINH DANH
-            </span>
-            <Trophy className="w-4 h-4 text-gold-champagne" />
-          </div>
-        </div>
+  const statsData = [
+    { icon: <Trophy size={14} />, label: "Hồ Sơ Nổi Bật", value: stats.featuredScore || 0 },
+    { icon: <Coins size={14} />, label: "Thu Nhập", value: stats.income || 0 },
+    { icon: <FileText size={14} />, label: "Bài Viết", value: stats.postsCount || 0 },
+    { icon: <Video size={14} />, label: "Video", value: stats.videosCount || 0 },
+    { icon: <UserPlus size={14} />, label: "Bạn Bè", value: stats.friendsCount || 0 },
+    { icon: <Award size={14} />, label: "Số NFT", value: stats.nftCount || 0 },
+  ];
 
-        {/* Stats */}
-        <div className="px-3 py-2 space-y-0.5">
-          <StatRow
-            icon={<Award className="w-4 h-4" />}
-            label="Hồ Sơ Nổi Bật"
-            value={stats.featuredScore}
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="absolute bottom-4 left-4 right-4 z-10 hidden md:flex items-center justify-center gap-3"
+    >
+      {/* User Stats Button - Left Side */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        whileHover={{ scale: 1.05 }}
+        className="metal-gold-border-button flex flex-col items-center justify-center px-4 py-3 cursor-pointer"
+      >
+        <Users className="text-purple-700 mb-0.5" size={20} />
+        <span className="text-lg font-bold text-purple-800">
+          {formatNumber(stats.featuredScore || 0)}
+        </span>
+        <span className="text-[9px] uppercase tracking-wider text-purple-600 font-medium">
+          Điểm
+        </span>
+      </motion.div>
+
+      {/* Stats Grid - Right Side */}
+      <div className="grid grid-cols-3 gap-2">
+        {statsData.map((stat, index) => (
+          <StatCell
+            key={stat.label}
+            icon={stat.icon}
+            label={stat.label}
+            value={stat.value}
+            delay={0.3 + index * 0.05}
           />
-          <StatRow
-            icon={<Coins className="w-4 h-4" />}
-            label="Thu Nhập"
-            value={stats.income}
-            suffix="đ"
-            showTrend={false}
-          />
-          <StatRow
-            icon={<FileText className="w-4 h-4" />}
-            label="Bài Viết"
-            value={stats.postsCount}
-          />
-          <StatRow
-            icon={<Video className="w-4 h-4" />}
-            label="Video"
-            value={stats.videosCount}
-          />
-          <StatRow
-            icon={<Users className="w-4 h-4" />}
-            label="Bạn Bè"
-            value={stats.friendsCount}
-          />
-          <StatRow
-            icon={<Award className="w-4 h-4" />}
-            label="Số Lượng NFT"
-            value={stats.nftCount}
-            showTrend={false}
-          />
-        </div>
+        ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
+
+export default PersonalHonorBoard;
