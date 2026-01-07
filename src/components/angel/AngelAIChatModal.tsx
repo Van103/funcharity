@@ -133,24 +133,16 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-amber-400/30 bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 backdrop-blur-md">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-xl shadow-lg shadow-amber-500/30">
-                      👼
-                    </div>
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-bold flex items-center gap-1 text-white">
-                      Angel AI
-                      <Sparkles className="w-4 h-4 text-amber-400" />
-                    </h3>
-                    <p className="text-xs text-amber-200">Thiên thần trợ lý của bạn</p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold flex items-center gap-1 text-white">
+                    Angel AI
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                  </h3>
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-3 h-3 bg-green-500 rounded-full border border-white"
+                  />
                 </div>
                 <div className="flex items-center gap-1">
                   <AngelThemePicker />
