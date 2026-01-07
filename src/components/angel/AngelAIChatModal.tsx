@@ -131,10 +131,10 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             {/* Content container */}
             <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-amber-400/30 bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 backdrop-blur-md">
+              <div className="flex items-center justify-between p-4 border-b border-purple-200/50 bg-[#E8E0F0] backdrop-blur-md">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-purple-500/30 border-2 border-amber-400/50">
+                    <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-purple-500/30 border-2 border-purple-400/50">
                       <img src={angelAvatar} alt="Angel AI" className="w-full h-full object-cover" />
                     </div>
                     <motion.div
@@ -143,9 +143,9 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
                     />
                   </div>
-                  <h3 className="font-bold flex items-center gap-1 text-white">
+                  <h3 className="font-bold flex items-center gap-1 text-purple-800">
                     Angel AI
-                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <Sparkles className="w-4 h-4 text-purple-500" />
                   </h3>
                 </div>
                 <div className="flex items-center gap-1">
@@ -154,7 +154,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     variant="ghost"
                     size="icon"
                     onClick={handleSaveHistory}
-                    className="h-8 w-8 text-amber-300 hover:text-white hover:bg-amber-500/30"
+                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
                     title="Lưu lịch sử chat"
                   >
                     <Download className="w-4 h-4" />
@@ -163,7 +163,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     variant="ghost"
                     size="icon"
                     onClick={toggleExpand}
-                    className="h-8 w-8 text-amber-300 hover:text-white hover:bg-amber-500/30"
+                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
                     title={isExpanded ? "Thu nhỏ" : "Phóng to"}
                   >
                     {isExpanded ? (
@@ -176,7 +176,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     variant="ghost"
                     size="icon"
                     onClick={clearConversation}
-                    className="h-8 w-8 text-amber-300 hover:text-white hover:bg-amber-500/30"
+                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
                     title="Xóa hội thoại"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -185,7 +185,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     variant="ghost"
                     size="icon"
                     onClick={onClose}
-                    className="h-8 w-8 text-amber-300 hover:text-white hover:bg-amber-500/30"
+                    className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-200/50"
                   >
                     <X className="w-5 h-5" />
                   </Button>
@@ -265,7 +265,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Input */}
-              <div className="p-4 border-t border-amber-400/30 bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 backdrop-blur-md">
+              <div className="p-4 border-t border-purple-200/50 bg-[#E8E0F0] backdrop-blur-md">
                 <div className="flex items-end gap-2">
                   <textarea
                     ref={inputRef}
@@ -274,13 +274,13 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     onKeyDown={handleKeyDown}
                     placeholder="Nhắn tin cho Angel..."
                     rows={1}
-                    className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50 max-h-32 border bg-white/80 border-amber-300/50 text-purple-900 placeholder-amber-600"
+                    className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/50 max-h-32 border bg-white/90 border-purple-300/50 text-purple-900 placeholder-purple-400"
                     style={{ minHeight: '44px' }}
                   />
                   <Button
                     onClick={handleSend}
                     disabled={!input.trim() || isLoading}
-                    className="h-11 w-11 rounded-xl text-white shadow-lg disabled:opacity-50 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
+                    className="h-11 w-11 rounded-xl text-white shadow-lg disabled:opacity-50 bg-gradient-to-r from-purple-500 to-violet-500 hover:from-purple-600 hover:to-violet-600"
                   >
                     {isLoading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -289,7 +289,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </Button>
                 </div>
-                <p className="text-xs text-center mt-2 text-amber-200">
+                <p className="text-xs text-center mt-2 text-purple-500">
                   Powered by FUN Charity 💜
                 </p>
               </div>
