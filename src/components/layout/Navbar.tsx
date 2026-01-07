@@ -235,10 +235,10 @@ export function Navbar() {
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     className="relative"
                   >
-                        {/* Active indicator line - like Facebook - positioned at navbar bottom */}
+                        {/* Active indicator line - like Facebook - centered under icon */}
                         {location.pathname === "/social" && (
                           <motion.div 
-                            className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-full h-[3px] rounded-t-full bg-primary"
+                            className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-14 h-[3px] rounded-full bg-primary"
                             initial={{ scaleX: 0 }}
                             animate={{ scaleX: 1 }}
                             layoutId="navActiveIndicator"
@@ -332,10 +332,10 @@ export function Navbar() {
                         transition={{ type: "spring", stiffness: 400, damping: 17 }}
                         className="relative"
                       >
-                        {/* Active indicator line - like Facebook - positioned at navbar bottom */}
+                        {/* Active indicator line - like Facebook - centered under icon */}
                         {isActive && (
                           <motion.div 
-                            className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-full h-[3px] rounded-t-full bg-primary"
+                            className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-14 h-[3px] rounded-full bg-primary"
                             initial={{ scaleX: 0 }}
                             animate={{ scaleX: 1 }}
                             layoutId="navActiveIndicator"
