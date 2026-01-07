@@ -478,7 +478,7 @@ export function SocialPostCard({ post, highlightPostId }: SocialPostCardProps) {
           onClick={() => setShowComments(!showComments)}
         >
           <MessageCircle className="w-5 h-5" />
-          <span className="hidden xs:inline">{t("post.comment")}</span>
+          <span>{t("post.comment")}</span>
         </Button>
         <GiftDonateModal post={post} />
         <SharePopover post={post} currentUserAvatar={currentUserAvatar} />
