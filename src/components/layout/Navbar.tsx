@@ -47,8 +47,6 @@ import {
   BarChart3,
   Trophy,
   Gift,
-  Shield,
-  Coins,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -56,9 +54,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
@@ -88,7 +83,6 @@ export function Navbar() {
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
-  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -97,19 +91,6 @@ export function Navbar() {
   useFriendRequestNotifications(user?.id || null);
   usePostNotifications(user?.id || null);
   useDonationNotifications(user?.id || null);
-
-  // Check admin status
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user?.id) {
-        setIsAdmin(false);
-        return;
-      }
-      const { data } = await supabase.rpc('is_admin', { _user_id: user.id });
-      setIsAdmin(data === true);
-    };
-    checkAdminStatus();
-  }, [user?.id]);
 
   // Fetch unread message count
   useEffect(() => {
@@ -468,64 +449,49 @@ export function Navbar() {
                     
                     <DropdownMenuSeparator className="my-2" />
                     
-                    {/* Claim Rewards Link */}
-                    <DropdownMenuItem asChild className="cursor-pointer p-3 rounded-lg hover:bg-primary/10">
-                      <Link to="/claim" className="flex items-center gap-3">
-                        <Coins className="w-5 h-5 text-amber-500" />
-                        <span className="font-medium">{t("nav.claimTokens") || "Claim Tokens"}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuSeparator className="my-2" />
-                    
-                    {/* Language Toggle - using DropdownMenuSub */}
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="p-3 rounded-lg hover:bg-primary/20 focus:bg-primary/20 flex items-center gap-3 cursor-pointer transition-colors">
-                        <Globe className="w-5 h-5 text-primary" />
-                        <span className="font-medium flex-1">{t("settings.language") || "Ngôn ngữ"}</span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="w-56 p-1 bg-card/95 backdrop-blur-xl border-border/50">
+                    {/* Language Toggle - entire row is clickable */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="p-3 rounded-lg hover:bg-primary/20 focus:bg-primary/20 flex items-center gap-3 cursor-pointer transition-colors">
+                          <Globe className="w-5 h-5 text-primary" />
+                          <span className="font-medium flex-1">{t("settings.language") || "Ngôn ngữ"}</span>
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-56 p-1 bg-card/95 backdrop-blur-xl border-border/50">
                         <LanguagePopoverContent />
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
+                      </PopoverContent>
+                    </Popover>
                     
-                    {/* Cursor Settings - using DropdownMenuSub */}
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="p-3 rounded-lg hover:bg-primary/20 focus:bg-primary/20 flex items-center gap-3 cursor-pointer transition-colors">
-                        <MousePointer2 className="w-5 h-5 text-primary" />
-                        <span className="font-medium flex-1">{t("settings.cursor") || "Con trỏ"}</span>
-                        <Sparkles className="h-4 w-4 text-secondary" />
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="w-80 max-h-[70vh] overflow-y-auto p-4 bg-card/95 backdrop-blur-xl border-border/50">
+                    {/* Cursor Settings - entire row is clickable */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="p-3 rounded-lg hover:bg-primary/20 focus:bg-primary/20 flex items-center gap-3 cursor-pointer transition-colors">
+                          <MousePointer2 className="w-5 h-5 text-primary" />
+                          <span className="font-medium flex-1">{t("settings.cursor") || "Con trỏ"}</span>
+                          <Sparkles className="h-4 w-4 text-secondary" />
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-80 max-h-[70vh] overflow-y-auto p-4 bg-card/95 backdrop-blur-xl border-border/50">
                         <CursorPopoverContent />
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
+                      </PopoverContent>
+                    </Popover>
                     
-                    {/* Settings with Motion Toggle - using DropdownMenuSub */}
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="p-3 rounded-lg hover:bg-primary/10 flex items-center gap-3 cursor-pointer">
-                        <Settings className="w-5 h-5 text-primary" />
-                        <span className="font-medium flex-1">{t("common.settings")}</span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent className="w-72 bg-background border border-border shadow-lg p-4">
+                    {/* Settings with Motion Toggle */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <div className="p-3 rounded-lg hover:bg-primary/10 flex items-center gap-3 cursor-pointer">
+                          <Settings className="w-5 h-5 text-primary" />
+                          <span className="font-medium flex-1">{t("common.settings")}</span>
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-72 bg-background border border-border shadow-lg">
                         <div className="space-y-2">
                           <h4 className="font-semibold text-sm">{t("common.settings")}</h4>
                           <MotionToggle />
                         </div>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                    
-                    <DropdownMenuSeparator className="my-2" />
-
-                    {/* Admin Rewards - only for admins */}
-                    {isAdmin && (
-                      <DropdownMenuItem asChild className="cursor-pointer p-3 rounded-lg hover:bg-primary/10">
-                        <Link to="/admin/rewards" className="flex items-center gap-3">
-                          <Shield className="w-5 h-5 text-primary" />
-                          <span className="font-medium">{t("admin.rewards") || "Quản lý phần thưởng"}</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
+                      </PopoverContent>
+                    </Popover>
                     
                     <DropdownMenuSeparator className="my-2" />
                     

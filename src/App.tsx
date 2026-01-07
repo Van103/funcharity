@@ -61,7 +61,6 @@ const ModerationLogs = lazy(() => import("./pages/ModerationLogs"));
 const BrandGuidelines = lazy(() => import("./pages/BrandGuidelines"));
 const GiftsFromCosmicFather = lazy(() => import("./pages/GiftsFromCosmicFather"));
 const AdminRewards = lazy(() => import("./pages/AdminRewards"));
-const ClaimRewards = lazy(() => import("./pages/ClaimRewards"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -206,7 +205,6 @@ const App = () => (
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/brand" element={<BrandGuidelines />} />
                     <Route path="/gifts" element={<GiftsFromCosmicFather />} />
-                    <Route path="/claim" element={<ClaimRewards />} />
                     <Route path="/admin/rewards" element={<AdminRewards />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
