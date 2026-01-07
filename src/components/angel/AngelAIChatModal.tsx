@@ -7,7 +7,7 @@ import { useAngelAI } from '@/hooks/useAngelAI';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import angelQueenBg from '@/assets/angel-queen-bg.png';
-import angelAvatar from '@/assets/angel-avatar.png';
+import angelAvatar from '@/assets/angel-avatar-smiling.png';
 
 interface AngelAIChatModalProps {
   isOpen: boolean;
