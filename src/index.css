@@ -1197,12 +1197,14 @@ label,
   direction: ltr;
 }
 
-/* Metal Gold Border for Honor Board */
+/* Metal Gold Border for Honor Board - Semi-transparent */
 .metal-gold-border {
   position: relative;
-  background: linear-gradient(135deg, rgba(254, 249, 225, 1) 0%, rgba(245, 230, 184, 1) 100%);
+  background: linear-gradient(135deg, rgba(254, 249, 225, 0.4) 0%, rgba(245, 230, 184, 0.4) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 9999px;
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5), 0 0 24px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
 }
 
 .metal-gold-border::before {
@@ -1210,7 +1212,7 @@ label,
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 3px;
+  padding: 2px;
   background: linear-gradient(135deg, #FFD700, #FFC107, #E5C76B, #D4AF37, #FFD700);
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
@@ -1224,9 +1226,11 @@ label,
 
 .metal-gold-border-button {
   position: relative;
-  background: linear-gradient(135deg, rgba(254, 249, 225, 1) 0%, rgba(245, 230, 184, 1) 100%);
+  background: linear-gradient(135deg, rgba(254, 249, 225, 0.5) 0%, rgba(245, 230, 184, 0.5) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 1.5rem;
-  box-shadow: 0 0 16px rgba(212, 175, 55, 0.6), 0 0 32px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.25);
 }
 
 .metal-gold-border-button::before {
@@ -1234,7 +1238,7 @@ label,
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  padding: 4px;
+  padding: 3px;
   background: linear-gradient(135deg, #FFD700, #FFC107, #E5C76B, #D4AF37, #FFD700);
   -webkit-mask: 
     linear-gradient(#fff 0 0) content-box, 
