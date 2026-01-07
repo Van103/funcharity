@@ -38,12 +38,12 @@ const StatCell = ({ icon, label, value, delay }: StatCellProps) => {
       className="metal-gold-border flex items-center justify-between gap-3 px-5 py-2.5 w-[280px]"
     >
       <div className="flex items-center gap-3">
-        <span className="text-purple-600 flex-shrink-0">{icon}</span>
-        <span className="text-[15px] uppercase tracking-wide text-purple-600 font-bold">
+        <span className="text-purple-800 flex-shrink-0">{icon}</span>
+        <span className="text-[15px] uppercase tracking-wide text-purple-800 font-bold">
           {label}
         </span>
       </div>
-      <span className="text-[15px] font-bold text-purple-600">{displayValue}</span>
+      <span className="text-[15px] font-bold text-purple-800">{displayValue}</span>
     </motion.div>
   );
 };
@@ -95,8 +95,8 @@ export function PersonalHonorBoard({ userId }: PersonalHonorBoardProps) {
         className="absolute top-3 left-3 z-10"
       >
         <div className="metal-gold-border-button flex items-center gap-3 px-6 py-2.5 cursor-pointer">
-          <Users className="text-purple-600" size={20} />
-          <span className="text-[16px] font-bold text-purple-600">
+          <Users className="text-purple-800" size={20} />
+          <span className="text-[16px] font-bold text-purple-800">
             {formatNumber(stats.featuredScore || 100000)} Users
           </span>
         </div>

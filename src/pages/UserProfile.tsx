@@ -167,13 +167,13 @@ export default function UserProfile() {
                 <PersonalHonorBoard userId={profile?.user_id || null} />
                 
                 <Button
-                  variant="secondary"
                   size="sm"
-                  className="absolute bottom-4 right-4 gap-2 bg-white/90 hover:bg-white text-foreground shadow-md"
+                  className="absolute bottom-4 right-4 gap-2 bg-purple-600 hover:bg-purple-700 text-white shadow-lg border-2 border-purple-300"
                   onClick={() => setEditModalOpen(true)}
                 >
                   <Camera className="w-4 h-4" />
                   <span className="hidden sm:inline">Chỉnh sửa ảnh bìa</span>
+                  <span className="sm:hidden">Sửa</span>
                 </Button>
               </div>
 
