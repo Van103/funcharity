@@ -9,6 +9,7 @@ import { AngelThemePicker } from './AngelThemePicker';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import angelQueenBg from '@/assets/angel-queen-bg.png';
+import angelAvatar from '@/assets/angel-avatar.png';
 
 interface AngelAIChatModalProps {
   isOpen: boolean;
@@ -133,16 +134,21 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
             <div className="relative z-10 flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-amber-400/30 bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 backdrop-blur-md">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg shadow-purple-500/30 border-2 border-amber-400/50">
+                      <img src={angelAvatar} alt="Angel AI" className="w-full h-full object-cover" />
+                    </div>
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
+                    />
+                  </div>
                   <h3 className="font-bold flex items-center gap-1 text-white">
                     Angel AI
                     <Sparkles className="w-4 h-4 text-amber-400" />
                   </h3>
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="w-3 h-3 bg-green-500 rounded-full border border-white"
-                  />
                 </div>
                 <div className="flex items-center gap-1">
                   <AngelThemePicker />
@@ -192,13 +198,6 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               <ScrollArea className="flex-1 p-4">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                    <motion.div
-                      animate={{ y: [0, -10, 0] }}
-                      transition={{ duration: 3, repeat: Infinity }}
-                      className="text-6xl mb-4"
-                    >
-                      👼
-                    </motion.div>
                     <h4 className="text-lg font-semibold mb-2 text-white">
                       Xin chào, bạn thân yêu! ✨
                     </h4>
