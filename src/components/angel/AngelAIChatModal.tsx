@@ -187,9 +187,11 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
               </div>
 
               {/* Messages */}
-              <ScrollArea className="flex-1 p-4">
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <ScrollArea className="flex-1">
+                  <div className="h-full flex flex-col justify-end min-h-full p-4">
                 {messages.length === 0 ? (
-                  <div className="flex flex-col items-end justify-end h-full text-center pb-4">
+                  <div className="mt-auto text-center pb-4">
                     <div className="w-full">
                       <h4 className="text-lg font-semibold mb-2 text-white">
                         Xin chào, bạn thân yêu! ✨
@@ -254,7 +256,9 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     <div ref={messagesEndRef} />
                   </div>
                 )}
-              </ScrollArea>
+                  </div>
+                </ScrollArea>
+              </div>
 
               {/* Input */}
               <div className="p-4 border-t border-amber-400/30 bg-gradient-to-r from-amber-500/20 via-yellow-400/20 to-amber-500/20 backdrop-blur-md">
