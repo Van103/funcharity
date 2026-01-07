@@ -791,58 +791,87 @@ label,
    Pastel gradient with glass blur effect
    ======================================== */
 
-/* Base glassmorphism pill button - DEFAULT for all buttons */
+/* ========================================
+   PURPLE DIAMOND BUTTON SYSTEM
+   Luxurious purple diamond effect with faceted shine
+   ======================================== */
+
+/* Base purple diamond button - DEFAULT for all buttons */
 .glass-pill-btn {
   @apply relative overflow-hidden font-semibold text-white;
   @apply transition-all duration-300 ease-out;
   border-radius: 9999px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  /* Vibrant rainbow gradient like reference image */
+  
+  /* Purple Diamond Gradient - Multi-faceted like real diamond */
   background: linear-gradient(
     135deg,
-    hsla(280, 100%, 60%, 1) 0%,
-    hsla(320, 100%, 65%, 1) 20%,
-    hsla(350, 90%, 60%, 1) 40%,
-    hsla(40, 100%, 55%, 1) 60%,
-    hsla(180, 90%, 50%, 1) 80%,
-    hsla(220, 100%, 65%, 1) 100%
+    hsla(280, 90%, 50%, 1) 0%,
+    hsla(270, 95%, 60%, 1) 20%,
+    hsla(280, 100%, 70%, 1) 40%,
+    hsla(260, 85%, 55%, 1) 60%,
+    hsla(275, 90%, 65%, 1) 80%,
+    hsla(285, 95%, 55%, 1) 100%
   );
   background-size: 200% 200%;
-  animation: glass-gradient-shift 4s ease infinite;
-  /* Glass border with bright glow */
-  border: 2px solid hsla(0, 0%, 100%, 0.5);
-  /* Multi-layer shadow for depth and glow */
+  animation: diamond-facet-shift 4s ease infinite;
+  
+  /* Diamond-cut border with bright purple glow */
+  border: 2px solid hsla(280, 100%, 85%, 0.8);
+  
+  /* Multi-faceted diamond shadow effect */
   box-shadow: 
-    0 4px 24px hsla(280, 100%, 60%, 0.4),
-    0 2px 12px hsla(320, 100%, 60%, 0.3),
-    0 0 30px hsla(280, 80%, 60%, 0.25),
-    inset 0 2px 8px hsla(0, 0%, 100%, 0.6),
-    inset 0 -2px 6px hsla(280, 80%, 40%, 0.3);
+    /* Outer glow - purple diamond brilliance */
+    0 4px 24px hsla(280, 100%, 60%, 0.5),
+    0 2px 12px hsla(270, 100%, 70%, 0.4),
+    0 0 30px hsla(285, 80%, 60%, 0.35),
+    /* Inner diamond facet highlights */
+    inset 0 2px 8px hsla(0, 0%, 100%, 0.7),
+    inset 0 -2px 6px hsla(280, 80%, 40%, 0.3),
+    inset 3px 3px 6px hsla(270, 100%, 85%, 0.5),
+    inset -3px -3px 6px hsla(280, 80%, 35%, 0.4);
+  
   text-shadow: 0 1px 3px hsla(0, 0%, 0%, 0.3);
 }
 
-@keyframes glass-gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes diamond-facet-shift {
+  0%, 100% { 
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  25% { filter: brightness(1.1); }
+  50% { 
+    background-position: 100% 50%;
+    filter: brightness(1.05);
+  }
+  75% { filter: brightness(1.15); }
 }
 
-/* Glossy reflection overlay - top shine like glass */
+/* Diamond facet shine - multiple light reflections like cut diamond */
 .glass-pill-btn::before {
   content: '';
   @apply absolute inset-x-0 top-0 pointer-events-none;
   height: 55%;
-  background: linear-gradient(
-    180deg,
-    hsla(0, 0%, 100%, 0.7) 0%,
-    hsla(0, 0%, 100%, 0.4) 25%,
-    hsla(0, 0%, 100%, 0.15) 50%,
-    transparent 100%
-  );
+  background: 
+    /* Primary facet shine */
+    linear-gradient(135deg, 
+      hsla(0, 0%, 100%, 0.9) 0%, 
+      hsla(0, 0%, 100%, 0.4) 20%,
+      transparent 40%),
+    /* Secondary purple reflection */
+    linear-gradient(225deg, 
+      hsla(280, 100%, 90%, 0.6) 0%, 
+      transparent 25%),
+    /* Top gradient shine */
+    linear-gradient(180deg,
+      hsla(0, 0%, 100%, 0.6) 0%,
+      hsla(0, 0%, 100%, 0.3) 30%,
+      transparent 60%);
   border-radius: 9999px 9999px 60% 60%;
 }
 
-/* Sparkle/shimmer overlay */
+/* Purple diamond sparkle shimmer effect */
 .glass-pill-btn::after {
   content: '';
   @apply absolute inset-0 pointer-events-none;
@@ -850,186 +879,205 @@ label,
   background: linear-gradient(
     120deg,
     transparent 0%,
-    hsla(0, 0%, 100%, 0.5) 30%,
-    hsla(0, 0%, 100%, 0.6) 50%,
-    hsla(0, 0%, 100%, 0.5) 70%,
+    hsla(280, 100%, 90%, 0.5) 20%,
+    hsla(0, 0%, 100%, 0.8) 40%,
+    hsla(270, 100%, 85%, 0.6) 60%,
+    hsla(0, 0%, 100%, 0.7) 80%,
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: btn-shimmer 3s ease-in-out infinite;
+  animation: diamond-sparkle 3s ease-in-out infinite;
   border-radius: inherit;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
-@keyframes btn-shimmer {
+@keyframes diamond-sparkle {
   0% { background-position: 200% center; }
   100% { background-position: -200% center; }
 }
 
-/* Hover state with intense glow */
+/* Hover state - Enhanced diamond brilliance */
 .glass-pill-btn:hover {
   transform: translateY(-3px) scale(1.03);
-  border-color: hsla(0, 0%, 100%, 0.8);
+  border-color: hsla(280, 100%, 95%, 0.95);
   animation-duration: 2s;
   box-shadow: 
-    0 10px 40px hsla(280, 100%, 60%, 0.5),
-    0 6px 20px hsla(320, 100%, 60%, 0.4),
-    0 0 50px hsla(280, 80%, 60%, 0.35),
-    0 0 30px hsla(200, 100%, 60%, 0.3),
-    inset 0 2px 8px hsla(0, 0%, 100%, 0.7),
-    inset 0 -2px 6px hsla(280, 80%, 40%, 0.2);
+    /* Intense outer purple diamond glow */
+    0 12px 45px hsla(280, 100%, 60%, 0.6),
+    0 0 50px hsla(270, 100%, 70%, 0.5),
+    0 0 35px hsla(285, 90%, 65%, 0.45),
+    /* Enhanced inner facet highlights */
+    inset 0 2px 10px hsla(0, 0%, 100%, 0.8),
+    inset 4px 4px 8px hsla(270, 100%, 90%, 0.6),
+    inset -4px -4px 8px hsla(280, 80%, 40%, 0.3);
 }
 
 .glass-pill-btn:hover::after {
-  @apply opacity-80;
+  @apply opacity-90;
+  animation-duration: 1.5s;
 }
 
-/* Active/tap state */
+/* Active/tap state - Diamond pressed effect */
 .glass-pill-btn:active {
   transform: translateY(-1px) scale(1.01);
   box-shadow: 
-    0 6px 25px hsla(280, 100%, 60%, 0.4),
-    0 4px 12px hsla(320, 100%, 60%, 0.3),
-    inset 0 2px 6px hsla(0, 0%, 100%, 0.5);
+    0 6px 25px hsla(280, 100%, 60%, 0.5),
+    0 4px 12px hsla(270, 100%, 65%, 0.4),
+    inset 0 2px 6px hsla(0, 0%, 100%, 0.5),
+    inset 2px 2px 4px hsla(270, 100%, 80%, 0.4);
 }
 
 /* Focus visible state */
 .glass-pill-btn:focus-visible {
   outline: none;
   box-shadow: 
-    0 0 0 4px hsla(280, 100%, 60%, 0.6),
+    0 0 0 4px hsla(280, 100%, 70%, 0.6),
     0 10px 40px hsla(280, 100%, 60%, 0.5),
-    0 6px 20px hsla(320, 100%, 60%, 0.4),
+    0 6px 20px hsla(270, 100%, 65%, 0.4),
     inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
 }
 
 /* ========================================
-   GLASS PILL BUTTON VARIANTS
+   PURPLE DIAMOND BUTTON VARIANTS
+   All variants maintain purple diamond theme
    ======================================== */
 
-/* Purple-pink variant - primary */
+/* Primary - Deep royal purple diamond */
 .glass-pill-primary {
   background: linear-gradient(
     135deg,
-    hsla(280, 100%, 55%, 1) 0%,
-    hsla(300, 100%, 60%, 1) 30%,
-    hsla(320, 100%, 65%, 1) 60%,
-    hsla(340, 90%, 70%, 1) 100%
+    hsla(280, 100%, 45%, 1) 0%,
+    hsla(275, 95%, 55%, 1) 30%,
+    hsla(270, 100%, 65%, 1) 60%,
+    hsla(280, 90%, 50%, 1) 100%
   );
   background-size: 200% 200%;
-  animation: glass-gradient-shift 4s ease infinite;
+  animation: diamond-facet-shift 4s ease infinite;
 }
 
 .glass-pill-primary:hover {
   box-shadow: 
-    0 10px 40px hsla(280, 100%, 55%, 0.5),
-    0 0 35px hsla(300, 100%, 60%, 0.4),
-    0 0 50px hsla(320, 100%, 65%, 0.3),
-    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
+    0 12px 45px hsla(280, 100%, 50%, 0.6),
+    0 0 40px hsla(275, 100%, 60%, 0.5),
+    0 0 55px hsla(270, 100%, 65%, 0.4),
+    inset 0 2px 10px hsla(0, 0%, 100%, 0.8);
 }
 
-/* Pink-orange-gold variant - secondary */
+/* Secondary - Lavender purple diamond */
 .glass-pill-secondary {
   background: linear-gradient(
     135deg,
-    hsla(330, 100%, 60%, 1) 0%,
-    hsla(350, 100%, 65%, 1) 30%,
-    hsla(25, 100%, 60%, 1) 60%,
-    hsla(45, 100%, 55%, 1) 100%
+    hsla(290, 85%, 55%, 1) 0%,
+    hsla(285, 90%, 65%, 1) 30%,
+    hsla(275, 85%, 70%, 1) 60%,
+    hsla(270, 80%, 60%, 1) 100%
   );
   background-size: 200% 200%;
-  animation: glass-gradient-shift 4s ease infinite;
+  animation: diamond-facet-shift 4s ease infinite;
 }
 
 .glass-pill-secondary:hover {
   box-shadow: 
-    0 10px 40px hsla(330, 100%, 60%, 0.5),
-    0 0 35px hsla(350, 100%, 65%, 0.4),
-    0 0 50px hsla(25, 100%, 60%, 0.3),
-    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
+    0 12px 45px hsla(290, 90%, 55%, 0.5),
+    0 0 40px hsla(285, 95%, 65%, 0.45),
+    0 0 55px hsla(275, 85%, 70%, 0.35),
+    inset 0 2px 10px hsla(0, 0%, 100%, 0.8);
 }
 
-/* Cyan-blue variant */
+/* Cyan variant - Purple-blue diamond */
 .glass-pill-cyan {
   background: linear-gradient(
     135deg,
-    hsla(180, 100%, 45%, 1) 0%,
-    hsla(195, 100%, 50%, 1) 30%,
-    hsla(210, 100%, 60%, 1) 60%,
-    hsla(230, 100%, 65%, 1) 100%
+    hsla(265, 90%, 55%, 1) 0%,
+    hsla(255, 95%, 60%, 1) 30%,
+    hsla(245, 100%, 65%, 1) 60%,
+    hsla(260, 85%, 55%, 1) 100%
   );
   background-size: 200% 200%;
-  animation: glass-gradient-shift 4s ease infinite;
+  animation: diamond-facet-shift 4s ease infinite;
 }
 
 .glass-pill-cyan:hover {
   box-shadow: 
-    0 10px 40px hsla(180, 100%, 45%, 0.5),
-    0 0 35px hsla(195, 100%, 50%, 0.4),
-    0 0 50px hsla(210, 100%, 60%, 0.3),
-    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
+    0 12px 45px hsla(265, 90%, 55%, 0.5),
+    0 0 40px hsla(255, 95%, 60%, 0.45),
+    0 0 55px hsla(245, 100%, 65%, 0.35),
+    inset 0 2px 10px hsla(0, 0%, 100%, 0.8);
 }
 
-/* Full rainbow gradient variant */
+/* Rainbow variant - Multi-faceted purple diamond */
 .glass-pill-rainbow {
   background: linear-gradient(
     135deg,
-    hsla(280, 100%, 60%, 1) 0%,
-    hsla(320, 100%, 65%, 1) 20%,
-    hsla(350, 90%, 60%, 1) 40%,
-    hsla(40, 100%, 55%, 1) 60%,
-    hsla(180, 90%, 50%, 1) 80%,
-    hsla(220, 100%, 65%, 1) 100%
+    hsla(280, 100%, 50%, 1) 0%,
+    hsla(290, 95%, 60%, 1) 15%,
+    hsla(270, 100%, 65%, 1) 30%,
+    hsla(260, 90%, 55%, 1) 50%,
+    hsla(285, 95%, 60%, 1) 70%,
+    hsla(275, 100%, 55%, 1) 85%,
+    hsla(280, 95%, 50%, 1) 100%
   );
   background-size: 300% 300%;
-  animation: rainbow-shift 5s ease infinite;
+  animation: diamond-rainbow-shift 5s ease infinite;
 }
 
-@keyframes rainbow-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes diamond-rainbow-shift {
+  0%, 100% { 
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  25% { filter: brightness(1.12); }
+  50% { 
+    background-position: 100% 50%;
+    filter: brightness(1.08);
+  }
+  75% { filter: brightness(1.18); }
 }
 
 .glass-pill-rainbow:hover {
   animation-duration: 2s;
   box-shadow: 
-    0 12px 45px hsla(280, 100%, 60%, 0.5),
-    0 0 40px hsla(320, 100%, 65%, 0.4),
-    0 0 30px hsla(40, 100%, 55%, 0.35),
-    0 0 25px hsla(180, 90%, 50%, 0.3),
-    inset 0 2px 8px hsla(0, 0%, 100%, 0.7);
+    0 14px 50px hsla(280, 100%, 60%, 0.55),
+    0 0 45px hsla(290, 95%, 65%, 0.45),
+    0 0 35px hsla(270, 100%, 70%, 0.4),
+    0 0 25px hsla(260, 90%, 60%, 0.35),
+    inset 0 2px 10px hsla(0, 0%, 100%, 0.8);
 }
 
-/* Destructive variant */
+/* Destructive - Deep amethyst purple */
 .glass-pill-destructive {
   background: linear-gradient(
     135deg,
-    hsla(0, 70%, 60%, 0.9) 0%,
-    hsla(350, 75%, 65%, 0.9) 50%,
-    hsla(340, 70%, 70%, 0.9) 100%
+    hsla(285, 70%, 45%, 0.95) 0%,
+    hsla(280, 75%, 55%, 0.95) 50%,
+    hsla(290, 70%, 50%, 0.95) 100%
   );
 }
 
 .glass-pill-destructive:hover {
   box-shadow: 
-    0 8px 30px hsla(0, 70%, 55%, 0.4),
-    0 0 25px hsla(350, 70%, 60%, 0.3),
-    inset 0 2px 4px hsla(0, 0%, 100%, 0.6);
+    0 10px 35px hsla(285, 70%, 50%, 0.5),
+    0 0 30px hsla(280, 75%, 60%, 0.4),
+    inset 0 2px 6px hsla(0, 0%, 100%, 0.6);
 }
 
-/* Outline/ghost variant - transparent with border */
+/* Outline variant - Crystal clear purple diamond edge */
 .glass-pill-outline {
-  background: hsla(280, 60%, 95%, 0.15);
+  background: hsla(280, 60%, 95%, 0.12);
   color: hsl(var(--foreground));
-  border: 2px solid hsla(280, 60%, 70%, 0.5);
+  border: 2px solid hsla(280, 80%, 70%, 0.6);
+  box-shadow: 
+    0 2px 12px hsla(280, 80%, 60%, 0.2),
+    inset 0 1px 4px hsla(280, 60%, 80%, 0.2);
 }
 
 .glass-pill-outline:hover {
-  background: hsla(280, 60%, 95%, 0.25);
-  border-color: hsla(280, 60%, 70%, 0.7);
+  background: hsla(280, 60%, 95%, 0.2);
+  border-color: hsla(280, 90%, 75%, 0.85);
   box-shadow: 
-    0 4px 20px hsla(280, 60%, 60%, 0.2),
-    inset 0 1px 2px hsla(0, 0%, 100%, 0.3);
+    0 6px 25px hsla(280, 80%, 60%, 0.35),
+    0 0 20px hsla(270, 70%, 65%, 0.25),
+    inset 0 2px 6px hsla(280, 60%, 85%, 0.3);
 }
 
 /* Ghost variant */
@@ -1046,15 +1094,15 @@ label,
 }
 
 .glass-pill-ghost:hover {
-  background: hsla(280, 60%, 95%, 0.2);
-  box-shadow: none;
+  background: hsla(280, 60%, 95%, 0.15);
+  box-shadow: 0 0 15px hsla(280, 70%, 60%, 0.2);
   transform: translateY(-1px);
 }
 
 /* Link variant */
 .glass-pill-link {
   background: transparent;
-  color: hsl(var(--secondary));
+  color: hsla(280, 80%, 60%, 1);
   border: none;
   box-shadow: none;
   text-decoration: underline;
@@ -1067,49 +1115,42 @@ label,
 }
 
 .glass-pill-link:hover {
-  color: hsl(var(--secondary-light));
+  color: hsla(280, 90%, 70%, 1);
   background: transparent;
   box-shadow: none;
   transform: none;
 }
 
 /* ========================================
-   LEGACY GLOSSY BUTTONS (for compatibility)
+   LEGACY GLOSSY BUTTONS - Purple Diamond Theme
    ======================================== */
 
 .glossy-btn {
   @apply glass-pill-btn;
 }
 
-.glossy-btn-green {
-  background: linear-gradient(135deg, hsla(160, 75%, 45%, 0.9) 0%, hsla(160, 70%, 55%, 0.9) 50%, hsla(160, 65%, 65%, 0.9) 100%);
-}
-
-.glossy-btn-pink {
-  background: linear-gradient(135deg, hsla(330, 75%, 60%, 0.9) 0%, hsla(340, 70%, 70%, 0.9) 50%, hsla(350, 65%, 80%, 0.9) 100%);
-}
-
-.glossy-btn-orange {
-  background: linear-gradient(135deg, hsla(25, 85%, 55%, 0.9) 0%, hsla(30, 80%, 65%, 0.9) 50%, hsla(35, 75%, 75%, 0.9) 100%);
-}
-
-.glossy-btn-blue {
-  background: linear-gradient(135deg, hsla(215, 75%, 55%, 0.9) 0%, hsla(210, 70%, 65%, 0.9) 50%, hsla(205, 65%, 75%, 0.9) 100%);
-}
-
-.glossy-btn-purple {
-  background: linear-gradient(135deg, hsla(265, 70%, 60%, 0.9) 0%, hsla(270, 65%, 70%, 0.9) 50%, hsla(275, 60%, 80%, 0.9) 100%);
-}
-
+.glossy-btn-green,
+.glossy-btn-pink,
+.glossy-btn-orange,
+.glossy-btn-blue,
+.glossy-btn-purple,
 .glossy-btn-cyan {
-  background: linear-gradient(135deg, hsla(185, 75%, 45%, 0.9) 0%, hsla(185, 70%, 55%, 0.9) 50%, hsla(185, 65%, 65%, 0.9) 100%);
+  background: linear-gradient(
+    135deg,
+    hsla(280, 90%, 50%, 1) 0%,
+    hsla(275, 95%, 60%, 1) 30%,
+    hsla(270, 100%, 65%, 1) 60%,
+    hsla(280, 85%, 55%, 1) 100%
+  );
+  background-size: 200% 200%;
+  animation: diamond-facet-shift 4s ease infinite;
 }
 
 .glossy-btn-gradient {
   @apply glass-pill-rainbow;
 }
 
-/* Feature button with glassmorphism hover */
+/* Feature button with purple diamond effect */
 .feature-btn {
   @apply glass-pill-btn glass-pill-rainbow;
 }
