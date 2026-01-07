@@ -137,9 +137,9 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
                     />
                   </div>
-                  <h3 className="font-bold flex items-center gap-1 text-yellow-400">
+                  <h3 className="font-bold flex items-center gap-1 text-purple-700">
                     Angel AI
-                    <Sparkles className="w-4 h-4 text-yellow-400" />
+                    <Sparkles className="w-4 h-4 text-purple-600" />
                   </h3>
                 </div>
                 <div className="flex items-center gap-1">
@@ -282,7 +282,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </Button>
                 </div>
-                <p className="text-sm text-center mt-2 text-yellow-400 font-medium">
+                <p className="text-sm text-center mt-2 text-purple-700 font-medium">
                   Powered by FUN Charity 💜
                 </p>
               </div>
