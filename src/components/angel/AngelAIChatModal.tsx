@@ -15,11 +15,10 @@ interface AngelAIChatModalProps {
 }
 
 const quickActions = [
-  { label: '🤝 Làm tình nguyện viên', prompt: 'Tôi muốn đăng ký làm tình nguyện viên' },
+  { label: '🤝 Tình nguyện viên', prompt: 'Tôi muốn đăng ký làm tình nguyện viên' },
   { label: '💝 Cách quyên góp', prompt: 'Hướng dẫn tôi cách quyên góp từ thiện' },
-  { label: '🌍 Chiến dịch đang cần giúp', prompt: 'Cho tôi xem những chiến dịch đang cần sự giúp đỡ nhất' },
-  { label: '🎯 Tìm người cần giúp đỡ', prompt: 'Tìm những người đang cần được giúp đỡ gần tôi' },
-  { label: '✨ Chia sẻ yêu thương', prompt: 'Làm sao để lan tỏa tinh thần thiện nguyện?' },
+  { label: '🌍 Chiến dịch cần giúp', prompt: 'Cho tôi xem những chiến dịch đang cần sự giúp đỡ nhất' },
+  { label: '✨ Lan tỏa yêu thương', prompt: 'Làm sao để lan tỏa tinh thần thiện nguyện?' },
 ];
 
 export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
@@ -198,8 +197,8 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                         Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                       </p>
 
-                      {/* Quick Actions */}
-                      <div className="flex flex-wrap gap-2 justify-center">
+                      {/* Quick Actions - 2 rows grid */}
+                      <div className="grid grid-cols-2 gap-2 max-w-xs mx-auto">
                         {quickActions.map((action, i) => (
                           <motion.button
                             key={i}
@@ -283,7 +282,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </Button>
                 </div>
-                <p className="text-sm text-center mt-2 font-medium text-amber-500">
+                <p className="text-xs text-center mt-2 font-medium text-amber-500">
                   Powered by FUN Charity 💜
                 </p>
               </div>
