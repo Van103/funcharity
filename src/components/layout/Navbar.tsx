@@ -46,6 +46,7 @@ import {
   TrendingUp,
   BarChart3,
   Trophy,
+  Gift,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -65,6 +66,7 @@ const platformItems = [
   { nameKey: "nav.myCampaigns", path: "/my-campaigns", icon: Layers },
   { nameKey: "nav.needsMap", path: "/needs-map", icon: MapPin },
   { nameKey: "nav.honorBoard", path: "/honor-board", icon: Trophy },
+  { nameKey: "nav.gifts", path: "/gifts", icon: Gift },
   { nameKey: "nav.trading", path: "/trading", icon: TrendingUp },
   { nameKey: "nav.overview", path: "/dashboard", icon: LayoutDashboard },
   { nameKey: "nav.reviews", path: "/reviews", icon: Sparkles },

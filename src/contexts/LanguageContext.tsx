@@ -113,6 +113,11 @@ export const translations: Translations = {
     th: "กิจกรรม", fr: "Activité", de: "Aktivität", es: "Actividad",
     pt: "Atividade", ru: "Активность", ar: "النشاط", hi: "गतिविधि"
   },
+  "nav.gifts": {
+    en: "Cosmic Gifts", vi: "Quà Vũ Trụ", zh: "宇宙礼物", ja: "宇宙の贈り物", ko: "우주 선물",
+    th: "ของขวัญจักรวาล", fr: "Cadeaux Cosmiques", de: "Kosmische Geschenke", es: "Regalos Cósmicos",
+    pt: "Presentes Cósmicos", ru: "Космические Дары", ar: "هدايا كونية", hi: "ब्रह्मांडीय उपहार"
+  },
   "user.viewProfile": {
     en: "View Profile", vi: "Xem hồ sơ", zh: "查看资料", ja: "プロフィールを見る", ko: "프로필 보기",
     th: "ดูโปรไฟล์", fr: "Voir le profil", de: "Profil anzeigen", es: "Ver perfil",

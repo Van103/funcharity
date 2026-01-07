@@ -102,8 +102,6 @@ export function useGrantReward() {
       
       if (!response.ok) throw new Error("Failed to grant reward");
       const data = await response.json();
-
-      if (error) throw error;
       return data as { success: boolean; message: string; transaction_id?: string };
     },
     onSuccess: (data) => {
