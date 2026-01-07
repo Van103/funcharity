@@ -812,10 +812,8 @@ label,
     hsla(280, 90%, 50%, 1) 100%
   );
   
-  /* Gold gradient border - diamond cut edge */
-  border: 3px solid transparent;
-  background-clip: padding-box;
-  position: relative;
+  /* Diamond-cut border - bright shiny rounded edge */
+  border: 2px solid hsla(280, 100%, 85%, 0.9);
   
   /* Faceted diamond shadow effect */
   box-shadow: 
@@ -850,22 +848,14 @@ label,
   border-radius: 9999px 9999px 60% 60%;
 }
 
-/* Gold gradient border overlay */
+/* Diamond edge highlight effect */
 .glass-pill-btn::after {
   content: '';
-  @apply absolute pointer-events-none;
-  inset: -3px;
+  @apply absolute inset-0 pointer-events-none;
   border-radius: 9999px;
-  background: linear-gradient(
-    135deg,
-    #FFD700 0%,
-    #FFF8DC 20%,
-    #FFD700 40%,
-    #B8860B 60%,
-    #FFD700 80%,
-    #FFF8DC 100%
-  );
-  z-index: -1;
+  border: 1px solid hsla(0, 0%, 100%, 0.5);
+  box-shadow: 
+    inset 0 0 0 1px hsla(280, 100%, 85%, 0.3);
 }
 
 /* Hover state - enhanced diamond shine */
@@ -883,14 +873,8 @@ label,
 }
 
 .glass-pill-btn:hover::after {
-  background: linear-gradient(
-    135deg,
-    #FFD700 0%,
-    #FFFACD 25%,
-    #FFD700 50%,
-    #DAA520 75%,
-    #FFD700 100%
-  );
+  border-color: hsla(0, 0%, 100%, 0.7);
+  box-shadow: inset 0 0 0 1px hsla(280, 100%, 90%, 0.5);
 }
 
 /* Active/tap state */
