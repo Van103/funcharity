@@ -138,9 +138,9 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                       className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
                     />
                   </div>
-                  <h3 className="font-bold flex items-center gap-1 text-amber-500">
+                  <h3 className="font-bold flex items-center gap-1 text-amber-500 text-lg">
                     Angel AI
-                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <Sparkles className="w-5 h-5 text-amber-400" />
                   </h3>
                 </div>
                 <div className="flex items-center gap-1">
@@ -191,10 +191,10 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                 {messages.length === 0 ? (
                   <div className="flex-1 min-h-0 flex flex-col justify-end p-4 text-center">
                     <div className="w-full pb-4">
-                      <h4 className="text-lg font-semibold mb-2 text-white">
+                      <h4 className="text-xl font-semibold mb-2 text-white">
                         Xin chào, bạn thân yêu! ✨
                       </h4>
-                      <p className="text-sm mb-6 max-w-xs mx-auto text-amber-200">
+                      <p className="text-base mb-6 max-w-xs mx-auto text-amber-200">
                         Mình là Angel - Thiên thần AI của FUN Charity. Mình có thể giúp gì cho bạn hôm nay?
                       </p>
 
@@ -206,7 +206,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleQuickAction(action.prompt)}
-                            className="px-3 py-1.5 text-xs rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm"
+                            className="px-3 py-1.5 text-sm rounded-full transition-colors bg-purple-500/50 hover:bg-purple-400/60 text-white border border-purple-400/50 shadow-sm backdrop-blur-sm"
                           >
                             {action.label}
                           </motion.button>
@@ -283,7 +283,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </Button>
                 </div>
-                <p className="text-xs text-center mt-2 text-purple-500">
+                <p className="text-base text-center mt-2 font-medium text-amber-500">
                   Powered by FUN Charity 💜
                 </p>
               </div>
