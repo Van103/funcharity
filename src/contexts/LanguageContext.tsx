@@ -180,6 +180,16 @@ export const translations: Translations = {
     th: "อาสาสมัคร", fr: "Bénévolat", de: "Freiwilligenarbeit", es: "Voluntariado",
     pt: "Voluntariado", ru: "Волонтерство", ar: "التطوع", hi: "स्वयंसेवा"
   },
+  "sidebar.admin": {
+    en: "Admin", vi: "Quản trị", zh: "管理员", ja: "管理者", ko: "관리자",
+    th: "ผู้ดูแล", fr: "Admin", de: "Admin", es: "Admin",
+    pt: "Admin", ru: "Админ", ar: "المسؤول", hi: "व्यवस्थापक"
+  },
+  "sidebar.angelKnowledge": {
+    en: "Angel AI Knowledge", vi: "Kiến thức Angel AI", zh: "Angel AI 知识库", ja: "Angel AI ナレッジ", ko: "Angel AI 지식",
+    th: "ความรู้ Angel AI", fr: "Connaissances Angel AI", de: "Angel AI Wissen", es: "Conocimiento Angel AI",
+    pt: "Conhecimento Angel AI", ru: "Знания Angel AI", ar: "معرفة Angel AI", hi: "Angel AI ज्ञान"
+  },
 
   // Menu items
   "menu.profile": {

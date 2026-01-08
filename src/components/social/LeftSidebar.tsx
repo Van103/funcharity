@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   GraduationCap,
   TrendingUp,
@@ -16,6 +18,7 @@ import {
   MessageCircle,
   Trophy,
   HandHeart,
+  BookOpen,
 } from "lucide-react";
 import funProfileLogo from "@/assets/fun-profile-logo.webp";
 import funPlayLogo from "@/assets/fun-play-logo.png";
@@ -86,6 +89,23 @@ interface LeftSidebarProps {
 export function LeftSidebar({ profile }: LeftSidebarProps) {
   const location = useLocation();
   const { t } = useLanguage();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+        setIsAdmin(!!data);
+      }
+    };
+    checkAdminRole();
+  }, []);
 
   return (
     <aside className="w-64 shrink-0 h-[calc(100vh-6rem)] overflow-y-auto scrollbar-purple scrollbar-left pl-1">
@@ -197,6 +217,33 @@ export function LeftSidebar({ profile }: LeftSidebarProps) {
             <span className="text-sm font-medium text-foreground">CAMLY COIN</span>
           </Link>
         </div>
+
+        {/* Admin Section */}
+        {isAdmin && (
+          <div className="glass-card p-4 hover-luxury-glow bg-gradient-to-br from-purple-500/10 to-indigo-500/10 border border-purple-500/20">
+            <h3 className="font-semibold mb-3 text-[#4C1D95] flex items-center gap-2" style={{ fontSize: '16px' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+              {t("sidebar.admin")}
+            </h3>
+            <nav className="space-y-2">
+              <Link
+                to="/admin/angel-knowledge"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group ${
+                  location.pathname === "/admin/angel-knowledge"
+                    ? "glossy-btn glossy-btn-gradient shadow-lg font-semibold"
+                    : "bg-gradient-to-r from-purple-500/20 to-indigo-500/20 hover:scale-[1.02] active:scale-[0.98] border border-transparent hover:border-purple-500/30"
+                }`}
+              >
+                <div className={`p-1.5 rounded-lg ${location.pathname === "/admin/angel-knowledge" ? "bg-white/20" : "bg-gradient-to-br from-purple-500/20 to-indigo-500/20"}`}>
+                  <BookOpen className={`w-4 h-4 ${location.pathname === "/admin/angel-knowledge" ? "text-white" : "text-purple-500"} transition-transform group-hover:scale-110`} />
+                </div>
+                <span className={`font-medium ${location.pathname === "/admin/angel-knowledge" ? "text-white" : "text-foreground"}`} style={{ fontSize: '14px' }}>
+                  {t("sidebar.angelKnowledge")}
+                </span>
+              </Link>
+            </nav>
+          </div>
+        )}
 
         {/* User Count */}
         <div className="glass-card p-3 hover-luxury-glow">
