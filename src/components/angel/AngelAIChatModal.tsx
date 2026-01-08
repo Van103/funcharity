@@ -246,7 +246,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     onKeyDown={handleKeyDown}
                     placeholder="Nhắn tin cho Angel..."
                     rows={1}
-                    className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/50 max-h-32 border bg-white/90 border-purple-300/50 text-purple-900 placeholder-purple-400"
+                    className="flex-1 resize-none rounded-xl px-4 py-2.5 text-[17px] focus:outline-none focus:ring-2 focus:ring-purple-400/50 max-h-32 border bg-white/90 border-purple-300/50 text-purple-900 placeholder-purple-400"
                     style={{ minHeight: '44px' }}
                   />
                   <Button
@@ -261,7 +261,7 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                     )}
                   </Button>
                 </div>
-                <p className="text-sm text-center mt-2 text-purple-700 font-medium">
+                <p className="text-[17px] text-center mt-2 text-purple-700 font-medium">
                   Powered by FUN Charity 💜
                 </p>
               </div>
