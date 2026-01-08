@@ -47,6 +47,7 @@ import {
   BarChart3,
   Trophy,
   Gift,
+  BookOpen,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -83,6 +84,7 @@ export function Navbar() {
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -181,6 +183,16 @@ export function Navbar() {
     if (data?.wallet_address) {
       setConnectedWallet(data.wallet_address);
     }
+
+    // Check admin role
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    
+    setIsAdmin(!!roleData);
   };
 
   const shortenAddress = (address: string) => {
@@ -367,6 +379,51 @@ export function Navbar() {
                 </Tooltip>
               );
             })}
+
+            {/* Admin Angel Knowledge - Only for Admin */}
+            {isAdmin && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/admin/angel-knowledge">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      className="relative"
+                    >
+                      {location.pathname === "/admin/angel-knowledge" && (
+                        <motion.div 
+                          className="absolute -bottom-[calc(0.75rem+1px)] left-1/2 -translate-x-1/2 w-14 h-[3px] rounded-full bg-primary"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          layoutId="navActiveIndicator"
+                        />
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`relative w-24 h-12 rounded-xl transition-all duration-300 group ${
+                          location.pathname === "/admin/angel-knowledge" 
+                            ? "hover:bg-primary/10" 
+                            : "text-muted-foreground hover:bg-primary/10"
+                        }`}
+                      >
+                        <BookOpen 
+                          className={`w-7 h-7 transition-colors duration-200 ${
+                            location.pathname === "/admin/angel-knowledge" ? "text-primary" : "group-hover:text-primary"
+                          }`} 
+                          fill={location.pathname === "/admin/angel-knowledge" ? "hsl(var(--primary))" : "none"}
+                          strokeWidth={location.pathname === "/admin/angel-knowledge" ? 0 : 2} 
+                        />
+                      </Button>
+                    </motion.div>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent className="bg-primary text-primary-foreground font-semibold">
+                  {t("sidebar.angelKnowledge")}
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
 
 
@@ -591,6 +648,19 @@ export function Navbar() {
                   </Link>
                 );
               })}
+
+              {/* Admin Angel Knowledge - Mobile */}
+              {isAdmin && (
+                <div className="py-2">
+                  <p className="px-3 text-xs font-semibold text-muted-foreground mb-2">{t("sidebar.admin")}</p>
+                  <Link to="/admin/angel-knowledge" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start gap-3 h-12 text-base text-primary font-medium">
+                      <BookOpen className="w-6 h-6" strokeWidth={2} />
+                      {t("sidebar.angelKnowledge")}
+                    </Button>
+                  </Link>
+                </div>
+              )}
 
               <div className="pt-4 space-y-3 border-t border-border">
                 {/* Language and Cursor on mobile */}
