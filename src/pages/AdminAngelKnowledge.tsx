@@ -517,7 +517,16 @@ export default function AdminAngelKnowledge() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ delay: index * 0.05 }}
-                        className={`p-4 rounded-lg border ${
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleEdit(entry)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleEdit(entry);
+                          }
+                        }}
+                        className={`p-4 rounded-lg border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/40 focus:ring-offset-2 focus:ring-offset-background hover:bg-muted/20 ${
                           entry.is_active
                             ? "bg-card border-border"
                             : "bg-muted/50 border-muted opacity-60"
@@ -546,14 +555,22 @@ export default function AdminAngelKnowledge() {
                             </div>
                             {entry.source_file_name && (
                               <p className="text-xs text-muted-foreground mt-2">
-                                📎 {entry.source_file_name} (Chunk {entry.chunk_index + 1}/{entry.total_chunks})
+                                📎 {entry.source_file_name} (Chunk {entry.chunk_index + 1}/
+                                {entry.total_chunks})
                               </p>
                             )}
                           </div>
-                          <div className="flex md:flex-col items-center gap-2 shrink-0">
+
+                          {/* Actions (always visible) */}
+                          <div
+                            className="flex flex-col gap-2 shrink-0"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          >
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              variant="outline"
+                              size="sm"
+                              className="justify-start gap-2"
                               onClick={() =>
                                 toggleActiveMutation.mutate({
                                   id: entry.id,
@@ -563,27 +580,34 @@ export default function AdminAngelKnowledge() {
                               title={entry.is_active ? "Tắt" : "Bật"}
                             >
                               {entry.is_active ? (
-                                <ToggleRight className="w-5 h-5 text-green-500" />
+                                <ToggleRight className="w-4 h-4" />
                               ) : (
-                                <ToggleLeft className="w-5 h-5 text-muted-foreground" />
+                                <ToggleLeft className="w-4 h-4" />
                               )}
+                              {entry.is_active ? "Đang bật" : "Đang tắt"}
                             </Button>
+
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              variant="secondary"
+                              size="sm"
+                              className="justify-start gap-2"
                               onClick={() => handleEdit(entry)}
                             >
                               <Edit className="w-4 h-4" />
+                              Chỉnh sửa
                             </Button>
+
                             <Button
-                              variant="ghost"
-                              size="icon"
+                              variant="destructive"
+                              size="sm"
+                              className="justify-start gap-2"
                               onClick={() => {
                                 setSelectedEntry(entry);
                                 setIsDeleteDialogOpen(true);
                               }}
                             >
-                              <Trash2 className="w-4 h-4 text-destructive" />
+                              <Trash2 className="w-4 h-4" />
+                              Xóa
                             </Button>
                           </div>
                         </div>
