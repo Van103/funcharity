@@ -210,14 +210,22 @@ export function AngelAIChatModal({ isOpen, onClose }: AngelAIChatModalProps) {
                                 <span className="text-xs text-amber-500 font-medium">Angel AI</span>
                               </div>
                             )}
-                            <p className="text-[17px] whitespace-pre-wrap leading-relaxed">
-                              {msg.content || (
+                            <div className="text-[17px] whitespace-pre-wrap leading-relaxed">
+                              {msg.content ? (
+                                <span dangerouslySetInnerHTML={{ 
+                                  __html: msg.content
+                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                    .replace(/__(.*?)__/g, '<strong>$1</strong>')
+                                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                                    .replace(/_(.*?)_/g, '<em>$1</em>')
+                                }} />
+                              ) : (
                                 <span className="inline-flex items-center gap-1">
                                   <Loader2 className="w-3 h-3 animate-spin" />
                                   Đang suy nghĩ...
                                 </span>
                               )}
-                            </p>
+                            </div>
                           </div>
                         </motion.div>
                       ))}
