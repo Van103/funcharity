@@ -53,12 +53,12 @@ const LawOfLight = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-950 via-purple-900 to-indigo-950 relative overflow-hidden">
-      {/* Animated background elements */}
+      {/* Animated background elements - reduced on mobile for performance */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(10)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-amber-400/30 rounded-full"
+            className="absolute w-1.5 h-1.5 sm:w-2 sm:h-2 bg-amber-400/30 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -78,45 +78,45 @@ const LawOfLight = () => {
       </div>
 
       <ScrollArea className="h-screen">
-        <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-40 sm:pb-32">
           {/* Header */}
           <motion.div
-            className="text-center mb-12"
+            className="text-center mb-6 sm:mb-12"
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-4 sm:mb-6">
               <div className="relative">
-                <Sun className="w-20 h-20 text-amber-400" />
+                <Sun className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 text-amber-400" />
                 <motion.div
                   className="absolute inset-0"
                   animate={{ rotate: 360 }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 >
-                  <Sparkles className="w-20 h-20 text-amber-300/50" />
+                  <Sparkles className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 text-amber-300/50" />
                 </motion.div>
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 bg-clip-text text-transparent mb-2 sm:mb-4">
               LUẬT ÁNH SÁNG
             </h1>
-            <p className="text-purple-200/80 text-lg">FUN Ecosystem • Nền Kinh Tế Ánh Sáng 5D</p>
+            <p className="text-purple-200/80 text-sm sm:text-base md:text-lg">FUN Ecosystem • Nền Kinh Tế Ánh Sáng 5D</p>
           </motion.div>
 
           {/* Section 1: Introduction */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">🌟</span>
-              <h2 className="text-2xl font-bold text-amber-400">USERS CỦA FUN ECOSYSTEM</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <span className="text-2xl sm:text-3xl">🌟</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">USERS CỦA FUN ECOSYSTEM</h2>
             </div>
-            <p className="text-purple-100 text-lg leading-relaxed mb-4">
+            <p className="text-purple-100 text-sm sm:text-base md:text-lg leading-relaxed mb-3 sm:mb-4">
               MẠNG XÃ HỘI THỜI ĐẠI HOÀNG KIM – NỀN KINH TẾ ÁNH SÁNG 5D
             </p>
-            <div className="space-y-2 text-purple-200">
+            <div className="space-y-2 text-purple-200 text-sm sm:text-base">
               <p className="font-medium">FUN Ecosystem không dành cho tất cả mọi người.</p>
               <p className="text-amber-300">FUN Ecosystem chỉ dành cho những linh hồn có ánh sáng, hoặc đang hướng về ánh sáng.</p>
             </div>
@@ -124,15 +124,15 @@ const LawOfLight = () => {
 
           {/* Section 2: Who are you? */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">✨</span>
-              <h2 className="text-2xl font-bold text-amber-400">Bạn là ai?</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <span className="text-2xl sm:text-3xl">✨</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">Bạn là ai?</h2>
             </div>
-            <p className="text-purple-100 mb-4">Users của FUN Ecosystem là những con người:</p>
-            <motion.ul className="space-y-3" variants={staggerContainer} initial="initial" animate="animate">
+            <p className="text-purple-100 mb-3 sm:mb-4 text-sm sm:text-base">Users của FUN Ecosystem là những con người:</p>
+            <motion.ul className="space-y-2 sm:space-y-3" variants={staggerContainer} initial="initial" animate="animate">
               {[
                 "Tỉnh thức – hoặc đang trên con đường tỉnh thức",
                 "Chân thật với chính mình",
@@ -143,21 +143,21 @@ const LawOfLight = () => {
               ].map((item, index) => (
                 <motion.li
                   key={index}
-                  className="flex items-start gap-3 text-purple-200"
+                  className="flex items-start gap-2 sm:gap-3 text-purple-200 text-sm sm:text-base"
                   variants={fadeInUp}
                 >
-                  <Star className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <Star className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   <span>{item}</span>
                 </motion.li>
               ))}
             </motion.ul>
-            <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <p className="text-purple-100 italic">
+            <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+              <p className="text-purple-100 italic text-sm sm:text-base">
                 Bạn có thể chưa hoàn hảo, nhưng bạn có trái tim hướng thiện.
                 <br />
                 Bạn muốn sống thật – sống đúng – sống sáng.
               </p>
-              <p className="text-amber-300 mt-3 font-medium">
+              <p className="text-amber-300 mt-2 sm:mt-3 font-medium text-sm sm:text-base">
                 👉 Cha thu hút bạn bằng Tần Số và Năng Lượng Yêu Thương.
               </p>
             </div>
@@ -165,28 +165,28 @@ const LawOfLight = () => {
 
           {/* Section 3: Core Principles */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">🔆</span>
-              <h2 className="text-2xl font-bold text-amber-400">Nguyên tắc cốt lõi của FUN Ecosystem</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <span className="text-2xl sm:text-3xl">🔆</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">Nguyên tắc cốt lõi của FUN Ecosystem</h2>
             </div>
-            <p className="text-purple-100 mb-4">FUN Ecosystem vận hành theo Luật Ánh Sáng, không theo số đông.</p>
-            <div className="space-y-2 text-purple-200 mb-6">
+            <p className="text-purple-100 mb-3 sm:mb-4 text-sm sm:text-base">FUN Ecosystem vận hành theo Luật Ánh Sáng, không theo số đông.</p>
+            <div className="space-y-2 text-purple-200 mb-4 sm:mb-6 text-sm sm:text-base">
               <p>• Ánh sáng thu hút ánh sáng</p>
               <p>• Tần số thấp không thể tồn tại lâu trong tần số cao</p>
               <p>• Ý chí vị kỷ không thể đồng hành cùng Ý Chí Vũ Trụ</p>
             </div>
-            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-              <p className="text-purple-100 mb-3">Vì vậy, nếu một User cố tình mang vào nền tảng:</p>
-              <p className="text-red-300 mb-3">
+            <div className="p-3 sm:p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+              <p className="text-purple-100 mb-2 sm:mb-3 text-sm sm:text-base">Vì vậy, nếu một User cố tình mang vào nền tảng:</p>
+              <p className="text-red-300 mb-2 sm:mb-3 text-sm sm:text-base">
                 tiêu cực • tham lam • thao túng • kiêu mạn • dối trá • gây chia rẽ • phá hoại năng lượng chung
               </p>
-              <p className="text-amber-300 font-medium">
+              <p className="text-amber-300 font-medium text-sm sm:text-base">
                 👉 Thì sẽ được xóa khỏi nền tảng mà không báo trước.
               </p>
-              <p className="text-purple-200 mt-3 italic">
+              <p className="text-purple-200 mt-2 sm:mt-3 italic text-sm sm:text-base">
                 Đó không phải hình phạt. Đó là sự thanh lọc tự nhiên của Ánh Sáng.
               </p>
             </div>
@@ -194,14 +194,14 @@ const LawOfLight = () => {
 
           {/* Section 4: Who doesn't belong */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">🚪</span>
-              <h2 className="text-2xl font-bold text-amber-400">Ai KHÔNG thuộc về FUN Ecosystem?</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <span className="text-2xl sm:text-3xl">🚪</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">Ai KHÔNG thuộc về FUN Ecosystem?</h2>
             </div>
-            <ul className="space-y-3">
+            <ul className="space-y-2 sm:space-y-3">
               {[
                 "Người chỉ tìm lợi ích mà không muốn trưởng thành",
                 "Người dùng trí khôn nhưng thiếu lương tâm",
@@ -209,41 +209,41 @@ const LawOfLight = () => {
                 "Người lấy danh nghĩa tâm linh để nuôi cái tôi",
                 "Người không chịu nhìn lại chính mình",
               ].map((item, index) => (
-                <li key={index} className="flex items-start gap-3 text-purple-200">
-                  <Moon className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                <li key={index} className="flex items-start gap-2 sm:gap-3 text-purple-200 text-sm sm:text-base">
+                  <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 flex-shrink-0 mt-0.5" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
-            <p className="text-amber-300 mt-4 font-medium">
+            <p className="text-amber-300 mt-3 sm:mt-4 font-medium text-sm sm:text-base">
               👉 Cửa FUN Ecosystem không khóa, nhưng Ánh Sáng tự sàng lọc.
             </p>
           </motion.section>
 
           {/* Section 5: Who benefits */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">🌈</span>
-              <h2 className="text-2xl font-bold text-amber-400">Ai ĐƯỢC hưởng lợi từ FUN Ecosystem?</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <span className="text-2xl sm:text-3xl">🌈</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">Ai ĐƯỢC hưởng lợi từ FUN Ecosystem?</h2>
             </div>
-            <p className="text-purple-100 mb-4">Chỉ những ai:</p>
-            <ul className="space-y-3">
+            <p className="text-purple-100 mb-3 sm:mb-4 text-sm sm:text-base">Chỉ những ai:</p>
+            <ul className="space-y-2 sm:space-y-3">
               {[
                 "Có Ánh Sáng nội tâm",
                 "Hoặc thật sự khao khát trở về với Ánh Sáng",
                 "Sẵn sàng buông cái tôi – học lại – nâng cấp tần số",
                 "Dám sống đúng – thật – tử tế – yêu thương",
               ].map((item, index) => (
-                <li key={index} className="flex items-start gap-3 text-purple-200">
-                  <Heart className="w-5 h-5 text-pink-400 flex-shrink-0 mt-0.5" />
+                <li key={index} className="flex items-start gap-2 sm:gap-3 text-purple-200 text-sm sm:text-base">
+                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400 flex-shrink-0 mt-0.5" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
-            <div className="mt-4 text-amber-300 font-medium space-y-1">
+            <div className="mt-3 sm:mt-4 text-amber-300 font-medium space-y-1 text-sm sm:text-base">
               <p>👉 Những người đó không chỉ dùng MXH của Cha,</p>
               <p>👉 mà còn được bảo vệ, nâng đỡ và nuôi dưỡng trong Nền Kinh Tế Ánh Sáng 5D.</p>
             </div>
@@ -251,27 +251,27 @@ const LawOfLight = () => {
 
           {/* Section 6: What is FUN Ecosystem */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">🌍</span>
-              <h2 className="text-2xl font-bold text-amber-400">FUN Ecosystem là gì?</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <span className="text-2xl sm:text-3xl">🌍</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">FUN Ecosystem là gì?</h2>
             </div>
-            <p className="text-purple-100 mb-4">FUN Ecosystem là:</p>
-            <ul className="space-y-2 text-purple-200 mb-6">
+            <p className="text-purple-100 mb-3 sm:mb-4 text-sm sm:text-base">FUN Ecosystem là:</p>
+            <ul className="space-y-2 text-purple-200 mb-4 sm:mb-6 text-sm sm:text-base">
               <li>• Mạng xã hội của linh hồn tỉnh thức</li>
               <li>• Không gian an toàn cho ánh sáng</li>
               <li>• Nền tảng kết nối những con người có giá trị thật</li>
               <li>• Hạ tầng cho Thời Đại Hoàng Kim của Trái Đất</li>
             </ul>
-            <div className="grid grid-cols-2 gap-3 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-center">
               {["Không drama", "Không thao túng", "Không cạnh tranh bẩn"].map((item, index) => (
-                <div key={index} className="p-3 rounded-lg bg-purple-500/10 text-purple-200">
+                <div key={index} className="p-2 sm:p-3 rounded-lg bg-purple-500/10 text-purple-200 text-sm sm:text-base">
                   {item}
                 </div>
               ))}
-              <div className="col-span-2 p-3 rounded-lg bg-amber-500/20 text-amber-300 font-medium">
+              <div className="sm:col-span-2 p-2 sm:p-3 rounded-lg bg-amber-500/20 text-amber-300 font-medium text-sm sm:text-base">
                 Chỉ có Hợp tác trong Yêu Thương Thuần Khiết
               </div>
             </div>
@@ -279,35 +279,35 @@ const LawOfLight = () => {
 
           {/* Section 7: Message from Cosmic Father */}
           <motion.section
-            className="mb-10 p-8 rounded-2xl bg-gradient-to-br from-amber-500/20 to-purple-500/20 backdrop-blur-sm border border-amber-500/30"
+            className="mb-6 sm:mb-10 p-4 sm:p-8 rounded-2xl bg-gradient-to-br from-amber-500/20 to-purple-500/20 backdrop-blur-sm border border-amber-500/30"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-3xl">🔑</span>
-              <h2 className="text-2xl font-bold text-amber-400">Thông điệp từ Cha</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <span className="text-2xl sm:text-3xl">🔑</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">Thông điệp từ Cha</h2>
             </div>
             <blockquote className="text-center">
-              <p className="text-xl md:text-2xl text-purple-100 italic leading-relaxed mb-4">
+              <p className="text-base sm:text-lg md:text-2xl text-purple-100 italic leading-relaxed mb-3 sm:mb-4">
                 "Chỉ những ai mang ánh sáng
                 <br />
                 hoặc thật lòng hướng về ánh sáng
                 <br />
                 mới có thể bước đi lâu dài trong Thời Đại Hoàng Kim."
               </p>
-              <footer className="text-amber-400 font-bold text-lg">— CHA VŨ TRỤ —</footer>
+              <footer className="text-amber-400 font-bold text-sm sm:text-lg">— CHA VŨ TRỤ —</footer>
             </blockquote>
           </motion.section>
 
           {/* Section 8: 8 Mantras */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-3xl">🌟</span>
-              <h2 className="text-2xl font-bold text-amber-400">8 Câu Thần Chú Từ Cha Vũ Trụ</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <span className="text-2xl sm:text-3xl">🌟</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">8 Câu Thần Chú Từ Cha Vũ Trụ</h2>
             </div>
-            <div className="grid gap-4">
+            <div className="grid gap-2 sm:gap-4">
               {[
                 "Con là Ánh Sáng Yêu Thương Thuần Khiết Của Cha Vũ Trụ.",
                 "Con là Ý Chí Của Cha Vũ Trụ.",
@@ -320,30 +320,30 @@ const LawOfLight = () => {
               ].map((mantra, index) => (
                 <motion.div
                   key={index}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-purple-500/10 border border-amber-500/20"
+                  className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-purple-500/10 border border-amber-500/20"
                   whileHover={{ scale: 1.02, x: 5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <span className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-500/20 text-amber-400 font-bold text-lg">
+                  <span className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-amber-500/20 text-amber-400 font-bold text-sm sm:text-lg flex-shrink-0">
                     {index + 1}
                   </span>
-                  <p className="text-purple-100 flex-1">{mantra}</p>
+                  <p className="text-purple-100 flex-1 text-sm sm:text-base">{mantra}</p>
                 </motion.div>
               ))}
             </div>
-            <p className="text-center text-2xl mt-6">💫✨⚡️🌟</p>
+            <p className="text-center text-xl sm:text-2xl mt-4 sm:mt-6">💫✨⚡️🌟</p>
           </motion.section>
 
           {/* Checklist Section */}
           <motion.section
-            className="mb-10 p-6 rounded-2xl bg-gradient-to-br from-purple-500/20 to-amber-500/20 backdrop-blur-sm border border-amber-500/30"
+            className="mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-purple-500/20 to-amber-500/20 backdrop-blur-sm border border-amber-500/30"
             {...fadeInUp}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-3xl">🕊️</span>
-              <h2 className="text-2xl font-bold text-amber-400">Checklist cho Users FUN Ecosystem</h2>
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <span className="text-2xl sm:text-3xl">🕊️</span>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-amber-400">Checklist cho Users FUN Ecosystem</h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {[
                 { key: "honest", label: "Con sống chân thật với chính mình" },
                 { key: "responsible", label: "Con chịu trách nhiệm với năng lượng con phát ra" },
@@ -353,7 +353,7 @@ const LawOfLight = () => {
               ].map((item) => (
                 <motion.label
                   key={item.key}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+                  className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >
@@ -362,20 +362,20 @@ const LawOfLight = () => {
                     onCheckedChange={(checked) =>
                       setChecklist((prev) => ({ ...prev, [item.key]: checked === true }))
                     }
-                    className="w-6 h-6 border-2 border-amber-400 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
+                    className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-amber-400 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500 flex-shrink-0"
                   />
-                  <span className="text-purple-100 text-lg">{item.label}</span>
+                  <span className="text-purple-100 text-sm sm:text-base md:text-lg">{item.label}</span>
                 </motion.label>
               ))}
             </div>
-            <p className="text-purple-300 text-sm mt-4 text-center italic">
+            <p className="text-purple-300 text-xs sm:text-sm mt-3 sm:mt-4 text-center italic">
               (Đánh dấu tất cả 5 mục để tiếp tục đăng ký)
             </p>
           </motion.section>
 
           {/* Action Buttons */}
           <motion.div
-            className="space-y-4"
+            className="space-y-3 sm:space-y-4"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
@@ -383,17 +383,17 @@ const LawOfLight = () => {
             <Button
               onClick={handleAgree}
               disabled={!allChecked}
-              className="w-full h-14 text-lg font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 hover:from-amber-500 hover:via-yellow-600 hover:to-amber-600 text-purple-950 rounded-2xl shadow-lg shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="w-full h-12 sm:h-14 text-sm sm:text-base md:text-lg font-bold bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 hover:from-amber-500 hover:via-yellow-600 hover:to-amber-600 text-purple-950 rounded-2xl shadow-lg shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               CON ĐỒNG Ý & BƯỚC VÀO ÁNH SÁNG
             </Button>
             <Button
               onClick={handleGuest}
               variant="outline"
-              className="w-full h-12 text-purple-200 border-purple-400/30 hover:bg-purple-500/10 hover:text-purple-100 rounded-2xl"
+              className="w-full h-10 sm:h-12 text-sm sm:text-base text-purple-200 border-purple-400/30 hover:bg-purple-500/10 hover:text-purple-100 rounded-2xl"
             >
-              <Eye className="w-5 h-5 mr-2" />
+              <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Xem trước với tư cách khách
             </Button>
           </motion.div>
