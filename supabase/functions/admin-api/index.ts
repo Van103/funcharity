@@ -6,18 +6,101 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Input validation schemas
+// ============= INPUT VALIDATION UTILITIES =============
+
 const validateUUID = (id: string): boolean => {
+  if (typeof id !== 'string') return false;
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return uuidRegex.test(id);
 };
 
 const validateStatus = (status: string, validStatuses: string[]): boolean => {
-  return validStatuses.includes(status);
+  return typeof status === 'string' && validStatuses.includes(status);
+};
+
+// Sanitize text input: remove potential XSS/injection characters, limit length
+const sanitizeText = (text: unknown, maxLength: number = 1000): string | null => {
+  if (text === null || text === undefined) return null;
+  if (typeof text !== 'string') return null;
+  
+  // Trim and limit length
+  let sanitized = text.trim().slice(0, maxLength);
+  
+  // Remove null bytes and control characters (except newlines and tabs)
+  sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  
+  // Encode HTML special characters to prevent XSS in admin UI
+  sanitized = sanitized
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+  
+  return sanitized || null;
+};
+
+// Validate and sanitize notes field
+const validateNotes = (notes: unknown, maxLength: number = 1000): string | null => {
+  if (notes === null || notes === undefined || notes === '') return null;
+  if (typeof notes !== 'string') return null;
+  return sanitizeText(notes, maxLength);
+};
+
+// Validate positive integer within range
+const validatePositiveInt = (value: unknown, min: number = 1, max: number = 1000000): number | null => {
+  if (value === null || value === undefined) return null;
+  const num = typeof value === 'string' ? parseInt(value, 10) : value;
+  if (typeof num !== 'number' || isNaN(num) || !Number.isInteger(num)) return null;
+  if (num < min || num > max) return null;
+  return num;
+};
+
+// Validate boolean value
+const validateBoolean = (value: unknown, defaultValue: boolean = true): boolean => {
+  if (value === null || value === undefined) return defaultValue;
+  if (typeof value === 'boolean') return value;
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return defaultValue;
+};
+
+// Validate pagination parameters
+const validatePagination = (pageParam: unknown, limitParam: unknown): { page: number; limit: number } => {
+  const page = validatePositiveInt(pageParam, 1, 10000) || 1;
+  const limit = Math.min(validatePositiveInt(limitParam, 1, 100) || 20, 100);
+  return { page, limit };
+};
+
+// Rate limiting tracking (simple in-memory, resets on function restart)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 100; // 100 requests per minute per user
+
+const checkRateLimit = (userId: string): boolean => {
+  const now = Date.now();
+  const userLimit = rateLimitMap.get(userId);
+  
+  if (!userLimit || userLimit.resetTime < now) {
+    rateLimitMap.set(userId, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  
+  if (userLimit.count >= RATE_LIMIT_MAX_REQUESTS) {
+    return false;
+  }
+  
+  userLimit.count++;
+  return true;
 };
 
 const CAMPAIGN_STATUSES = ['draft', 'pending_review', 'approved', 'active', 'paused', 'completed', 'rejected', 'cancelled'];
 const USER_ROLES = ['admin', 'moderator', 'user', 'donor', 'volunteer', 'ngo', 'beneficiary'];
+const DONATION_STATUSES = ['pending', 'processing', 'completed', 'failed', 'refunded'];
+
+// Max lengths for various text fields
+const MAX_NOTES_LENGTH = 1000;
+const MAX_REASON_LENGTH = 500;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -41,6 +124,18 @@ serve(async (req) => {
       console.log('[admin-api] Unauthorized access attempt');
       return new Response(JSON.stringify({ success: false, error: 'Unauthorized' }), {
         status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Rate limiting check
+    if (!checkRateLimit(user.id)) {
+      console.log(`[admin-api] Rate limit exceeded for user ${user.id}`);
+      return new Response(JSON.stringify({ 
+        success: false, 
+        error: 'Rate limit exceeded. Please try again later.' 
+      }), {
+        status: 429,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -78,8 +173,10 @@ serve(async (req) => {
     // GET /admin-api/campaigns - List all campaigns with filters
     if (req.method === 'GET' && resource === 'campaigns' && pathParts.length === 2) {
       const status = url.searchParams.get('status');
-      const page = Number(url.searchParams.get('page')) || 1;
-      const limit = Math.min(Number(url.searchParams.get('limit')) || 20, 100);
+      const { page, limit } = validatePagination(
+        url.searchParams.get('page'),
+        url.searchParams.get('limit')
+      );
       const offset = (page - 1) * limit;
 
       let query = adminClient
@@ -122,6 +219,7 @@ serve(async (req) => {
       }
 
       const body = await req.json().catch(() => ({}));
+      const notes = validateNotes(body.notes, MAX_NOTES_LENGTH);
 
       const { data: campaign, error } = await adminClient
         .from('campaigns')
@@ -140,14 +238,14 @@ serve(async (req) => {
         throw error;
       }
 
-      // Create audit log
+      // Create audit log with sanitized notes
       await adminClient.from('campaign_audits').insert({
         campaign_id: campaignId,
         auditor_id: user.id,
         action: 'approve',
         previous_status: 'pending_review',
         new_status: 'approved',
-        notes: body.notes || null,
+        notes: notes,
       });
 
       console.log(`[admin-api] Campaign ${campaignId} approved by ${user.id}`);
@@ -174,10 +272,23 @@ serve(async (req) => {
 
       const body = await req.json();
       
-      if (!body.reason || typeof body.reason !== 'string' || body.reason.trim().length < 10) {
+      // Validate and sanitize rejection reason
+      if (!body.reason || typeof body.reason !== 'string') {
         return new Response(JSON.stringify({ 
           success: false, 
-          error: 'Rejection reason required (min 10 characters)' 
+          error: 'Rejection reason is required' 
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const reason = sanitizeText(body.reason, MAX_REASON_LENGTH);
+      
+      if (!reason || reason.length < 10) {
+        return new Response(JSON.stringify({ 
+          success: false, 
+          error: 'Rejection reason required (min 10 characters, max 500 characters)' 
         }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -197,17 +308,17 @@ serve(async (req) => {
         throw error;
       }
 
-      // Create audit log
+      // Create audit log with sanitized reason
       await adminClient.from('campaign_audits').insert({
         campaign_id: campaignId,
         auditor_id: user.id,
         action: 'reject',
         previous_status: 'pending_review',
         new_status: 'rejected',
-        notes: body.reason,
+        notes: reason,
       });
 
-      console.log(`[admin-api] Campaign ${campaignId} rejected by ${user.id}: ${body.reason}`);
+      console.log(`[admin-api] Campaign ${campaignId} rejected by ${user.id}`);
 
       return new Response(JSON.stringify({
         success: true,
@@ -241,6 +352,8 @@ serve(async (req) => {
         });
       }
 
+      const notes = validateNotes(body.notes, MAX_NOTES_LENGTH);
+
       // Get current campaign status
       const { data: currentCampaign } = await adminClient
         .from('campaigns')
@@ -260,14 +373,14 @@ serve(async (req) => {
         throw error;
       }
 
-      // Create audit log
+      // Create audit log with sanitized notes
       await adminClient.from('campaign_audits').insert({
         campaign_id: campaignId,
         auditor_id: user.id,
         action: 'status_change',
         previous_status: currentCampaign?.status,
         new_status: body.status,
-        notes: body.notes || null,
+        notes: notes,
       });
 
       console.log(`[admin-api] Campaign ${campaignId} status changed to ${body.status}`);
@@ -285,8 +398,10 @@ serve(async (req) => {
     // GET /admin-api/users - List all users
     if (req.method === 'GET' && resource === 'users' && pathParts.length === 2) {
       const role = url.searchParams.get('role');
-      const page = Number(url.searchParams.get('page')) || 1;
-      const limit = Math.min(Number(url.searchParams.get('limit')) || 20, 100);
+      const { page, limit } = validatePagination(
+        url.searchParams.get('page'),
+        url.searchParams.get('limit')
+      );
       const offset = (page - 1) * limit;
 
       let query = adminClient
@@ -439,7 +554,7 @@ serve(async (req) => {
       }
 
       const body = await req.json().catch(() => ({}));
-      const isVerified = body.is_verified !== false;
+      const isVerified = validateBoolean(body.is_verified, true);
 
       const { data: profile, error } = await adminClient
         .from('profiles')
@@ -470,8 +585,10 @@ serve(async (req) => {
     if (req.method === 'GET' && resource === 'donations' && pathParts.length === 2) {
       const status = url.searchParams.get('status');
       const campaignId = url.searchParams.get('campaign_id');
-      const page = Number(url.searchParams.get('page')) || 1;
-      const limit = Math.min(Number(url.searchParams.get('limit')) || 20, 100);
+      const { page, limit } = validatePagination(
+        url.searchParams.get('page'),
+        url.searchParams.get('limit')
+      );
       const offset = (page - 1) * limit;
 
       let query = adminClient
@@ -482,7 +599,7 @@ serve(async (req) => {
           campaign:campaigns!donations_campaign_id_fkey(title)
         `, { count: 'exact' });
 
-      if (status) {
+      if (status && validateStatus(status, DONATION_STATUSES)) {
         query = query.eq('status', status);
       }
       if (campaignId && validateUUID(campaignId)) {
@@ -536,12 +653,11 @@ serve(async (req) => {
       }
 
       const body = await req.json();
-      const validDonationStatuses = ['pending', 'processing', 'completed', 'failed', 'refunded'];
       
-      if (!body.status || !validDonationStatuses.includes(body.status)) {
+      if (!body.status || !validateStatus(body.status, DONATION_STATUSES)) {
         return new Response(JSON.stringify({ 
           success: false, 
-          error: `Invalid status. Must be one of: ${validDonationStatuses.join(', ')}` 
+          error: `Invalid status. Must be one of: ${DONATION_STATUSES.join(', ')}` 
         }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -625,10 +741,10 @@ serve(async (req) => {
 
   } catch (error: unknown) {
     console.error('[admin-api] Error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    // Return generic error message to avoid leaking internal details
     return new Response(JSON.stringify({
       success: false,
-      error: errorMessage,
+      error: 'An error occurred while processing your request',
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
