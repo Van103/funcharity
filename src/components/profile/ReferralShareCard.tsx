@@ -18,12 +18,19 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
 
   useEffect(() => {
     if (userId) {
-      fetchReferralCode();
+      fetchOrCreateReferralCode();
     }
   }, [userId]);
 
-  const fetchReferralCode = async () => {
+  const generateCode = () => {
+    return Array.from({ length: 8 }, () => 
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random() * 36)]
+    ).join('');
+  };
+
+  const fetchOrCreateReferralCode = async () => {
     try {
+      // Thử lấy code hiện có
       const { data, error } = await supabase
         .from("referral_codes")
         .select("code, uses_count")
@@ -36,9 +43,24 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
       if (data) {
         setReferralCode(data.code);
         setUsesCount(data.uses_count);
+      } else {
+        // Tạo code mới nếu chưa có
+        const newCode = generateCode();
+        const { data: insertedData, error: insertError } = await supabase
+          .from("referral_codes")
+          .insert({ user_id: userId, code: newCode })
+          .select("code, uses_count")
+          .single();
+
+        if (insertError) throw insertError;
+        
+        if (insertedData) {
+          setReferralCode(insertedData.code);
+          setUsesCount(insertedData.uses_count);
+        }
       }
     } catch (error) {
-      console.error("Error fetching referral code:", error);
+      console.error("Error fetching/creating referral code:", error);
     } finally {
       setLoading(false);
     }
