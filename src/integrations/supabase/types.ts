@@ -2619,6 +2619,14 @@ export type Database = {
       }
       claim_rewards: { Args: { p_user_id: string }; Returns: Json }
       generate_referral_code: { Args: never; Returns: string }
+      generate_unique_referral_code: {
+        Args: { base_name: string; exclude_id?: string }
+        Returns: string
+      }
+      generate_username_from_name: {
+        Args: { full_name: string }
+        Returns: string
+      }
       get_campaign_donations: {
         Args: { _campaign_id: string }
         Returns: {
