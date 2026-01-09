@@ -48,12 +48,18 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [manualReferralCode, setManualReferralCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const { toast } = useToast();
+  
+  // Effective referral code: URL param > localStorage > manual input
+  const effectiveReferralCode = referralCode || manualReferralCode.trim();
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -191,6 +197,16 @@ const Auth = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check password confirmation
+    if (password !== confirmPassword) {
+      toast({
+        title: t("auth.validationError"),
+        description: "Mật khẩu xác nhận không khớp",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Validate input with zod
     const result = signupSchema.safeParse({ email, password, fullName });
     if (!result.success) {
@@ -214,7 +230,7 @@ const Auth = () => {
         data: {
           full_name: result.data.fullName,
           role: userType,
-          referral_code: referralCode || undefined,
+          referral_code: effectiveReferralCode || undefined,
         },
       },
     });
@@ -294,14 +310,14 @@ const Auth = () => {
               </p>
               
               {/* Referral Bonus Banner */}
-              {referralCode && activeTab === "signup" && (
+              {effectiveReferralCode && activeTab === "signup" && (
                 <div className="mt-4 p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
                   <div className="flex items-center justify-center gap-2 text-green-600">
                     <Gift className="w-5 h-5" />
                     <span className="font-semibold">🎁 Bạn được tặng 50,000 Camly Coin khi đăng ký!</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Mã giới thiệu: <strong className="text-green-600">{referralCode}</strong>
+                    Mã giới thiệu: <strong className="text-green-600">{effectiveReferralCode}</strong>
                   </p>
                 </div>
               )}
@@ -564,6 +580,94 @@ const Auth = () => {
                     </div>
                     <PasswordStrengthIndicator password={password} />
                   </div>
+
+                  {/* Confirm Password Field */}
+                  <div>
+                    <Label htmlFor="confirm-password">Xác nhận mật khẩu</Label>
+                    <div className="relative mt-1">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="confirm-password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirm-password"
+                        autoComplete="new-password"
+                        placeholder="••••••••"
+                        className={`pl-10 pr-10 ${confirmPassword && password !== confirmPassword ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        disabled={loading}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                    {confirmPassword && password !== confirmPassword && (
+                      <p className="text-xs text-red-500 mt-1">Mật khẩu xác nhận không khớp</p>
+                    )}
+                    {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
+                      <p className="text-xs text-green-600 mt-1">✓ Mật khẩu khớp</p>
+                    )}
+                  </div>
+
+                  {/* Referral Code Field */}
+                  {!referralCode && (
+                    <div>
+                      <Label htmlFor="referral-code">Mã người giới thiệu (không bắt buộc)</Label>
+                      <div className="relative mt-1">
+                        <Gift className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input
+                          id="referral-code"
+                          type="text"
+                          name="referral-code"
+                          placeholder="Nhập mã giới thiệu hoặc dán link..."
+                          className="pl-10"
+                          value={manualReferralCode}
+                          onChange={(e) => {
+                            let value = e.target.value;
+                            // Extract referral code from URL if user pastes a full link
+                            if (value.includes('ref=')) {
+                              const match = value.match(/ref=([^&]+)/);
+                              if (match) {
+                                value = match[1];
+                              }
+                            } else if (value.includes('/r/')) {
+                              const match = value.match(/\/r\/([^/?]+)/);
+                              if (match) {
+                                value = match[1];
+                              }
+                            }
+                            setManualReferralCode(value);
+                          }}
+                          disabled={loading}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Dán link hoặc nhập mã người giới thiệu để nhận thưởng
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Referrer Info Display */}
+                  {effectiveReferralCode && (
+                    <div className="p-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-white font-bold flex-shrink-0">
+                          {effectiveReferralCode.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-muted-foreground">Bạn được giới thiệu bởi:</p>
+                          <p className="font-semibold text-sm text-secondary truncate">
+                            {effectiveReferralCode}
+                          </p>
+                        </div>
+                        <Gift className="w-5 h-5 text-pink-500 flex-shrink-0" />
+                      </div>
+                    </div>
+                  )}
 
                   {userType === "ngo" && (
                     <div className="bg-muted/50 rounded-xl p-4">
