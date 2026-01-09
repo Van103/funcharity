@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift, Trophy, Link2, Share2 } from 'lucide-react';
+import { Wallet, History, ArrowUpRight, Copy, Check, Coins, TrendingUp, Gift, Trophy, Link2, Share2, Send, ExternalLink } from 'lucide-react';
 import { useUserBalances, useRewardTransactions, useReferralCode, formatCurrency, getCurrencyIcon, getActionName } from '@/hooks/useRewards';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,10 @@ import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { ClaimRewardsButton } from './ClaimRewardsButton';
 import { vi } from 'date-fns/locale';
+import { TransferModal } from '@/components/wallet/TransferModal';
+import { WithdrawModal } from '@/components/wallet/WithdrawModal';
+import { WalletConnectModal } from '@/components/wallet/WalletConnectModal';
+import { useWithdrawalRequests } from '@/hooks/useWithdrawal';
 
 export function MyWallet() {
   const { data: balances, isLoading: balancesLoading } = useUserBalances();
@@ -19,6 +23,11 @@ export function MyWallet() {
   const { data: referralCode } = useReferralCode();
   const [copied, setCopied] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+  const [walletConnectOpen, setWalletConnectOpen] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+  const { data: withdrawalRequests } = useWithdrawalRequests();
 
   const copyReferralCode = async () => {
     if (referralCode?.code) {
@@ -109,6 +118,33 @@ export function MyWallet() {
                   <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                     <Check className="w-4 h-4 text-primary" />
                     <span>Đã nhận: {(balances?.find(b => b.currency === 'CAMLY')?.total_withdrawn || 0).toLocaleString()}</span>
+                  </div>
+                  {/* Quick Actions */}
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => setTransferModalOpen(true)}
+                    >
+                      <Send className="w-4 h-4 mr-1" />
+                      Chuyển
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => {
+                        if (connectedWallet) {
+                          setWithdrawModalOpen(true);
+                        } else {
+                          setWalletConnectOpen(true);
+                        }
+                      }}
+                    >
+                      <ArrowUpRight className="w-4 h-4 mr-1" />
+                      Rút
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -232,16 +268,20 @@ export function MyWallet() {
         </CardContent>
       </Card>
 
-      {/* Tabs: History */}
+      {/* Tabs: History & Withdraw */}
       <Tabs defaultValue="history" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="history">
             <History className="w-4 h-4 mr-2" />
-            Lịch sử thưởng
+            Lịch sử
           </TabsTrigger>
-          <TabsTrigger value="withdraw" disabled>
+          <TabsTrigger value="withdraw">
             <ArrowUpRight className="w-4 h-4 mr-2" />
-            Rút tiền (Sắp ra mắt)
+            Rút tiền
+          </TabsTrigger>
+          <TabsTrigger value="transfer">
+            <Send className="w-4 h-4 mr-2" />
+            Chuyển
           </TabsTrigger>
         </TabsList>
 
@@ -275,11 +315,11 @@ export function MyWallet() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-green-500">
-                          +{formatCurrency(tx.amount, tx.currency)}
+                        <p className={`font-bold ${tx.amount >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                          {tx.amount >= 0 ? '+' : ''}{formatCurrency(Math.abs(tx.amount), tx.currency)}
                         </p>
                         <Badge variant="secondary" className="text-xs">
-                          {tx.status === 'completed' ? 'Hoàn thành' : tx.status}
+                          {tx.status === 'completed' ? 'Hoàn thành' : tx.status === 'pending' ? 'Đang xử lý' : tx.status}
                         </Badge>
                       </div>
                     </motion.div>
@@ -296,18 +336,100 @@ export function MyWallet() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="withdraw">
+        <TabsContent value="withdraw" className="mt-4">
           <Card>
-            <CardContent className="p-8 text-center">
-              <ArrowUpRight className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">Tính năng đang phát triển</h3>
-              <p className="text-muted-foreground">
-                Chức năng rút tiền sẽ sớm được ra mắt. Hãy tích lũy thêm phần thưởng nhé!
+            <CardContent className="p-6 space-y-4">
+              <div className="text-center">
+                <ArrowUpRight className="w-12 h-12 mx-auto mb-4 text-primary" />
+                <h3 className="text-lg font-semibold mb-2">Rút Camly Coin về ví crypto</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Chuyển đổi Camly Coin thành MATIC và rút về ví Polygon của bạn
+                </p>
+              </div>
+
+              {/* Withdrawal History */}
+              {withdrawalRequests && withdrawalRequests.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Lịch sử rút tiền</h4>
+                  {withdrawalRequests.slice(0, 5).map((req) => (
+                    <div key={req.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                      <div>
+                        <p className="font-medium">{req.amount.toLocaleString()} Camly</p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(req.created_at), 'dd/MM/yyyy HH:mm', { locale: vi })}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant={req.status === 'completed' ? 'default' : req.status === 'failed' ? 'destructive' : 'secondary'}>
+                          {req.status === 'pending' ? 'Đang chờ' : req.status === 'processing' ? 'Đang xử lý' : req.status === 'completed' ? 'Hoàn thành' : req.status === 'failed' ? 'Thất bại' : req.status}
+                        </Badge>
+                        {req.tx_hash && (
+                          <a
+                            href={`https://polygonscan.com/tx/${req.tx_hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary flex items-center gap-1 mt-1"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            Xem giao dịch
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Button
+                className="w-full"
+                onClick={() => {
+                  if (connectedWallet) {
+                    setWithdrawModalOpen(true);
+                  } else {
+                    setWalletConnectOpen(true);
+                  }
+                }}
+              >
+                {connectedWallet ? 'Rút tiền ngay' : 'Kết nối ví để rút'}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="transfer" className="mt-4">
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Send className="w-12 h-12 mx-auto mb-4 text-primary" />
+              <h3 className="text-lg font-semibold mb-2">Chuyển Camly Coin</h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                Gửi Camly Coin cho bạn bè trong cộng đồng Fun Charity
               </p>
+              <Button onClick={() => setTransferModalOpen(true)} className="w-full">
+                Chuyển tiền
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Modals */}
+      <TransferModal
+        open={transferModalOpen}
+        onOpenChange={setTransferModalOpen}
+        currentBalance={totalCamly}
+      />
+
+      <WithdrawModal
+        open={withdrawModalOpen}
+        onOpenChange={setWithdrawModalOpen}
+        walletAddress={connectedWallet}
+        currentBalance={totalCamly}
+      />
+
+      <WalletConnectModal
+        open={walletConnectOpen}
+        onOpenChange={setWalletConnectOpen}
+      />
     </div>
   );
 }

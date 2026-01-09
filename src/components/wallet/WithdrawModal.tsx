@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { 
   Coins, 
   Wallet, 
@@ -17,109 +15,58 @@ import {
   Info,
   ExternalLink
 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useRequestWithdrawal, useWithdrawalRequests } from "@/hooks/useWithdrawal";
 
 interface WithdrawModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   walletAddress: string | null;
+  currentBalance: number;
   onWithdrawSuccess?: () => void;
 }
 
-export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuccess }: WithdrawModalProps) {
-  const { language } = useLanguage();
-  const { toast } = useToast();
+export function WithdrawModal({ open, onOpenChange, walletAddress, currentBalance, onWithdrawSuccess }: WithdrawModalProps) {
   const [step, setStep] = useState<"input" | "confirm" | "processing" | "success">("input");
   const [amount, setAmount] = useState("");
-  const [userCoins, setUserCoins] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const { data: withdrawalHistory } = useWithdrawalRequests();
+  const requestWithdrawal = useRequestWithdrawal();
 
-  // Conversion rate: 1 Camly Coin = 0.001 MATIC (example)
-  const COIN_TO_MATIC_RATE = 0.001;
-  const MIN_WITHDRAW = 100;
-  const MAX_WITHDRAW = 10000;
+  // Conversion rate: 1 Camly Coin = 0.0001 MATIC (example)
+  const COIN_TO_MATIC_RATE = 0.0001;
+  const MIN_WITHDRAW = 10000;
+  const MAX_WITHDRAW = 1000000;
 
   useEffect(() => {
     if (open) {
-      fetchUserCoins();
       setStep("input");
       setAmount("");
     }
   }, [open]);
 
-  const fetchUserCoins = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data } = await supabase
-      .from("user_coins")
-      .select("balance")
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-    setUserCoins(data?.balance || 0);
-  };
-
   const maticAmount = parseFloat(amount || "0") * COIN_TO_MATIC_RATE;
-  const isValidAmount = parseFloat(amount) >= MIN_WITHDRAW && parseFloat(amount) <= Math.min(MAX_WITHDRAW, userCoins);
+  const isValidAmount = parseFloat(amount) >= MIN_WITHDRAW && parseFloat(amount) <= Math.min(MAX_WITHDRAW, currentBalance);
 
   const handleWithdraw = async () => {
-    if (!walletAddress) {
-      toast({
-        title: language === "vi" ? "Chưa kết nối ví" : "Wallet not connected",
-        description: language === "vi" ? "Vui lòng kết nối ví crypto trước" : "Please connect your crypto wallet first",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!walletAddress) return;
 
     setStep("processing");
-    setLoading(true);
-
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const withdrawAmount = parseFloat(amount);
-
-      // Deduct coins from user balance
-      const { error } = await supabase
-        .from("user_coins")
-        .update({ 
-          balance: userCoins - withdrawAmount,
-          total_spent: supabase.rpc as any // This would need a proper RPC call
-        })
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-
-      // In production, this would call an edge function to process the actual crypto transfer
-      // For now, we simulate success
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      setStep("success");
-      toast({
-        title: language === "vi" ? "Rút tiền thành công!" : "Withdrawal successful!",
-        description: language === "vi" 
-          ? `${withdrawAmount} Camly Coin đã được gửi về ví của bạn` 
-          : `${withdrawAmount} Camly Coins sent to your wallet`,
+      await requestWithdrawal.mutateAsync({
+        amount: parseFloat(amount),
+        walletAddress,
       });
-
+      
+      setStep("success");
       onWithdrawSuccess?.();
     } catch (error) {
-      console.error("Withdraw error:", error);
       setStep("input");
-      toast({
-        title: language === "vi" ? "Lỗi" : "Error",
-        description: language === "vi" ? "Không thể thực hiện rút tiền" : "Could not process withdrawal",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
     }
   };
 
   const shortenAddress = (addr: string) => `${addr.slice(0, 10)}...${addr.slice(-8)}`;
+
+  const pendingWithdrawals = withdrawalHistory?.filter(w => w.status === "pending" || w.status === "processing") || [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -127,12 +74,10 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Coins className="w-5 h-5 text-primary" />
-            {language === "vi" ? "Rút Camly Coin" : "Withdraw Camly Coin"}
+            Rút Camly Coin
           </DialogTitle>
           <DialogDescription>
-            {language === "vi" 
-              ? "Chuyển đổi Camly Coin thành crypto và rút về ví của bạn" 
-              : "Convert Camly Coins to crypto and withdraw to your wallet"}
+            Chuyển đổi Camly Coin thành crypto và rút về ví của bạn
           </DialogDescription>
         </DialogHeader>
 
@@ -147,62 +92,80 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                 className="space-y-4"
               >
                 {/* Balance Display */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      {language === "vi" ? "Số dư hiện tại" : "Current Balance"}
-                    </span>
+                    <span className="text-sm text-muted-foreground">Số dư hiện tại</span>
                     <Badge variant="secondary" className="text-lg font-bold">
-                      🪙 {userCoins.toLocaleString()} Coins
+                      🪙 {currentBalance.toLocaleString()} Camly
                     </Badge>
                   </div>
                 </div>
 
+                {/* Pending Withdrawals Warning */}
+                {pendingWithdrawals.length > 0 && (
+                  <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                    <div className="flex items-start gap-2 text-sm">
+                      <Info className="w-4 h-4 text-amber-500 mt-0.5" />
+                      <p className="text-muted-foreground">
+                        Bạn có {pendingWithdrawals.length} yêu cầu rút tiền đang chờ xử lý.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Amount Input */}
                 <div className="space-y-2">
-                  <Label htmlFor="amount">
-                    {language === "vi" ? "Số lượng muốn rút" : "Amount to withdraw"}
-                  </Label>
+                  <Label htmlFor="amount">Số lượng muốn rút</Label>
                   <div className="relative">
                     <Input
                       id="amount"
                       type="number"
                       min={MIN_WITHDRAW}
-                      max={Math.min(MAX_WITHDRAW, userCoins)}
+                      max={Math.min(MAX_WITHDRAW, currentBalance)}
                       placeholder="0"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       className="pr-20 text-lg"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                      Coins
+                      Camly
                     </div>
                   </div>
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Min: {MIN_WITHDRAW} Coins</span>
-                    <span>Max: {Math.min(MAX_WITHDRAW, userCoins).toLocaleString()} Coins</span>
+                    <span>Tối thiểu: {MIN_WITHDRAW.toLocaleString()} Camly</span>
+                    <span>Tối đa: {Math.min(MAX_WITHDRAW, currentBalance).toLocaleString()} Camly</span>
                   </div>
                 </div>
 
                 {/* Quick Amount Buttons */}
                 <div className="flex gap-2">
-                  {[100, 500, 1000, userCoins].map((val) => (
+                  {[10000, 50000, 100000].map((val) => (
                     <Button
                       key={val}
                       type="button"
                       variant="outline"
                       size="sm"
                       className="flex-1"
-                      onClick={() => setAmount(Math.min(val, MAX_WITHDRAW).toString())}
-                      disabled={val > userCoins}
+                      onClick={() => setAmount(Math.min(val, currentBalance).toString())}
+                      disabled={val > currentBalance}
                     >
-                      {val === userCoins ? (language === "vi" ? "Tất cả" : "All") : val}
+                      {val.toLocaleString()}
                     </Button>
                   ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setAmount(Math.min(currentBalance, MAX_WITHDRAW).toString())}
+                    disabled={currentBalance < MIN_WITHDRAW}
+                  >
+                    Tất cả
+                  </Button>
                 </div>
 
                 {/* Conversion Preview */}
-                {amount && (
+                {amount && parseFloat(amount) > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -216,7 +179,7 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {language === "vi" ? "Tỷ giá: 1 Coin = 0.001 MATIC" : "Rate: 1 Coin = 0.001 MATIC"}
+                      Tỷ giá: 10,000 Camly = 1 MATIC
                     </p>
                   </motion.div>
                 )}
@@ -226,7 +189,7 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                   <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
                     <div className="flex items-center gap-2 text-sm">
                       <Wallet className="w-4 h-4 text-green-500" />
-                      <span className="text-muted-foreground">{language === "vi" ? "Ví nhận:" : "Receiving wallet:"}</span>
+                      <span className="text-muted-foreground">Ví nhận:</span>
                       <code className="font-mono text-xs">{shortenAddress(walletAddress)}</code>
                     </div>
                   </div>
@@ -234,7 +197,7 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                   <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
                     <div className="flex items-center gap-2 text-sm text-destructive">
                       <AlertCircle className="w-4 h-4" />
-                      {language === "vi" ? "Vui lòng kết nối ví trước" : "Please connect wallet first"}
+                      Vui lòng kết nối ví trước
                     </div>
                   </div>
                 )}
@@ -245,7 +208,7 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                   disabled={!isValidAmount || !walletAddress}
                   className="w-full"
                 >
-                  {language === "vi" ? "Tiếp tục" : "Continue"}
+                  Tiếp tục
                 </Button>
               </motion.div>
             )}
@@ -259,20 +222,20 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                 className="space-y-4"
               >
                 <div className="p-4 rounded-xl bg-muted/50 border border-border space-y-3">
-                  <h4 className="font-semibold">{language === "vi" ? "Xác nhận rút tiền" : "Confirm Withdrawal"}</h4>
+                  <h4 className="font-semibold">Xác nhận rút tiền</h4>
                   
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{language === "vi" ? "Số lượng" : "Amount"}</span>
-                    <span className="font-semibold">🪙 {parseInt(amount).toLocaleString()} Coins</span>
+                    <span className="text-muted-foreground">Số lượng</span>
+                    <span className="font-semibold">🪙 {parseInt(amount).toLocaleString()} Camly</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{language === "vi" ? "Nhận được" : "You receive"}</span>
+                    <span className="text-muted-foreground">Nhận được</span>
                     <span className="font-semibold text-primary">{maticAmount.toFixed(4)} MATIC</span>
                   </div>
                   
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{language === "vi" ? "Ví nhận" : "To wallet"}</span>
+                    <span className="text-muted-foreground">Ví nhận</span>
                     <code className="font-mono text-xs">{shortenAddress(walletAddress!)}</code>
                   </div>
                 </div>
@@ -281,19 +244,17 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                   <div className="flex items-start gap-2 text-sm">
                     <Info className="w-4 h-4 text-amber-500 mt-0.5" />
                     <p className="text-muted-foreground">
-                      {language === "vi" 
-                        ? "Giao dịch sẽ được xử lý trong vòng 1-5 phút. Vui lòng kiểm tra ví sau khi hoàn tất." 
-                        : "Transaction will be processed within 1-5 minutes. Please check your wallet after completion."}
+                      Yêu cầu sẽ được xử lý trong vòng 24-48 giờ. Số dư sẽ bị trừ ngay khi gửi yêu cầu.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setStep("input")} className="flex-1">
-                    {language === "vi" ? "Quay lại" : "Back"}
+                    Quay lại
                   </Button>
                   <Button onClick={handleWithdraw} className="flex-1">
-                    {language === "vi" ? "Xác nhận rút" : "Confirm Withdraw"}
+                    Xác nhận rút
                   </Button>
                 </div>
               </motion.div>
@@ -308,9 +269,9 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
               >
                 <Loader2 className="w-12 h-12 mx-auto text-primary animate-spin" />
                 <div>
-                  <h4 className="font-semibold">{language === "vi" ? "Đang xử lý..." : "Processing..."}</h4>
+                  <h4 className="font-semibold">Đang xử lý...</h4>
                   <p className="text-sm text-muted-foreground">
-                    {language === "vi" ? "Vui lòng không đóng cửa sổ này" : "Please do not close this window"}
+                    Vui lòng không đóng cửa sổ này
                   </p>
                 </div>
               </motion.div>
@@ -331,9 +292,9 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                   <CheckCircle className="w-16 h-16 mx-auto text-green-500" />
                 </motion.div>
                 <div>
-                  <h4 className="font-semibold text-lg">{language === "vi" ? "Rút tiền thành công!" : "Withdrawal Successful!"}</h4>
+                  <h4 className="font-semibold text-lg">Yêu cầu đã được gửi!</h4>
                   <p className="text-sm text-muted-foreground">
-                    {maticAmount.toFixed(4)} MATIC {language === "vi" ? "đã được gửi về ví của bạn" : "has been sent to your wallet"}
+                    {parseInt(amount).toLocaleString()} Camly sẽ được chuyển đổi thành {maticAmount.toFixed(4)} MATIC và gửi về ví của bạn.
                   </p>
                 </div>
                 <Button 
@@ -342,10 +303,10 @@ export function WithdrawModal({ open, onOpenChange, walletAddress, onWithdrawSuc
                   className="gap-2"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  {language === "vi" ? "Xem trên PolygonScan" : "View on PolygonScan"}
+                  Xem trên PolygonScan
                 </Button>
                 <Button onClick={() => onOpenChange(false)} className="w-full">
-                  {language === "vi" ? "Đóng" : "Close"}
+                  Đóng
                 </Button>
               </motion.div>
             )}

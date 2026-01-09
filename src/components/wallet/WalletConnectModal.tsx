@@ -351,6 +351,7 @@ export function WalletConnectModal({ open, onOpenChange, onWalletConnected }: Wa
         open={withdrawModalOpen}
         onOpenChange={setWithdrawModalOpen}
         walletAddress={connectedAddress}
+        currentBalance={0}
         onWithdrawSuccess={() => {
           // Optionally refresh data
         }}
