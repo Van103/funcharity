@@ -52,6 +52,24 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
     }
   }, [userId]);
 
+  // Poll stats so the "đã đăng ký" number updates without refresh
+  useEffect(() => {
+    if (!userId) return;
+
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from("referral_codes")
+        .select("uses_count")
+        .eq("user_id", userId)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (data) setUsesCount(data.uses_count);
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [userId]);
+
   const generateUniqueUsernameCode = async (baseName: string): Promise<string> => {
     let code = baseName;
     let counter = 0;
@@ -126,10 +144,12 @@ export function ReferralShareCard({ userId }: ReferralShareCardProps) {
   const getReferralLink = () => {
     const productionDomain = "https://fun-charity.lovable.app";
     const currentOrigin = window.location.origin;
-    const isProduction = currentOrigin.includes("fun-charity.lovable.app") || 
+    const isProduction = currentOrigin.includes("fun-charity.lovable.app") ||
                          currentOrigin.includes("fungiveback.org");
     const baseUrl = isProduction ? currentOrigin : productionDomain;
-    return `${baseUrl}/r/${referralCode}`;
+
+    // Use /auth?ref=... directly (more reliable across devices/apps)
+    return `${baseUrl}/auth?ref=${encodeURIComponent(referralCode)}`;
   };
 
   const handleCopy = async () => {

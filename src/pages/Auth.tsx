@@ -32,9 +32,17 @@ import {
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const referralCodeFromUrl = searchParams.get("ref");
+
   // Fallback to localStorage if URL param is missing (e.g., after page refresh)
   const referralCode = referralCodeFromUrl || localStorage.getItem("referral_code");
-  
+
+  // Persist referral code when present in URL (covers direct /auth?ref=... links)
+  useEffect(() => {
+    if (referralCodeFromUrl) {
+      localStorage.setItem("referral_code", referralCodeFromUrl);
+    }
+  }, [referralCodeFromUrl]);
+
   const [activeTab, setActiveTab] = useState(referralCode ? "signup" : "login");
   const [userType, setUserType] = useState<"donor" | "volunteer" | "ngo">("donor");
   const [loading, setLoading] = useState(false);
