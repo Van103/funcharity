@@ -9,7 +9,7 @@ interface ReferralShareCardProps {
   userId: string | null;
 }
 
-// Hàm chuyển đổi tên thành username format
+// Hàm chuyển đổi tên thành username format ngắn gọn (chỉ lấy 1-2 từ cuối)
 const generateUsernameFromName = (fullName: string): string => {
   if (!fullName) return "";
   
@@ -23,14 +23,20 @@ const generateUsernameFromName = (fullName: string): string => {
   };
   
   const normalized = removeVietnameseTones(fullName);
+  const words = normalized.split(/\s+/).filter(word => word.length > 0);
   
-  // Tách từng từ và viết hoa chữ cái đầu, nối bằng dấu chấm
-  const words = normalized
-    .split(/\s+/)
-    .filter(word => word.length > 0)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+  if (words.length === 0) return "";
   
-  return words.join(".");
+  // Nếu chỉ có 1 từ: lấy luôn (ví dụ: "Lannguyen")
+  if (words.length === 1) {
+    return words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase();
+  }
+  
+  // Lấy 2 từ cuối (tên đệm + tên), ghép liền không dấu chấm
+  const lastTwo = words.slice(-2);
+  return lastTwo
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join("");
 };
 
 export function ReferralShareCard({ userId }: ReferralShareCardProps) {
