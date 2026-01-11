@@ -2612,9 +2612,9 @@ export type Database = {
       check_milestones: {
         Args: { p_user_id: string }
         Returns: {
-          is_new: boolean
-          milestone_type: string
-          milestone_value: number
+          out_is_new: boolean
+          out_milestone_type: string
+          out_milestone_value: number
         }[]
       }
       claim_rewards: { Args: { p_user_id: string }; Returns: Json }

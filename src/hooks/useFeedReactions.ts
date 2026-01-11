@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 interface FeedReaction {
   id: string;
@@ -46,31 +46,57 @@ export function usePostReactions(postId: string) {
     return acc;
   }, {} as Record<string, number>) || {};
 
-  // Add reaction mutation
+  // Debounce ref to prevent race conditions
+  const pendingReactionRef = useRef<string | null>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Add reaction mutation with debounce
   const addReaction = useMutation({
     mutationFn: async (reactionType: string) => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error("Not authenticated");
 
-      // Remove existing reaction first
+      // Use upsert approach: delete first, then insert
+      // Wrap in a single transaction-like operation
+      const userId = user.user.id;
+
+      // First, delete any existing reaction
       await supabase
         .from("feed_reactions")
         .delete()
         .eq("feed_post_id", postId)
-        .eq("user_id", user.user.id);
+        .eq("user_id", userId);
 
-      // Add new reaction
+      // Small delay to ensure delete is processed
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      // Then insert new reaction
       const { data, error } = await supabase
         .from("feed_reactions")
         .insert({
           feed_post_id: postId,
-          user_id: user.user.id,
+          user_id: userId,
           reaction_type: reactionType,
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        // If duplicate key error, try to update instead
+        if (error.code === '23505') {
+          const { data: updateData, error: updateError } = await supabase
+            .from("feed_reactions")
+            .update({ reaction_type: reactionType })
+            .eq("feed_post_id", postId)
+            .eq("user_id", userId)
+            .select()
+            .single();
+          
+          if (updateError) throw updateError;
+          return updateData;
+        }
+        throw error;
+      }
       return data;
     },
     onMutate: async (reactionType) => {

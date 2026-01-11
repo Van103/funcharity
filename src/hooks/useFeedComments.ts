@@ -103,7 +103,7 @@ export function useFeedComments(postId: string) {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error("Not authenticated");
 
-      // AI Content Moderation for comments
+      // AI Content Moderation for comments (with timeout and fallback)
       try {
         const moderationPayload: { text?: string; imageUrls?: string[]; userId: string } = {
           userId: user.user.id,
@@ -117,14 +117,24 @@ export function useFeedComments(postId: string) {
           moderationPayload.imageUrls = [imageUrl];
         }
 
-        const { data: moderationResult, error: moderationError } = await supabase.functions.invoke(
+        // Add timeout to prevent hanging if moderation service is slow
+        const moderationPromise = supabase.functions.invoke(
           'content-moderation',
           { body: moderationPayload }
         );
 
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Moderation timeout')), 5000)
+        );
+
+        const { data: moderationResult, error: moderationError } = await Promise.race([
+          moderationPromise,
+          timeoutPromise.then(() => ({ data: null, error: { message: 'timeout' } }))
+        ]) as { data: any; error: any };
+
         if (moderationError) {
-          console.error('Moderation error:', moderationError);
-          // Continue posting if moderation fails
+          console.warn('Moderation skipped due to error/timeout:', moderationError);
+          // Continue posting if moderation fails or times out
         } else if (moderationResult) {
           const decision = moderationResult.decision || 'SAFE';
 
@@ -144,10 +154,12 @@ export function useFeedComments(postId: string) {
           }
         }
       } catch (moderationError: any) {
+        // Only block if it's a hard violation error
         if (moderationError.message?.includes('vi phạm')) {
           throw moderationError;
         }
-        console.error('Moderation check failed:', moderationError);
+        // For all other errors (timeout, network, etc.), continue with posting
+        console.warn('Moderation check skipped:', moderationError.message);
       }
 
       const { data, error } = await supabase

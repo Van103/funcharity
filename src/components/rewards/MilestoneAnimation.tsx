@@ -30,9 +30,9 @@ export function MilestoneAnimation() {
 
     if (error || !data) return;
 
-    const newMilestones = (data as Array<{ milestone_type: string; milestone_value: number; is_new: boolean }>)
-      .filter(m => m.is_new)
-      .map(m => ({ type: m.milestone_type, value: m.milestone_value }));
+    const newMilestones = (data as Array<{ out_milestone_type: string; out_milestone_value: number; out_is_new: boolean }>)
+      .filter(m => m.out_is_new)
+      .map(m => ({ type: m.out_milestone_type, value: m.out_milestone_value }));
 
     if (newMilestones.length > 0) {
       setMilestoneQueue(prev => [...prev, ...newMilestones]);
